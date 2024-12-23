@@ -20,5 +20,5 @@ public class Shipment
     public double TotalPackageWeight { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    public Warehouse SourceWarehouse { get; set; }
+    public Warehouse? SourceWarehouse { get; set; }
 }

@@ -32,7 +32,7 @@ public class ShipmentService : IShipmentService
             return ("Error: Invalid shipment data.", null);
         }
 
-        // Validate fields (you can add more validations as needed)
+        //Checks
         if (shipment.OrderId <= 0)
             return ("Error: 'OrderId' must be greater than zero.", null);
         if (shipment.SourceId <= 0)
