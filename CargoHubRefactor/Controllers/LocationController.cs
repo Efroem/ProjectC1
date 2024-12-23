@@ -51,18 +51,21 @@ namespace CargoHubRefactor.Controllers{
         [HttpPost]
         public async Task<IActionResult> AddLocation([FromBody] Location location)
         {
-            if (location == null || string.IsNullOrEmpty(location.Name) || string.IsNullOrEmpty(location.Code))
-            {
-                return BadRequest("Location name and code are required.");
-            }
+            // if (location == null || string.IsNullOrEmpty(location.Name) || string.IsNullOrEmpty(location.Code))
+            // {
+            //     return BadRequest("Location name and code are required.");
+            // }
 
-            if (!await _locationService.IsValidLocationNameAsync(location.Name))
-            {
-                return BadRequest("Location name must follow the format: 'Row: A, Rack: 1, Shelf: 0'. Row must be between A-Z, Rack between 1-100, and Shelf between 0-10.");
-            }
+            // if (!await _locationService.IsValidLocationNameAsync(location.Name))
+            // {
+            //     return BadRequest("Location name must follow the format: 'Row: A, Rack: 1, Shelf: 0'. Row must be between A-Z, Rack between 1-100, and Shelf between 0-10.");
+            // }
 
-            var createdLocation = await _locationService.AddLocationAsync(location.Name, location.Code, location.WarehouseId);
-            return Ok(createdLocation);
+            var createdLocation = await _locationService.AddLocationAsync(location);
+            if (createdLocation != null) {
+                return Ok(createdLocation);
+            }
+            return BadRequest("Failed to add Location. Invalid data found");
         }
 
         [HttpPut("{id}")]
@@ -78,7 +81,7 @@ namespace CargoHubRefactor.Controllers{
                 return BadRequest("Location name must follow the format: 'Row: A, Rack: 1, Shelf: 0'. Row must be between A-Z, Rack between 1-100, and Shelf between 0-10.");
             }
 
-            var updatedLocation = await _locationService.UpdateLocationAsync(id, location.Name, location.Code, location.WarehouseId);
+            var updatedLocation = await _locationService.UpdateLocationAsync(id, location);
             if (updatedLocation == null)
             {
                 return NotFound($"Location with ID: {id} was not found");

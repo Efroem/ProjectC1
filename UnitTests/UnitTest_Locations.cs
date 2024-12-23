@@ -225,6 +225,16 @@ namespace UnitTests
         }
 
         [TestMethod]
+        [DataRow(1, true)]
+        [DataRow(999999, false)]
+
+        public async Task TestGetLocationByWarehouse(int id, bool expectedResult)
+        {
+            var locations = await _locationService.GetLocationsByWarehouseAsync(id);
+            Assert.AreEqual(locations.Count() > 0, expectedResult);
+        }
+        
+        [TestMethod]
         public async Task TestGetAllLocations()
         {
             var locations = await _locationService.GetLocationsAsync();
@@ -236,6 +246,8 @@ namespace UnitTests
         [DataRow("Row: Z, Rack: 150, Shelf: 5", false)]  // Ongeldig rack (150 > 100)
         [DataRow("Row: A, Rack: 5, Shelf: 11", false)]    // Ongeldig shelf (11 > 10)
         [DataRow("Row: AA, Rack: 5, Shelf: 5", false)]    // Ongeldige naam (Row is geen enkele letter)
+        [DataRow("Row: 1, Rack: 5, Shelf: 5", false)]    // Ongeldige naam (Row is geen letter)        
+        [DataRow("Row: a, Rack: 5, Shelf: 5", false)]    // Ongeldige naam (Row is geen uppercase letter) 
         [DataRow("Row: A, Rack: 5, Shelf: 5", true)]      // Geldige invoer
         public async Task TestLocationNameValidation(string name, bool expectedResult)
         {
@@ -244,9 +256,37 @@ namespace UnitTests
         }
 
         [TestMethod]
+        [DataRow(100, 1, true)]
+        [DataRow(100, 100, false)]
+        [DataRow(1, 1, false)]
+        public async Task TestAddLocation(int id, int warehouseId, bool expectedResult) {
+            Location testLocation = new Location
+            {
+                LocationId = id,
+                Name = "Row: G, Rack: 5, Shelf: 8",
+                Code = "LOC100",
+                ItemAmounts = new Dictionary<string, int>{},
+                WarehouseId = warehouseId,
+                MaxHeight = 20,
+                MaxWidth = 20,
+                MaxDepth = 20,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            var returnedLocation = await _locationService.AddLocationAsync(testLocation);
+        }
+
+        [TestMethod]
         public async Task TestUpdateLocation_ValidData()
         {
-            var updatedLocation = await _locationService.UpdateLocationAsync(1, "Row: D, Rack: 4, Shelf: 4", "LOC001-Updated", 1);
+            Location location = await _dbContext.Locations.FirstOrDefaultAsync(x => x.LocationId == 1);
+            location.Name = "Row: D, Rack: 4, Shelf: 4";
+            location.Code = "LOC001-Updated";
+            location.MaxHeight = 20;
+            location.MaxWidth = 20;
+            location.MaxDepth = 20;
+            location.MaxWeight = 100;
+            var updatedLocation = await _locationService.UpdateLocationAsync(1, location);
             Assert.IsNotNull(updatedLocation);
             Assert.AreEqual("Row: D, Rack: 4, Shelf: 4", updatedLocation.Name);
         }
@@ -271,19 +311,22 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public async Task TestUpdateLocationItems_InValidItemId()
+        [DataRow(1, true)]
+        [DataRow(999999, false)]
+        public async Task TestUpdateLocationItems_InValidItemOrLocationId(int id, bool expectedResult)
         {
-            int id = 1;
             List<LocationItem> locationItems = new List<LocationItem>
             {
                 new LocationItem { ItemId = "P000001", Amount = 15, Classification = "None", Height = 10, Depth = 10, Width = 10 },
                 new LocationItem { ItemId = "P999999", Amount = 15, Classification = "None", Height = 10, Depth = 10, Width = 10 }
             };
             var updatedLocation = await _locationService.UpdateLocationItemsAsync(id, locationItems);
-            Assert.IsTrue(updatedLocation !=  null);
-            Assert.IsTrue(updatedLocation.ItemAmounts.Count == 1);
-            
+            Assert.AreEqual(updatedLocation != null, expectedResult);
+            if (updatedLocation != null) {
+                Assert.IsTrue(updatedLocation.ItemAmounts.Count == 1);
+            }
 
+            
         }
 
         [TestMethod]
@@ -323,7 +366,11 @@ namespace UnitTests
         [TestMethod]
         public async Task TestUpdateLocation_NotFound()
         {
-            var updatedLocation = await _locationService.UpdateLocationAsync(999, "Row: E, Rack: 5, Shelf: 5", "LOC999", 5);
+            Location location = await _dbContext.Locations.FirstOrDefaultAsync(x => x.LocationId == 1);
+            location.Name = "Row: E, Rack: 5, Shelf: 5";
+            location.Code = "LOC999";
+            location.WarehouseId = 4;
+            var updatedLocation = await _locationService.UpdateLocationAsync(999, location);
             Assert.IsNull(updatedLocation);
         }
 
