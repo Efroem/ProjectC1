@@ -194,6 +194,9 @@ namespace CargoHubRefactor.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<double>("Weight")
+                        .HasColumnType("REAL");
+
                     b.Property<double>("Width")
                         .HasColumnType("REAL");
 
