@@ -27,6 +27,7 @@ public class Item
     public double Height { get; set; } = 0;
     public double Width { get; set; }  = 0;
     public double Depth { get; set; } = 0;
+    public double Weight { get; set; } = 0;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

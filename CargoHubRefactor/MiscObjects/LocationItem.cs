@@ -4,7 +4,8 @@ public class LocationItem
     public int Amount { get; set; }
     public string Classification { get; set; } = "None";
 
-    public int Height { get; set; } = 0;
-    public int Width { get; set; } = 0;
-    public int Depth { get; set; } = 0;
+    public double Height { get; set; } = 0;
+    public double Width { get; set; } = 0;
+    public double Depth { get; set; } = 0;
+    public double Weight { get; set; } = 0;
 }
