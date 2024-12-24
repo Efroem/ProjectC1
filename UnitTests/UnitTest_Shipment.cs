@@ -92,7 +92,7 @@ public class UnitTest_Shipment
 
     [TestMethod]
     [DataRow(1, true)] // Test with an existing shipment ID
-    [DataRow(999, true)] // Test with a non-existent shipment ID
+    [DataRow(999, false)] // Test with a non-existent shipment ID
     public async Task TestGetShipmentById(int shipmentId, bool expectedresult)
     {
         ShipmentService shipmentService = new ShipmentService(_dbContext);
