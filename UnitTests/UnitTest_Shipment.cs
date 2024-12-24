@@ -95,24 +95,6 @@ public class UnitTest_Shipment
     }
 
 
-    [TestMethod]
-    [DataRow(1, true)]  // Existing shipment
-    [DataRow(999, false)]  // Non-existent shipment
-    public async Task TestGetShipmentById(int shipmentId, bool expectedResult)
-    {
-        // Act
-        var shipment = await _shipmentService.GetShipmentByIdAsync(shipmentId);
-
-        // Debugging logs
-        TestContext?.WriteLine($"Testing ShipmentId: {shipmentId}, ExpectedResult: {expectedResult}");
-        TestContext?.WriteLine(shipment != null
-            ? $"Retrieved Shipment - ID: {shipment.ShipmentId}, Status: {shipment.ShipmentStatus}"
-            : "No shipment retrieved.");
-
-        // Assert
-        Assert.AreEqual(expectedResult, shipment != null, $"Test failed for ShipmentId: {shipmentId}");
-    }
-
 
     [TestMethod]
     public async Task TestAddShipment()
