@@ -4,6 +4,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CargoHubRefactor;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Threading.Tasks;
 
 /*
 WHEN MAKING A NEW UNIT TEST FILE FOR AN ENDPOINT. COPY OVER Setup AND SeedDatabase
@@ -15,6 +19,7 @@ public class UnitTest_Shipment
 {
     private CargoHubDbContext _dbContext;
     private ShipmentService _shipmentService;
+    public TestContext TestContext { get; set; }
 
     [TestInitialize]
     public void Setup()
@@ -91,14 +96,23 @@ public class UnitTest_Shipment
 
 
     [TestMethod]
-    [DataRow(1, true)] // Test with an existing shipment ID
-    [DataRow(999, false)] // Test with a non-existent shipment ID
-    public async Task TestGetShipmentById(int shipmentId, bool expectedresult)
+    [DataRow(1, true)]  // Existing shipment
+    [DataRow(999, false)]  // Non-existent shipment
+    public async Task TestGetShipmentById(int shipmentId, bool expectedResult)
     {
-        ShipmentService shipmentService = new ShipmentService(_dbContext);
-        Shipment? shipment = shipmentService.GetShipmentByIdAsync(shipmentId).Result;
-        Assert.AreEqual(shipment != null, expectedresult);
+        // Act
+        var shipment = await _shipmentService.GetShipmentByIdAsync(shipmentId);
+
+        // Debugging logs
+        TestContext?.WriteLine($"Testing ShipmentId: {shipmentId}, ExpectedResult: {expectedResult}");
+        TestContext?.WriteLine(shipment != null
+            ? $"Retrieved Shipment - ID: {shipment.ShipmentId}, Status: {shipment.ShipmentStatus}"
+            : "No shipment retrieved.");
+
+        // Assert
+        Assert.AreEqual(expectedResult, shipment != null, $"Test failed for ShipmentId: {shipmentId}");
     }
+
 
     [TestMethod]
     public async Task TestAddShipment()
