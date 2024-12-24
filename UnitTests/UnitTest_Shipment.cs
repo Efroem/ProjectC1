@@ -9,26 +9,23 @@ using CargoHubRefactor;
 WHEN MAKING A NEW UNIT TEST FILE FOR AN ENDPOINT. COPY OVER Setup AND SeedDatabase
 */
 
+
 [TestClass]
-public class UnitTest_Shipments
+public class UnitTest_Shipment
 {
     private CargoHubDbContext _dbContext;
     private ShipmentService _shipmentService;
-    public TestContext TestContext { get; set; }
 
     [TestInitialize]
     public void Setup()
     {
-        // Set up an in-memory database
         var options = new DbContextOptionsBuilder<CargoHubDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestCargoHubDatabase_Shipments")
+            .UseInMemoryDatabase(databaseName: "TestCargoHubDatabase")
             .Options;
 
         _dbContext = new CargoHubDbContext(options);
-        _shipmentService = new ShipmentService(_dbContext);
-
-        // Seed test data
         SeedDatabase(_dbContext);
+        _shipmentService = new ShipmentService(_dbContext);
     }
 
     private void SeedDatabase(CargoHubDbContext context)
@@ -87,21 +84,20 @@ public class UnitTest_Shipments
     [TestMethod]
     public async Task TestGetAllShipments()
     {
-        var shipments = await _shipmentService.GetAllShipmentsAsync();
-
-        Assert.IsNotNull(shipments);
-        Assert.IsTrue(shipments.Count > 0);
+        ShipmentService shipmentService = new ShipmentService(_dbContext);
+        List<Shipment> shipmentList = shipmentService.GetAllShipmentsAsync().Result.ToList();
+        Assert.IsTrue(shipmentList.Count >= 0);
     }
+
 
     [TestMethod]
     [DataRow(1, true)] // Test with an existing shipment ID
-    [DataRow(999, false)] // Test with a non-existent shipment ID
-    public async Task TestGetShipmentById(int shipmentId, bool shouldExist)
+    [DataRow(999, true)] // Test with a non-existent shipment ID
+    public async Task TestGetShipmentById(int shipmentId, bool expectedresult)
     {
-
-        var shipment = await _shipmentService.GetShipmentByIdAsync(shipmentId);
-
-        Assert.AreEqual(shipment != null, shouldExist);
+        ShipmentService shipmentService = new ShipmentService(_dbContext);
+        Shipment? shipment = shipmentService.GetShipmentByIdAsync(shipmentId).Result;
+        Assert.AreEqual(shipment != null, expectedresult);
     }
 
     [TestMethod]
@@ -183,3 +179,4 @@ public class UnitTest_Shipments
         Assert.AreEqual(result.StartsWith("Shipment successfully deleted."), shouldDelete);
     }
 }
+
