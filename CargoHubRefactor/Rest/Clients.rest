@@ -7,7 +7,7 @@ ApiToken: your_api_token_here
 ##geeft bepaald aantal clients
 GET http://localhost:5000/api/v1/Clients/limit/10
 Content-Type: application/json
-ApiToken: A1B2C3
+ApiToken: D4E5F6
 ###
 
 ##geeft bepaalde client
@@ -37,7 +37,7 @@ ApiToken: A1B2C3
 ##voegt client toe
 POST http://localhost:5000/api/v1/Clients
 Content-Type: application/json
-ApiToken: your_api_token_here
+ApiToken: A1B2C3
 
 {
     "name": "Nick muik",
@@ -55,7 +55,7 @@ ApiToken: your_api_token_here
 ##Andere data maar dezelfde email (Badrequest)
 POST http://localhost:5000/api/v1/Clients
 Content-Type: application/json
-ApiToken: your_api_token_here
+ApiToken: A1B2C3
 
 {
     "name": "Vincent Stoel",
