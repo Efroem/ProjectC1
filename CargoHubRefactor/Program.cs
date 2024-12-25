@@ -15,11 +15,11 @@ namespace CargoHubRefactor
 
             builder.Services.AddDistributedMemoryCache();
 
-            builder.Services.AddSession(options => 
+            builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
-                options.Cookie.HttpOnly = true; 
-                options.Cookie.IsEssential = true; 
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
             });
 
             builder.Services.AddHttpContextAccessor();
@@ -39,6 +39,7 @@ namespace CargoHubRefactor
             builder.Services.AddScoped<ILocationService, LocationService>();
             builder.Services.AddScoped<IInventoryService, InventoryService>();
             builder.Services.AddScoped<ISupplierService, SupplierService>();
+            builder.Services.AddScoped<IShipmentService, ShipmentService>();
             builder.Services.AddScoped<SetupItems>();
 
             // Add health checks
