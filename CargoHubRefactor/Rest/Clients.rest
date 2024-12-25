@@ -7,19 +7,19 @@ ApiToken: your_api_token_here
 ##geeft bepaald aantal clients
 GET http://localhost:5000/api/v1/Clients/limit/10
 Content-Type: application/json
-ApiToken: D4E5F6
+ApiToken: A1B2C3D4
 ###
 
 ##geeft bepaalde client
 GET http://localhost:5000/api/v1/Clients/1
 Content-Type: application/json
-ApiToken: A1B2C3
+ApiToken: A1B2C3D4
 ###
 
 ##voegt client toe
 POST http://localhost:5000/api/v1/Clients
 Content-Type: application/json
-ApiToken: A1B2C3
+ApiToken: A1B2C3D4
 
 {
     "name": "John Test",
@@ -37,7 +37,7 @@ ApiToken: A1B2C3
 ##voegt client toe
 POST http://localhost:5000/api/v1/Clients
 Content-Type: application/json
-ApiToken: A1B2C3
+ApiToken: A1B2C3D4
 
 {
     "name": "Nick muik",
@@ -55,7 +55,7 @@ ApiToken: A1B2C3
 ##Andere data maar dezelfde email (Badrequest)
 POST http://localhost:5000/api/v1/Clients
 Content-Type: application/json
-ApiToken: A1B2C3
+ApiToken: A1B2C3D4
 
 {
     "name": "Vincent Stoel",
@@ -73,7 +73,7 @@ ApiToken: A1B2C3
 ##update client
 PUT http://localhost:5000/api/v1/Clients/1
 Content-Type: application/json
-ApiToken: A1B2C3
+ApiToken: A1B2C3D4
 
 {
     "name": "Jane Doe",
@@ -91,5 +91,5 @@ ApiToken: A1B2C3
 ##verwijdert client
 DELETE http://localhost:5000/api/v1/Clients/9821
 Content-Type: application/json
-ApiToken: A1B2C3
+ApiToken: A1B2C3D4
 ###
