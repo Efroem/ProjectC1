@@ -31,6 +31,7 @@ namespace CargoHubRefactor
             // Register services
             builder.Services.AddScoped<IWarehouseService, WarehouseService>();
             builder.Services.AddScoped<IClientService, ClientService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IItemGroupService, ItemGroupService>();
             builder.Services.AddScoped<IItemLineService, ItemLineService>();
             builder.Services.AddScoped<IItemTypeService, ItemTypeService>();
@@ -41,6 +42,10 @@ namespace CargoHubRefactor
             builder.Services.AddScoped<ISupplierService, SupplierService>();
             builder.Services.AddScoped<IShipmentService, ShipmentService>();
             builder.Services.AddScoped<SetupItems>();
+            builder.Services.AddScoped<AdminFilter>();
+            builder.Services.AddScoped<FloorManagerFilter>();
+
+
 
             // Add health checks
             builder.Services.AddHealthChecks();  // Registers health check services
