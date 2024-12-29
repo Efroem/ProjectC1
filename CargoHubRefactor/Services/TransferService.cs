@@ -71,7 +71,7 @@ public class TransferService : ITransferService
 
         if (status == "InProgress")
         {
-            var fromLocation = await _context.Locations.Include(l => l.ItemAmounts).FirstOrDefaultAsync(l => l.LocationId == transfer.TransferFrom);
+            var fromLocation = await _context.Locations.FirstOrDefaultAsync(l => l.LocationId == transfer.TransferFrom);
             if (fromLocation == null)
             {
                 return "Error: Source location not found.";
@@ -95,7 +95,7 @@ public class TransferService : ITransferService
         }
         else if (status == "Completed")
         {
-            var toLocation = await _context.Locations.Include(l => l.ItemAmounts).FirstOrDefaultAsync(l => l.LocationId == transfer.TransferTo);
+            var toLocation = await _context.Locations.FirstOrDefaultAsync(l => l.LocationId == transfer.TransferTo);
             if (toLocation == null)
             {
                 return "Error: Destination location not found.";

@@ -14,4 +14,15 @@ Content-Type: application/json
 }
 ###
 
-PUT http://localhost:5000/api/v1/transfers/1/status=Complete
+### Update Transfer Status to "Completed"
+PUT http://localhost:5000/api/v1/transfers/1/status
+Content-Type: application/json
+
+"Completed"
+###
+
+PUT http://localhost:5000/api/v1/transfers/6/status
+Content-Type: application/json
+
+"InProgress"
+###
