@@ -15,164 +15,117 @@ public class TransferService : ITransferService
 
     public async Task<(string message, Transfer? transfer)> AddTransferAsync(Transfer transfer)
     {
-        // Retrieve the source location
-        var sourceLocation = await _context.Locations
-            .FirstOrDefaultAsync(l => l.LocationId == transfer.TransferFrom);
+        var fromLocation = await _context.Locations.Include(l => l.ItemAmounts).FirstOrDefaultAsync(l => l.LocationId == transfer.TransferFrom);
+        var toLocation = await _context.Locations.FirstOrDefaultAsync(l => l.LocationId == transfer.TransferTo);
 
-        if (sourceLocation == null)
+        if (fromLocation == null || toLocation == null)
         {
-            return ($"Source location with ID {transfer.TransferFrom} not found.", null);
+            return ("Error: Invalid source or destination location.", null);
         }
 
-        // Retrieve the destination location
-        var destinationLocation = await _context.Locations
-            .FirstOrDefaultAsync(l => l.LocationId == transfer.TransferTo);
-
-        if (destinationLocation == null)
+        if (fromLocation.WarehouseId != toLocation.WarehouseId)
         {
-            return ($"Destination location with ID {transfer.TransferTo} not found.", null);
-        }
-
-        // Ensure both locations belong to the same warehouse
-        if (sourceLocation.WarehouseId != destinationLocation.WarehouseId)
-        {
-            return ("Transfers must occur within the same warehouse.", null);
+            return ("Error: Transfers must remain within the same warehouse.", null);
         }
 
         foreach (var item in transfer.Items)
         {
-            // Check if the source location has enough stock
-            if (!sourceLocation.ItemAmounts.ContainsKey(item.ItemId) ||
-                sourceLocation.ItemAmounts[item.ItemId] < item.Amount)
-            {
-                return ($"Insufficient stock for item {item.ItemId}.", null);
-            }
-
-            // Check if the item dimensions are compatible with the destination location
-            var itemDetails = await _context.Items.FindAsync(item.ItemId);
+            var itemDetails = await _context.Items.FirstOrDefaultAsync(i => i.Uid == item.ItemId);
             if (itemDetails == null)
             {
-                return ($"Item {item.ItemId} not found.", null);
+                return ($"Error: Item {item.ItemId} does not exist.", null);
             }
 
-            if (itemDetails.Weight > destinationLocation.MaxWeight ||
-                itemDetails.Height > destinationLocation.MaxHeight ||
-                itemDetails.Width > destinationLocation.MaxWidth ||
-                itemDetails.Depth > destinationLocation.MaxDepth)
+            // Validate dimension constraints for destination location
+            if (itemDetails.Weight * item.Amount > toLocation.MaxWeight ||
+                itemDetails.Width > toLocation.MaxWidth ||
+                itemDetails.Height > toLocation.MaxHeight ||
+                itemDetails.Depth > toLocation.MaxDepth)
             {
-                return ($"Item {item.ItemId} exceeds the dimension constraints of the destination location.", null);
+                return ($"Error: Item {item.ItemId} exceeds destination location's constraints.", null);
             }
-
-            // Update source location ItemAmounts
-            sourceLocation.ItemAmounts[item.ItemId] -= item.Amount;
-            if (sourceLocation.ItemAmounts[item.ItemId] <= 0)
-            {
-                sourceLocation.ItemAmounts.Remove(item.ItemId);
-            }
-
-            // Update destination location ItemAmounts
-            if (destinationLocation.ItemAmounts.ContainsKey(item.ItemId))
-            {
-                destinationLocation.ItemAmounts[item.ItemId] += item.Amount;
-            }
-            else
-            {
-                destinationLocation.ItemAmounts[item.ItemId] = item.Amount;
-            }
-
-            // Update inventories
-            var inventory = await _context.Inventories
-                .FirstOrDefaultAsync(i => i.ItemId == item.ItemId);
-
-            if (inventory == null)
-            {
-                return ($"Inventory not found for item {item.ItemId}.", null);
-            }
-
-            var locationList = inventory.Locations.Split(',').Select(int.Parse).ToList();
-
-            // Remove source location if all items are transferred
-            if (sourceLocation.ItemAmounts.ContainsKey(item.ItemId) == false)
-            {
-                locationList.Remove(sourceLocation.LocationId);
-            }
-
-            // Add destination location if not already in the list
-            if (!locationList.Contains(destinationLocation.LocationId))
-            {
-                locationList.Add(destinationLocation.LocationId);
-            }
-
-            inventory.Locations = string.Join(",", locationList);
         }
 
-        // Add the transfer to the database
-        transfer.TransferStatus = "InProgress"; // Default status
+        // Set default status to "Pending"
+        transfer.TransferStatus = "Pending";
+        transfer.CreatedAt = DateTime.UtcNow;
+        transfer.UpdatedAt = DateTime.UtcNow;
+
+        // Add transfer to database
         _context.Transfers.Add(transfer);
 
-        // Save changes to locations and inventory
-        _context.Locations.Update(sourceLocation);
-        _context.Locations.Update(destinationLocation);
+        // Save changes
         await _context.SaveChangesAsync();
 
-        return ("Transfer created successfully.", transfer);
+        return ("Transfer successfully created.", transfer);
     }
 
     public async Task<string> UpdateTransferStatusAsync(int transferId, string status)
     {
-        var transfer = await _context.Transfers
-            .Include(t => t.Items)
-            .FirstOrDefaultAsync(t => t.TransferId == transferId);
-
+        var transfer = await _context.Transfers.Include(t => t.Items).FirstOrDefaultAsync(t => t.TransferId == transferId);
         if (transfer == null)
         {
-            return "Transfer not found.";
+            return "Error: Transfer not found.";
         }
 
-        if (status == "Completed")
+        if (status == "InProgress")
         {
+            var fromLocation = await _context.Locations.Include(l => l.ItemAmounts).FirstOrDefaultAsync(l => l.LocationId == transfer.TransferFrom);
+            if (fromLocation == null)
+            {
+                return "Error: Source location not found.";
+            }
+
             foreach (var item in transfer.Items)
             {
-                var destinationLocation = await _context.Locations.FindAsync(transfer.TransferTo);
-
-                if (destinationLocation == null)
+                if (!fromLocation.ItemAmounts.ContainsKey(item.ItemId))
                 {
-                    return "Destination location not found.";
+                    return $"Error: Item {item.ItemId} does not exist in the source location.";
                 }
 
-                // Finalize the transfer by ensuring items are correctly moved
-                if (!destinationLocation.ItemAmounts.ContainsKey(item.ItemId))
+                if (fromLocation.ItemAmounts[item.ItemId] < item.Amount)
                 {
-                    destinationLocation.ItemAmounts[item.ItemId] = 0;
+                    return $"Error: Not enough stock for item {item.ItemId} in the source location.";
                 }
 
-                destinationLocation.ItemAmounts[item.ItemId] += item.Amount;
-                _context.Locations.Update(destinationLocation);
+                // Subtract stock from source location
+                fromLocation.ItemAmounts[item.ItemId] -= item.Amount;
+            }
+        }
+        else if (status == "Completed")
+        {
+            var toLocation = await _context.Locations.Include(l => l.ItemAmounts).FirstOrDefaultAsync(l => l.LocationId == transfer.TransferTo);
+            if (toLocation == null)
+            {
+                return "Error: Destination location not found.";
+            }
+
+            foreach (var item in transfer.Items)
+            {
+                if (toLocation.ItemAmounts.ContainsKey(item.ItemId))
+                {
+                    toLocation.ItemAmounts[item.ItemId] += item.Amount;
+                }
+                else
+                {
+                    toLocation.ItemAmounts[item.ItemId] = item.Amount;
+                }
             }
         }
 
         transfer.TransferStatus = status;
-        await _context.SaveChangesAsync();
-        return "Transfer status updated successfully.";
-    }
+        transfer.UpdatedAt = DateTime.UtcNow;
 
-    public async Task<string> DeleteTransferAsync(int transferId)
-    {
-        var transfer = await _context.Transfers.FindAsync(transferId);
-        if (transfer == null)
-        {
-            return "Transfer not found.";
-        }
-
-        _context.Transfers.Remove(transfer);
         await _context.SaveChangesAsync();
-        return "Transfer deleted successfully.";
+
+        return "Transfer status successfully updated.";
     }
 
     public async Task<List<Transfer>> GetAllTransfersAsync()
     {
         return await _context.Transfers
             .Include(t => t.Items)
+            .ThenInclude(ti => ti.Item)
             .ToListAsync();
     }
 
@@ -180,7 +133,39 @@ public class TransferService : ITransferService
     {
         return await _context.Transfers
             .Include(t => t.Items)
+            .ThenInclude(ti => ti.Item)
             .FirstOrDefaultAsync(t => t.TransferId == transferId);
     }
+
+    public async Task<string> DeleteTransferAsync(int transferId)
+    {
+        var transfer = await _context.Transfers.Include(t => t.Items).FirstOrDefaultAsync(t => t.TransferId == transferId);
+        if (transfer == null)
+        {
+            return "Error: Transfer not found.";
+        }
+
+        // Add back items to origin location if the transfer is incomplete
+        if (transfer.TransferStatus != "Completed")
+        {
+            var fromLocation = await _context.Locations.Include(l => l.ItemAmounts).FirstOrDefaultAsync(l => l.LocationId == transfer.TransferFrom);
+
+            if (fromLocation != null)
+            {
+                foreach (var item in transfer.Items)
+                {
+                    if (fromLocation.ItemAmounts.ContainsKey(item.ItemId))
+                    {
+                        fromLocation.ItemAmounts[item.ItemId] += item.Amount;
+                    }
+                }
+            }
+        }
+
+        _context.Transfers.Remove(transfer);
+        await _context.SaveChangesAsync();
+
+        return "Transfer successfully deleted.";
+    }
 }
- 
+

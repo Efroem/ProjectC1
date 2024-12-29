@@ -1,16 +1,3 @@
-### Get all transfers
-GET http://localhost:5000/api/v1/transfers
-Content-Type: application/json
-
-###
-
-### Get a transfer by ID
-GET http://localhost:5000/api/v1/transfers/1
-Content-Type: application/json
-
-###
-
-### Create a new transfer
 POST http://localhost:5000/api/v1/transfers
 Content-Type: application/json
 
@@ -25,17 +12,3 @@ Content-Type: application/json
         }
     ]
 }
-
-###
-
-### Update transfer status
-PUT http://localhost:5000/api/v1/transfers/1/status
-Content-Type: application/json
-
-"Completed"
-
-###
-
-### Delete a transfer by ID
-DELETE http://localhost:5000/api/v1/transfers/1
-Content-Type: application/json
