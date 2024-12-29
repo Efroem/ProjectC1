@@ -68,19 +68,25 @@ namespace CargoHubRefactor.Services
         {
             string fileName = $"{entity}_Report_{fromDate:yyyyMMdd}_{toDate:yyyyMMdd}.txt";
             string filePath = Path.Combine(_reportDirectory, fileName);
-            var options = new JsonSerializerOptions
+
+            using (StreamWriter writer = new StreamWriter(filePath, false))
             {
-                WriteIndented = true
-            };
+                writer.WriteLine($"Report for entity: {entity}");
+                writer.WriteLine($"Date range: {fromDate:yyyy-MM-dd} to {toDate:yyyy-MM-dd}");
+                if (warehouseId.HasValue)
+                {
+                    writer.WriteLine($"Warehouse ID: {warehouseId}");
+                }
+                writer.WriteLine("--------------------------------------------------");
 
-            // Maak de samenvatting in één regel
-            string reportLine = $"Entity: {entity}, " +
-                                $"DateRange: {fromDate:yyyy-MM-dd} to {toDate:yyyy-MM-dd}, " +
-                                $"WarehouseId: {(warehouseId.HasValue ? warehouseId.ToString() : "N/A")}, " +
-                                $"Records: [{string.Join(", ", JsonSerializer.Serialize(reportData, options))}]";
+                foreach (var record in reportData)
+                {
+                    writer.WriteLine(JsonSerializer.Serialize(record, new JsonSerializerOptions { WriteIndented = true }));
+                }
 
-            // Schrijf de regel naar het bestand
-            File.WriteAllText(filePath, reportLine);
+                writer.WriteLine("--------------------------------------------------");
+                writer.WriteLine($"Generated on: {DateTime.Now}");
+            }
         }
 
     }
