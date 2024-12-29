@@ -3,12 +3,15 @@ Content-Type: application/json
 
 {
     "reference": "TR00001",
-    "transfer_from": 1,
-    "transfer_to": 2,
+    "transferFrom": 1,
+    "transferTo": 2,
     "items": [
         {
-            "item_id": "P000451",
+            "itemId": "P000451",
             "amount": 10
         }
     ]
 }
+###
+
+PUT http://localhost:5000/api/v1/transfers/1/status=Complete

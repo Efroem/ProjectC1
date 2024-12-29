@@ -7,6 +7,8 @@ public class TransferItem
     public string? ItemId { get; set; }   // FK to Item (Uid)
     public int Amount { get; set; }
 
+    [JsonIgnore]
     public Transfer? Transfer { get; set; }
+    [JsonIgnore]
     public Item? Item { get; set; }
 }

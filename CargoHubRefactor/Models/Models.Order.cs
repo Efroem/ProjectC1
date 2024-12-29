@@ -25,5 +25,5 @@ public class Order
     public DateTime UpdatedAt { get; set; }
 
     // Navigation Properties
-    public Warehouse Warehouse { get; set; }
+    public Warehouse? Warehouse { get; set; }
 }

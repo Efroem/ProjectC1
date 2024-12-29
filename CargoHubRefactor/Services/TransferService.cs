@@ -15,7 +15,8 @@ public class TransferService : ITransferService
 
     public async Task<(string message, Transfer? transfer)> AddTransferAsync(Transfer transfer)
     {
-        var fromLocation = await _context.Locations.Include(l => l.ItemAmounts).FirstOrDefaultAsync(l => l.LocationId == transfer.TransferFrom);
+        var fromLocation = await _context.Locations.FirstOrDefaultAsync(l => l.LocationId == transfer.TransferFrom);
+        // var fromLocation = await _context.Locations.Include(l => l.ItemAmounts).FirstOrDefaultAsync(l => l.LocationId == transfer.TransferFrom);
         var toLocation = await _context.Locations.FirstOrDefaultAsync(l => l.LocationId == transfer.TransferTo);
 
         if (fromLocation == null || toLocation == null)
