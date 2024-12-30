@@ -32,7 +32,7 @@ public class ShipmentService : IShipmentService
             return ("Error: Invalid shipment data.", null);
         }
 
-        //Checks
+        // Validation checks
         if (shipment.OrderId <= 0)
             return ("Error: 'OrderId' must be greater than zero.", null);
         if (shipment.SourceId <= 0)
@@ -41,8 +41,17 @@ public class ShipmentService : IShipmentService
         shipment.CreatedAt = DateTime.Now;
         shipment.UpdatedAt = DateTime.Now;
 
+        // Add shipment
         _context.Shipments.Add(shipment);
         await _context.SaveChangesAsync();
+
+        // Update ShipmentId in the Orders table
+        var order = await _context.Orders.FindAsync(shipment.OrderId);
+        if (order != null)
+        {
+            order.ShipmentId = shipment.ShipmentId; // Update ShipmentId in the Orders table
+            await _context.SaveChangesAsync();
+        }
 
         return ("Shipment successfully created.", shipment);
     }
@@ -55,6 +64,7 @@ public class ShipmentService : IShipmentService
             return "Error: Shipment not found.";
         }
 
+        // Update shipment fields
         existingShipment.OrderId = shipment.OrderId;
         existingShipment.SourceId = shipment.SourceId;
         existingShipment.OrderDate = shipment.OrderDate;
@@ -73,6 +83,15 @@ public class ShipmentService : IShipmentService
         existingShipment.UpdatedAt = DateTime.Now;
 
         await _context.SaveChangesAsync();
+
+        // Update ShipmentId in the Orders table
+        var order = await _context.Orders.FindAsync(existingShipment.OrderId);
+        if (order != null)
+        {
+            order.ShipmentId = existingShipment.ShipmentId; // Update ShipmentId in the Orders table
+            await _context.SaveChangesAsync();
+        }
+
         return "Shipment successfully updated.";
     }
 
