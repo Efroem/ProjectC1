@@ -13,7 +13,7 @@ public class OrderService : IOrderService
         _context = context;
     }
 
-    public async Task<Order> GetOrderAsync(int orderId)
+    public async Task<Order?> GetOrderAsync(int orderId)
     {
         return await _context.Orders.FirstOrDefaultAsync(l => l.Id == orderId);
     }
@@ -27,7 +27,7 @@ public class OrderService : IOrderService
                                            string referenceExtra, string orderStatus, string notes,
                                            string shippingNotes, string pickingNotes, int warehouseId,
                                            int? shipTo, int? billTo, int? shipmentId, double totalAmount,
-                                           double totalDiscount, double totalTax, double totalSurcharge)
+                                           double totalDiscount, double totalTax, double totalSurcharge, List<OrderItem> orderItems)
     {
         int nextId;
 
@@ -62,8 +62,24 @@ public class OrderService : IOrderService
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
-
         _context.Orders.Add(order);
+        int nextOrderItemId;
+        if (_context.OrderItems.Any())
+        {
+            nextOrderItemId = _context.OrderItems.Max(l => l.Id) + 1;
+        }
+        else
+        {
+            nextOrderItemId = 1;
+        }
+        foreach (OrderItem Item in orderItems) {
+            var orderItem = new OrderItem{
+                Id = nextOrderItemId,
+                OrderId = nextId,
+                ItemId = Item.ItemId,
+                Amount = Item.Amount
+            };
+        }
         await _context.SaveChangesAsync();
 
         return order;
@@ -74,7 +90,7 @@ public class OrderService : IOrderService
                                               string notes, string shippingNotes, string pickingNotes,
                                               int warehouseId, int? shipTo, int? billTo, int? shipmentId,
                                               double totalAmount, double totalDiscount, double totalTax,
-                                              double totalSurcharge)
+                                              double totalSurcharge, List<OrderItem> orderItems)
     {
         var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
         if (order == null)

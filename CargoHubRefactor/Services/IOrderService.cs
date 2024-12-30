@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 public interface IOrderService
 {
-    Task<Order> GetOrderAsync(int orderId);
+    Task<Order?> GetOrderAsync(int orderId);
     Task<IEnumerable<Order>> GetOrdersAsync();
     
     Task<Order> AddOrderAsync(
@@ -24,7 +24,8 @@ public interface IOrderService
         double totalAmount,
         double totalDiscount,
         double totalTax,
-        double totalSurcharge);
+        double totalSurcharge,
+        List<OrderItem> orderItems);
     
     Task<Order> UpdateOrderAsync(
         int id,
@@ -44,7 +45,8 @@ public interface IOrderService
         double totalAmount,
         double totalDiscount,
         double totalTax,
-        double totalSurcharge);
+        double totalSurcharge,
+        List<OrderItem> orderItems);
     
     Task<bool> DeleteOrderAsync(int orderId);
     Task<Dictionary<string, List<Location>>> GetLocationsForOrderItemsAsync(int orderId);

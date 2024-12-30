@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class Order
 {
@@ -21,9 +22,11 @@ public class Order
     public double TotalDiscount { get; set; }
     public double TotalTax { get; set; }
     public double TotalSurcharge { get; set; }
+    [NotMapped]
+    public List<OrderItem> OrderItems {get; set;} = new List<OrderItem>();
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
     // Navigation Properties
-    public Warehouse Warehouse { get; set; }
+    public Warehouse? Warehouse { get; set; }
 }
