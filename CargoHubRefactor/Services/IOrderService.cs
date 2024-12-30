@@ -45,8 +45,7 @@ public interface IOrderService
         double totalAmount,
         double totalDiscount,
         double totalTax,
-        double totalSurcharge,
-        List<OrderItem> orderItems);
+        double totalSurcharge);
     
     Task<bool> DeleteOrderAsync(int orderId);
     Task<Dictionary<string, List<Location>>> GetLocationsForOrderItemsAsync(int orderId);

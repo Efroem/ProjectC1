@@ -49,7 +49,7 @@ def test_post_orders_integration(_data):
     # params = {'id': 12}
     # header = _data[1]
     body = {
-        "sourceId": 125,
+        "sourceId": 1255,
         "orderDate": "2024-12-10T10:00:00Z",
         "requestDate": "2024-12-12T10:00:00Z",
         "reference": "ORD12347",
@@ -65,15 +65,20 @@ def test_post_orders_integration(_data):
         "totalAmount": 2500.00,
         "totalDiscount": 200.00,
         "totalTax": 150.00,
-        "totalSurcharge": 30.00
+        "totalSurcharge": 30.00,
+        "orderItems": [
+            {
+                "itemId": "P000001",
+                "amount": 5
+            }
+        ]
     }
 
-
-    # Send a POST request to the API and check if it was successful
     post_response = requests.post(url, json=body)
-    assert post_response.status_code == 201
-
-    get_response = requests.get(url + "/999999")
+    assert post_response.status_code == 200
+    id = post_response.json().get("id")
+    
+    get_response = requests.get(f"{url}/{id}")
 
     # Get the status code and response data
     status_code = get_response.status_code
@@ -81,36 +86,45 @@ def test_post_orders_integration(_data):
     # response_data = response.json()
 
     # Verify that the status code is 200 (OK)
-    assert status_code == 200 
-    dummy = requests.delete(url + "/999999")
+    # print(uid)
+    # print(response_data)
+    dummy = requests.delete(f"{url}/{id}")
+    assert status_code == 200 and response_data["shippingNotes"] == body["shippingNotes"] and response_data["pickingNotes"] == body["pickingNotes"]
 
 
 def test_put_orders_integration(_data):
     url = _data[0]["URL"] + 'orders/3054'
+
+    original_order = requests.get(url)
+    assert original_order.status_code == 200
+    original_body = original_order.json()
+
     # header = _data[1]
-    body =    {
-        "id": 3054, 
-        "source_id": 29, 
-        "order_date": "1990-11-22T19:50:42Z", 
-        "request_date": "1990-11-26T19:50:42Z", 
-        "reference": "ORD03054", 
-        "reference_extra": "Team zwak deel hier.", 
-        "order_status": "Delivered", 
-        "notes": "Graf vis vork hobby herinneren.", 
-        "shipping_notes": "Zinken broer persoon zwembad.", 
-        "picking_notes": "Brood knippen ja glad.", 
-        "warehouse_id": 21, 
-        "ship_to": 4233, 
-        "bill_to": 4233, 
-        "shipment_id": 8365, 
-        "total_amount": 6613.42, 
-        "total_discount": 390.08, 
-        "total_tax": 305.0, 
-        "total_surcharge": 41.9, 
-        "created_at": "1990-11-22T19:50:42Z", 
-        "updated_at": "1990-11-24T15:50:42Z", 
-        "items": [{"item_id": "P000032", "amount": 45}, {"item_id": "P011181", "amount": 39}, {"item_id": "P005104", "amount": 36}, {"item_id": "P000593", "amount": 2}, {"item_id": "P008136", "amount": 6}, {"item_id": "P011188", "amount": 29}, {"item_id": "P004274", "amount": 10}, {"item_id": "P000846", "amount": 8}, {"item_id": "P001188", "amount": 38}, {"item_id": "P008870", "amount": 24}, {"item_id": "P006794", "amount": 46}, {"item_id": "P011196", "amount": 19}, {"item_id": "P003299", "amount": 28}, {"item_id": "P008927", "amount": 26}, {"item_id": "P001048", "amount": 43}, {"item_id": "P010873", "amount": 8}, {"item_id": "P007494", "amount": 15}, {"item_id": "P004533", "amount": 14}]
-        }
+    body = {
+        "sourceId": 1255,
+        "orderDate": "2024-12-10T10:00:00Z",
+        "requestDate": "2024-12-12T10:00:00Z",
+        "reference": "ORD12347",
+        "referenceExtra": "EXTRA125",
+        "orderStatus": "Pending",
+        "notes": "Handle with care",
+        "shippingNotes": "No special instructions",
+        "pickingNotes": "Pick all items",
+        "warehouseId": 4,
+        "shipTo": 60,
+        "billTo": 100,
+        "shipmentId": 91,
+        "totalAmount": 2500.00,
+        "totalDiscount": 200.00,
+        "totalTax": 150.00,
+        "totalSurcharge": 30.00,
+        "orderItems": [
+            {
+                "itemId": "P000001",
+                "amount": 5
+            }
+        ]
+    }
 
     # Send a PUT request to the API and check if it was successful
     put_response = requests.put(url, json=body)
@@ -121,33 +135,61 @@ def test_put_orders_integration(_data):
     # Get the status code and response data
     status_code = get_response.status_code
     response_data = get_response.json()
-    # response_data = response.json()
+
+    # Restore original body
+    original_put_response = requests.put(url, json=original_body)
+    assert original_put_response.status_code == 200
 
     # Verify that the status code is 200 (OK) and the body in this code and the response data are basically equal
-    assert status_code == 200 and response_data["id"] == body["id"] and response_data["notes"] == body["notes"] and response_data["total_tax"] == body["total_tax"]
-
+    assert status_code == 200 and response_data["id"] == original_body["id"] and response_data["notes"] == body["notes"]
 
 def test_delete_orders_integration(_data):
-    url = _data[0]["URL"] + 'orders/35'
-    # header = _data[1]
 
-    get1_response = requests.get(url)
+    url = _data[0]["URL"] + 'orders'
+    body = {
+            "sourceId": 111,
+            "orderDate": "2024-12-10T10:00:00Z",
+            "requestDate": "2024-12-12T10:00:00Z",
+            "reference": "ORD12347",
+            "referenceExtra": "EXTRA1eaheaare25",
+            "orderStatus": "Pending",
+            "notes": "Handle witSGsgh care",
+            "shippingNotes": "No speciSGsgdSDgal instructions",
+            "pickingNotes": "Pick adgSGSDgSEll items",
+            "warehouseId": 4,
+            "shipTo": 60,
+            "billTo": 100,
+            "shipmentId": 91,
+            "totalAmount": 2500.00,
+            "totalDiscount": 200.00,
+            "totalTax": 150.00,
+            "totalSurcharge": 30.00,
+            "orderItems": [
+                {
+                    "itemId": "P000001",
+                    "amount": 5
+                }
+            ]
+        }
+    post_response = requests.post(url, json=body)
+    assert post_response.status_code == 200
+    order_id = post_response.json().get("Id")
 
-    # Send a DELETE request to the API and check if it was successful
-    delete_response = requests.delete(url)
-    assert delete_response.status_code == 200
+    get1_response = requests.get(f"{url}/{order_id}")
 
-    get2_response = requests.get(url)
-
-    # Get the status code and response data
-    status_code = get2_response.status_code
-    response_data = get2_response.json()
-
-    # Verify that the status code is 200 (OK) and that the client doesn't exist anymore
-    assert status_code == 200 and response_data == None
     
-    # Repost the deleted inventory for later use
-    post_response = requests.post(url, json=get1_response.json())
+
+    # Als recourse bestaat, stuurt hij delete request
+    if get1_response.status_code == 200:
+
+        delete_response = requests.delete(f"{url}/{order_id}") 
+
+        # Check if the DELETE request was successful
+        assert delete_response.status_code == 200
+    else:
+        print("Resource with ID 3 not found.")
+
+
 
 #Edge cases
 

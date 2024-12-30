@@ -205,8 +205,7 @@ namespace CargoHubRefactor.Controllers {
                 order.TotalAmount,
                 order.TotalDiscount,
                 order.TotalTax,
-                order.TotalSurcharge,
-                order.OrderItems);
+                order.TotalSurcharge);
 
             if (updatedOrder == null)
             {

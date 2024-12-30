@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -73,13 +74,22 @@ public class OrderService : IOrderService
             nextOrderItemId = 1;
         }
         foreach (OrderItem Item in orderItems) {
+            Item? dummyItem = await _context.Items.FirstOrDefaultAsync(l => l.Uid == Item.ItemId);
+            if (dummyItem == null) continue;
+
             var orderItem = new OrderItem{
                 Id = nextOrderItemId,
                 OrderId = nextId,
                 ItemId = Item.ItemId,
                 Amount = Item.Amount
             };
+
+            nextOrderItemId++;
+            
+            await _context.OrderItems.AddAsync(orderItem);
         }
+
+        
         await _context.SaveChangesAsync();
 
         return order;
@@ -90,7 +100,7 @@ public class OrderService : IOrderService
                                               string notes, string shippingNotes, string pickingNotes,
                                               int warehouseId, int? shipTo, int? billTo, int? shipmentId,
                                               double totalAmount, double totalDiscount, double totalTax,
-                                              double totalSurcharge, List<OrderItem> orderItems)
+                                              double totalSurcharge)
     {
         var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
         if (order == null)

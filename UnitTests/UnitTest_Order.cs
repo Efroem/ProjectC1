@@ -27,6 +27,100 @@ public class UnitTest_Order
         context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
 
+        // Seed ItemGroups with unique IDs
+        context.ItemGroups.Add(new ItemGroup {
+            GroupId = 1,  // Ensure unique GroupId
+            Name = "dummy",
+            Description = "Dummy",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        context.ItemGroups.Add(new ItemGroup {
+            GroupId = 2,  // Ensure unique GroupId
+            Name = "dummy2",
+            Description = "Dummy2",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        // Seed ItemTypes with unique IDs
+        context.ItemTypes.Add(new ItemType {
+            TypeId = 1,  // Ensure unique TypeId
+            Name = "dummy",
+            Description = "Dummy",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        context.ItemTypes.Add(new ItemType {
+            TypeId = 2,  // Ensure unique TypeId
+            Name = "dummy2",
+            Description = "Dummy2",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        // Seed ItemLines with unique IDs
+        context.ItemLines.Add(new ItemLine {
+            LineId = 1,  // Ensure unique LineId
+            Name = "dummy",
+            Description = "Dummy",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        context.ItemLines.Add(new ItemLine {
+            LineId = 2,  // Ensure unique LineId
+            Name = "dummy2",
+            Description = "Dummy2",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        // Seed Items with unique codes and references
+        context.Items.Add(new Item {
+            Uid = "P000001",  // Unique Item Uid
+            Code = "Dummy",
+            Description = "dummy",
+            ShortDescription = "dummy",
+            UpcCode = "null",
+            ModelNumber = "null",
+            CommodityCode = "null",
+            ItemLine = 1,  // Reference the unique ItemLine ID
+            ItemGroup = 1,  // Reference the unique ItemGroup ID
+            ItemType = 1,  // Reference the unique ItemType ID
+            UnitPurchaseQuantity = 1,
+            UnitOrderQuantity = 1,
+            PackOrderQuantity = 1,
+            SupplierId = 1,
+            SupplierCode = "null",
+            SupplierPartNumber = "null",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        context.Items.Add(new Item {
+            Uid = "P000002",  // Unique Item Uid
+            Code = "Dummy2",
+            Description = "dummy2",
+            ShortDescription = "dummy2",
+            UpcCode = "null",
+            ModelNumber = "null",
+            CommodityCode = "null",
+            ItemLine = 2,  // Reference the unique ItemLine ID
+            ItemGroup = 2,  // Reference the unique ItemGroup ID
+            ItemType = 2,  // Reference the unique ItemType ID
+            UnitPurchaseQuantity = 1,
+            UnitOrderQuantity = 1,
+            PackOrderQuantity = 1,
+            SupplierId = 2,
+            SupplierCode = "null",
+            SupplierPartNumber = "null",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
         context.Clients.Add(new Client
         {
             ClientId = 1,
@@ -109,7 +203,7 @@ public class UnitTest_Order
             TotalTax = 25.50,
             TotalSurcharge = 10.00,
             CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         });
 
         context.SaveChanges();
@@ -132,8 +226,45 @@ public class UnitTest_Order
     }
 
     [TestMethod]
-    public void TestAddOrder()
+    [DataRow(0, true)]
+    [DataRow(1, true)]
+    [DataRow(2, false)]
+  
+    public void TestAddOrder(int OrderItemListId, bool expectedResult)
     {
+        int orderItemAmountBefore;
+        if (_dbContext.OrderItems.Any())
+        {
+            orderItemAmountBefore = _dbContext.OrderItems.Max(l => l.Id);
+        }
+        else
+        {
+            orderItemAmountBefore = 0;
+        }
+        List<List<OrderItem>> OrderItemLists = new List<List<OrderItem>>() {
+            new List<OrderItem>() {},
+            new List<OrderItem>{
+                new OrderItem{
+                    ItemId = "P000001",
+                    Amount = 5
+                },
+                new OrderItem{
+                    ItemId = "P000002",
+                    Amount = 3
+                }
+            },
+            new List<OrderItem>{
+                new OrderItem{
+                    ItemId = "P000001",
+                    Amount = 5
+                },
+                new OrderItem{
+                    ItemId = "Invalid",
+                    Amount = 3
+                }
+            }
+        };
+
         var newOrder = orderService.AddOrderAsync(
             sourceId: 2,
             orderDate: DateTime.UtcNow.AddDays(-7),
@@ -152,11 +283,33 @@ public class UnitTest_Order
             totalDiscount: 50.00,
             totalTax: 25.50,
             totalSurcharge: 10.00,
-            orderItems: new List<OrderItem>{}
-        );
+            orderItems: OrderItemLists[OrderItemListId]
+        ).Result;
 
-        Assert.IsNotNull(newOrder.Result);
+        int orderItemAmountAfter;
+        if (_dbContext.OrderItems.Any())
+        {
+            orderItemAmountAfter = _dbContext.OrderItems.Max(l => l.Id);
+        }
+        else
+        {
+            orderItemAmountAfter = 0;
+        }
+
+        Console.WriteLine($"Before: {orderItemAmountBefore}, After: {orderItemAmountAfter}");
+
+        Assert.IsNotNull(newOrder);
         Assert.AreEqual(2, _dbContext.Orders.Count());
+        switch (OrderItemListId) {
+            case 0:
+                break;
+            case 1: 
+                Assert.IsTrue(orderItemAmountBefore + 2 == orderItemAmountAfter);
+                break;
+            case 2:
+                Assert.IsTrue(orderItemAmountBefore + 1 == orderItemAmountAfter);
+                break;
+        }
     }
 
     [TestMethod]
@@ -184,8 +337,7 @@ public class UnitTest_Order
                 totalAmount: 500.75,
                 totalDiscount: 50.00,
                 totalTax: 25.50,
-                totalSurcharge: 10.00,
-                orderItems: new List<OrderItem>{}
+                totalSurcharge: 10.00
             );
 
             Assert.AreEqual(updatedOrder.Result != null, expectedResult);
