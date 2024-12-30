@@ -88,18 +88,22 @@ public class ShipmentService : IShipmentService
         existingShipment.TotalPackageWeight = shipment.TotalPackageWeight;
         existingShipment.UpdatedAt = DateTime.Now;
 
+        // Ensure the shipment entity is updated
+        _context.Shipments.Update(existingShipment);
+
+        // Update ShipmentId in the Orders table for each OrderId
         foreach (var orderId in shipment.OrderIdsList)
         {
-            if (int.TryParse(orderId, out int parsedOrderId)) // Convert string to int
+            // Directly parse the orderId to an integer
+            int parsedOrderId = int.Parse(orderId);
+
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == parsedOrderId);
+            if (order != null)
             {
-                var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == parsedOrderId);
-                if (order != null)
-                {
-                    order.ShipmentId = shipment.ShipmentId; // Update ShipmentId in the Orders table
-                }
+                order.ShipmentId = existingShipment.ShipmentId; // Update ShipmentId in the Orders table
+                _context.Orders.Update(order); // Ensure EF Core tracks the update
             }
         }
-
         await _context.SaveChangesAsync();
 
         return "Shipment successfully updated.";
