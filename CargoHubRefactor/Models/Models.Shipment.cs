@@ -3,7 +3,7 @@ using System;
 public class Shipment
 {
     public int ShipmentId { get; set; }
-    public int OrderId { get; set; }
+    public string OrderId { get; set; }
     public int SourceId { get; set; }
     public DateTime OrderDate { get; set; }
     public DateTime RequestDate { get; set; }

@@ -33,10 +33,6 @@ public class ShipmentService : IShipmentService
         }
 
         // Validation checks
-        if (shipment.OrderId <= 0)
-            return ("Error: 'OrderId' must be greater than zero.", null);
-        if (shipment.SourceId <= 0)
-            return ("Error: 'SourceId' must be greater than zero.", null);
 
         shipment.CreatedAt = DateTime.Now;
         shipment.UpdatedAt = DateTime.Now;
