@@ -118,7 +118,8 @@ namespace CargoHubRefactor.Controllers {
                 order.TotalAmount,
                 order.TotalDiscount,
                 order.TotalTax,
-                order.TotalSurcharge);
+                order.TotalSurcharge,
+                order.OrderItems);
 
             return Ok(CreatedOrder);
         }
