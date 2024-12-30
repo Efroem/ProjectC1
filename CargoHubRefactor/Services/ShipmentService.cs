@@ -33,21 +33,31 @@ public class ShipmentService : IShipmentService
         }
 
         // Validation checks
-
         shipment.CreatedAt = DateTime.Now;
         shipment.UpdatedAt = DateTime.Now;
+
+        // Convert OrderIdsList to a comma-separated string before saving
+        shipment.OrderId = string.Join(",", shipment.OrderIdsList);
 
         // Add shipment
         _context.Shipments.Add(shipment);
         await _context.SaveChangesAsync();
 
-        // Update ShipmentId in the Orders table
-        var order = await _context.Orders.FindAsync(shipment.OrderId);
-        if (order != null)
+        // Update ShipmentId in the Orders table for each OrderId
+        foreach (var orderId in shipment.OrderIdsList)
         {
-            order.ShipmentId = shipment.ShipmentId; // Update ShipmentId in the Orders table
-            await _context.SaveChangesAsync();
+            if (int.TryParse(orderId, out int parsedOrderId)) // Convert string to int
+            {
+                var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == parsedOrderId);
+                if (order != null)
+                {
+                    order.ShipmentId = shipment.ShipmentId; // Update ShipmentId in the Orders table
+                }
+            }
         }
+
+        await _context.SaveChangesAsync();
+
 
         return ("Shipment successfully created.", shipment);
     }
@@ -61,7 +71,7 @@ public class ShipmentService : IShipmentService
         }
 
         // Update shipment fields
-        existingShipment.OrderId = shipment.OrderId;
+        existingShipment.OrderId = string.Join(",", shipment.OrderIdsList); // Update OrderIds as comma-separated string
         existingShipment.SourceId = shipment.SourceId;
         existingShipment.OrderDate = shipment.OrderDate;
         existingShipment.RequestDate = shipment.RequestDate;
@@ -78,15 +88,19 @@ public class ShipmentService : IShipmentService
         existingShipment.TotalPackageWeight = shipment.TotalPackageWeight;
         existingShipment.UpdatedAt = DateTime.Now;
 
-        await _context.SaveChangesAsync();
-
-        // Update ShipmentId in the Orders table
-        var order = await _context.Orders.FindAsync(existingShipment.OrderId);
-        if (order != null)
+        foreach (var orderId in shipment.OrderIdsList)
         {
-            order.ShipmentId = existingShipment.ShipmentId; // Update ShipmentId in the Orders table
-            await _context.SaveChangesAsync();
+            if (int.TryParse(orderId, out int parsedOrderId)) // Convert string to int
+            {
+                var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == parsedOrderId);
+                if (order != null)
+                {
+                    order.ShipmentId = shipment.ShipmentId; // Update ShipmentId in the Orders table
+                }
+            }
         }
+
+        await _context.SaveChangesAsync();
 
         return "Shipment successfully updated.";
     }
@@ -104,3 +118,4 @@ public class ShipmentService : IShipmentService
         return "Shipment successfully deleted.";
     }
 }
+

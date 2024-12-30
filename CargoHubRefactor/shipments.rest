@@ -17,22 +17,25 @@ POST http://localhost:5000/api/v1/shipments
 Content-Type: application/json
 
 {
-  "orderId": 12345,
-  "sourceId": 1,
-  "orderDate": "2024-12-13T00:00:00",
-  "requestDate": "2024-12-15T00:00:00",
-  "shipmentDate": "2024-12-20T00:00:00",
-  "shipmentType": "Standard",
-  "shipmentStatus": "Pending",
-  "notes": "First shipment",
-  "carrierCode": "CARRIER001",
-  "carrierDescription": "Test Carrier",
-  "serviceCode": "EXPRESS",
-  "paymentType": "Prepaid",
-  "transferMode": "Air",
-  "totalPackageCount": 5,
-  "totalPackageWeight": 100.5
+  "OrderId": "1,2,3",  // comma-separated list of order IDs
+  "SourceId": 10,
+  "OrderDate": "2024-12-30T00:00:00Z",
+  "RequestDate": "2024-12-30T00:00:00Z",
+  "ShipmentDate": "2024-12-30T00:00:00Z",
+  "ShipmentType": "Express",
+  "ShipmentStatus": "Shipped",
+  "Notes": "Fragile items",
+  "CarrierCode": "XYZ",
+  "CarrierDescription": "Carrier XYZ Description",
+  "ServiceCode": "ABC123",
+  "PaymentType": "Prepaid",
+  "TransferMode": "Air",
+  "TotalPackageCount": 5,
+  "TotalPackageWeight": 15.5,
+  "CreatedAt": "2024-12-30T00:00:00Z",
+  "UpdatedAt": "2024-12-30T00:00:00Z"
 }
+
 
 ###
 
