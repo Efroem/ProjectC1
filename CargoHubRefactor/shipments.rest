@@ -17,25 +17,22 @@ POST http://localhost:5000/api/v1/shipments
 Content-Type: application/json
 
 {
-  "OrderId": "1,2,3",  // comma-separated list of order IDs
-  "SourceId": 10,
-  "OrderDate": "2024-12-30T00:00:00Z",
-  "RequestDate": "2024-12-30T00:00:00Z",
-  "ShipmentDate": "2024-12-30T00:00:00Z",
-  "ShipmentType": "Express",
-  "ShipmentStatus": "Shipped",
-  "Notes": "Fragile items",
-  "CarrierCode": "XYZ",
-  "CarrierDescription": "Carrier XYZ Description",
-  "ServiceCode": "ABC123",
-  "PaymentType": "Prepaid",
-  "TransferMode": "Air",
-  "TotalPackageCount": 5,
-  "TotalPackageWeight": 15.5,
-  "CreatedAt": "2024-12-30T00:00:00Z",
-  "UpdatedAt": "2024-12-30T00:00:00Z"
+  "orderId": "5,6,3",
+  "sourceId": 1,
+  "orderDate": "2024-12-13T00:00:00",
+  "requestDate": "2024-12-15T00:00:00",
+  "shipmentDate": "2024-12-20T00:00:00",
+  "shipmentType": "Standard",
+  "shipmentStatus": "Pending",
+  "notes": "First shipment",
+  "carrierCode": "CARRIER001",
+  "carrierDescription": "Test Carrier",
+  "serviceCode": "EXPRESS",
+  "paymentType": "Prepaid",
+  "transferMode": "Air",
+  "totalPackageCount": 5,
+  "totalPackageWeight": 100.5
 }
-
 
 ###
 
@@ -44,7 +41,7 @@ POST http://localhost:5000/api/v1/shipments
 Content-Type: application/json
 
 {
-  "orderId": 67890,
+  "orderId": "6,7,8",
   "sourceId": 2,
   "orderDate": "2024-12-10T00:00:00",
   "requestDate": "2024-12-12T00:00:00",
@@ -68,7 +65,7 @@ PUT http://localhost:5000/api/v1/shipments/1
 Content-Type: application/json
 
 {
-  "orderId": 12345,
+  "orderId": "6,7,8",
   "sourceId": 1,
   "orderDate": "2024-12-13T00:00:00",
   "requestDate": "2024-12-16T00:00:00",
@@ -76,7 +73,7 @@ Content-Type: application/json
   "shipmentType": "Priority",
   "shipmentStatus": "Shipped",
   "notes": "Updated shipment",
-  "carrierCode": "CARRIER001",
+  "carrierCode": "CARRIER99",
   "carrierDescription": "Updated Carrier",
   "serviceCode": "STANDARD",
   "paymentType": "Prepaid",
