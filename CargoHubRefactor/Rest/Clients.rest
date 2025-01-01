@@ -1,20 +1,25 @@
 ##geeft alle clients
 GET http://localhost:5000/api/v1/Clients
 Content-Type: application/json
+ApiToken: your_api_token_here
 ###
 
 ##geeft bepaald aantal clients
 GET http://localhost:5000/api/v1/Clients/limit/10
 Content-Type: application/json
+ApiToken: A1B2C3D4
 ###
 
-//geeft bepaalde client
+##geeft bepaalde client
 GET http://localhost:5000/api/v1/Clients/1
 Content-Type: application/json
+ApiToken: A1B2C3D4
 ###
-//voegt client toe
+
+##voegt client toe
 POST http://localhost:5000/api/v1/Clients
 Content-Type: application/json
+ApiToken: A1B2C3D4
 
 {
     "name": "John Test",
@@ -27,11 +32,12 @@ Content-Type: application/json
     "contactPhone": "+123456789",
     "contactEmail": "test2.doe@example.com"
 }
-
 ###
-//voegt client toe
+
+##voegt client toe
 POST http://localhost:5000/api/v1/Clients
 Content-Type: application/json
+ApiToken: A1B2C3D4
 
 {
     "name": "Nick muik",
@@ -45,9 +51,11 @@ Content-Type: application/json
     "contactEmail": "nickmuik@gmail.com"
 }
 ###
-//Andere data maar dezelfde email (Badrequest)
+
+##Andere data maar dezelfde email (Badrequest)
 POST http://localhost:5000/api/v1/Clients
 Content-Type: application/json
+ApiToken: A1B2C3D4
 
 {
     "name": "Vincent Stoel",
@@ -61,9 +69,11 @@ Content-Type: application/json
     "contactEmail": "john.dtoe@example.com"
 }
 ###
-//update client
+
+##update client
 PUT http://localhost:5000/api/v1/Clients/1
 Content-Type: application/json
+ApiToken: A1B2C3D4
 
 {
     "name": "Jane Doe",
@@ -76,9 +86,10 @@ Content-Type: application/json
     "contactPhone": "+987654321",
     "contactEmail": "jane.doe@example.com"
 }
-
 ###
-//verwijdert client
+
+##verwijdert client
 DELETE http://localhost:5000/api/v1/Clients/9821
 Content-Type: application/json
-####
+ApiToken: A1B2C3D4
+###

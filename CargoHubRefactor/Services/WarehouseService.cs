@@ -86,40 +86,40 @@ public class WarehouseService : IWarehouseService
         return ("Warehouse successfully created.", warehouse);
     }
 
-    public async Task<string> UpdateWarehouseAsync(int id, WarehouseDto warehouseDto)
+    public async Task<(string message, Warehouse? ReturnedWarehouse)> UpdateWarehouseAsync(int id, WarehouseDto warehouseDto)
     {
         var warehouse = await _context.Warehouses.FindAsync(id);
         if (warehouse == null)
         {
-            return "Error: Warehouse not found.";
+            return ("Error: Warehouse not found.", null);
         }
 
         // Validate that all fields are filled in
         if (string.IsNullOrWhiteSpace(warehouseDto.Code))
-            return "Error: 'Code' field must be filled in.";
+            return ("Error: 'Code' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(warehouseDto.Name))
-            return "Error: 'Name' field must be filled in.";
+            return ("Error: 'Name' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(warehouseDto.Address))
-            return "Error: 'Address' field must be filled in.";
+            return ("Error: 'Address' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(warehouseDto.Zip))
-            return "Error: 'Zip' field must be filled in.";
+            return ("Error: 'Zip' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(warehouseDto.City))
-            return "Error: 'City' field must be filled in.";
+            return ("Error: 'City' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(warehouseDto.Province))
-            return "Error: 'Province' field must be filled in.";
+            return ("Error: 'Province' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(warehouseDto.Country))
-            return "Error: 'Country' field must be filled in.";
+            return ("Error: 'Country' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(warehouseDto.ContactName))
-            return "Error: 'ContactName' field must be filled in.";
+            return ("Error: 'ContactName' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(warehouseDto.ContactPhone))
-            return "Error: 'ContactPhone' field must be filled in.";
+            return ("Error: 'ContactPhone' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(warehouseDto.ContactEmail))
-            return "Error: 'ContactEmail' field must be filled in.";
+            return ("Error: 'ContactEmail' field must be filled in.", null);
 
         // Check for duplicate code, excluding the current warehouse
         if (await _context.Warehouses.AnyAsync(w => w.Code == warehouseDto.Code && w.WarehouseId != id))
         {
-            return "Error: A warehouse with this code already exists.";
+            return ("Error: A warehouse with this code already exists.", null);
         }
 
         warehouse.Code = warehouseDto.Code;
@@ -135,7 +135,7 @@ public class WarehouseService : IWarehouseService
         warehouse.UpdatedAt = DateTime.Now; // Set UpdatedAt to current time
 
         await _context.SaveChangesAsync();
-        return "Warehouse successfully updated.";
+        return ("Warehouse successfully updated.", warehouse);
     }
 
     public async Task<string> DeleteWarehouseAsync(int id)

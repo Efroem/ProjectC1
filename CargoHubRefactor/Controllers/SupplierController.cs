@@ -4,7 +4,7 @@ using Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Controllers
+namespace CargoHubRefactor.Controllers
 {
     [Route("api/v1/suppliers")]
     [ApiController]

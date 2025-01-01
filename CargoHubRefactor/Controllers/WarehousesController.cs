@@ -45,12 +45,14 @@ namespace CargoHubRefactor.Controllers{
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateWarehouse(int id, [FromBody] WarehouseDto warehouseDto)
         {
-            var result = await _warehouseService.UpdateWarehouseAsync(id, warehouseDto);
-            if (result.StartsWith("Error"))
+            (string message, Warehouse ReturnedWarehouse) result = await _warehouseService.UpdateWarehouseAsync(id, warehouseDto);
+            if (result.message.StartsWith("Error"))
             {
                 return BadRequest(result);
             }
-            return Ok(result);
+            if (result.ReturnedWarehouse != null) return Ok(result.ReturnedWarehouse);
+            return BadRequest("Invalid Warehouse added");
+            
         }
 
         [HttpDelete("{id}")]

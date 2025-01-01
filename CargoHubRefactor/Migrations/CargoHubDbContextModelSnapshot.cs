@@ -125,6 +125,10 @@ namespace CargoHubRefactor.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Uid");
 
+                    b.Property<string>("Classification")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -136,9 +140,15 @@ namespace CargoHubRefactor.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<double>("Depth")
+                        .HasColumnType("REAL");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<double>("Height")
+                        .HasColumnType("REAL");
 
                     b.Property<int>("ItemGroup")
                         .HasColumnType("INTEGER");
@@ -183,6 +193,12 @@ namespace CargoHubRefactor.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("Width")
+                        .HasColumnType("REAL");
 
                     b.HasKey("Uid");
 
@@ -295,8 +311,23 @@ namespace CargoHubRefactor.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsDock")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("ItemAmountsString")
                         .HasColumnType("TEXT");
+
+                    b.Property<double>("MaxDepth")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("MaxHeight")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("MaxWeight")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("MaxWidth")
+                        .HasColumnType("REAL");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -390,7 +421,7 @@ namespace CargoHubRefactor.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("BillTo")
+                    b.Property<int?>("BillTo")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedAt")
@@ -422,17 +453,17 @@ namespace CargoHubRefactor.Migrations
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ShipTo")
+                    b.Property<int?>("ShipTo")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ShipmentId")
+                    b.Property<int?>("ShipmentId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ShippingNotes")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("SourceId")
+                    b.Property<int?>("SourceId")
                         .HasColumnType("INTEGER");
 
                     b.Property<double>("TotalAmount")
@@ -454,10 +485,6 @@ namespace CargoHubRefactor.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BillTo");
-
-                    b.HasIndex("ShipTo");
 
                     b.HasIndex("WarehouseId");
 
@@ -691,6 +718,9 @@ namespace CargoHubRefactor.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("RestrictedClassifications")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
@@ -784,27 +814,11 @@ namespace CargoHubRefactor.Migrations
 
             modelBuilder.Entity("Order", b =>
                 {
-                    b.HasOne("Client", "BillToClient")
-                        .WithMany()
-                        .HasForeignKey("BillTo")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Client", "ShipToClient")
-                        .WithMany()
-                        .HasForeignKey("ShipTo")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Warehouse", "Warehouse")
                         .WithMany()
                         .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("BillToClient");
-
-                    b.Navigation("ShipToClient");
 
                     b.Navigation("Warehouse");
                 });
@@ -818,7 +832,7 @@ namespace CargoHubRefactor.Migrations
                         .IsRequired();
 
                     b.HasOne("Order", "Order")
-                        .WithMany("Items")
+                        .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -892,11 +906,6 @@ namespace CargoHubRefactor.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("Transfer");
-                });
-
-            modelBuilder.Entity("Order", b =>
-                {
-                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }
