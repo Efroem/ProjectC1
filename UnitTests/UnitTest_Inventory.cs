@@ -128,6 +128,134 @@ public class UnitTest_Inventory
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         });
+        context.Items.Add(new Item {
+            Uid = "P000011",  // Unique Item Uid
+            Code = "Dummy",
+            Description = "dummy",
+            ShortDescription = "dummy",
+            UpcCode = "null",
+            ModelNumber = "null",
+            CommodityCode = "null",
+            ItemLine = 1,  // Reference the unique ItemLine ID
+            ItemGroup = 1,  // Reference the unique ItemGroup ID
+            ItemType = 1,  // Reference the unique ItemType ID
+            UnitPurchaseQuantity = 1,
+            UnitOrderQuantity = 1,
+            PackOrderQuantity = 1,
+            Classification = "DummyRestricted",
+            SupplierId = 1,
+            SupplierCode = "null",
+            SupplierPartNumber = "null",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        context.Items.Add(new Item {
+            Uid = "P000012",  // Unique Item Uid
+            Code = "Dummy2",
+            Description = "dummy2",
+            ShortDescription = "dummy2",
+            UpcCode = "null",
+            ModelNumber = "null",
+            CommodityCode = "null",
+            ItemLine = 2,  // Reference the unique ItemLine ID
+            ItemGroup = 2,  // Reference the unique ItemGroup ID
+            ItemType = 2,  // Reference the unique ItemType ID
+            UnitPurchaseQuantity = 1,
+            UnitOrderQuantity = 1,
+            PackOrderQuantity = 1,
+            Height = 10000,
+            Width = 10,
+            Depth = 10,
+            SupplierId = 2,
+            SupplierCode = "null",
+            SupplierPartNumber = "null",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+        context.Items.Add(new Item {
+            Uid = "P000013",  // Unique Item Uid
+            Code = "Dummy",
+            Description = "dummy",
+            ShortDescription = "dummy",
+            UpcCode = "null",
+            ModelNumber = "null",
+            CommodityCode = "null",
+            ItemLine = 1,  // Reference the unique ItemLine ID
+            ItemGroup = 1,  // Reference the unique ItemGroup ID
+            ItemType = 1,  // Reference the unique ItemType ID
+            UnitPurchaseQuantity = 1,
+            UnitOrderQuantity = 1,
+            PackOrderQuantity = 1,
+            Height = 10,
+            Width = 10000,
+            Depth = 10,
+            SupplierId = 1,
+            SupplierCode = "null",
+            SupplierPartNumber = "null",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        context.Items.Add(new Item {
+            Uid = "P000014",  // Unique Item Uid
+            Code = "Dummy2",
+            Description = "dummy2",
+            ShortDescription = "dummy2",
+            UpcCode = "null",
+            ModelNumber = "null",
+            CommodityCode = "null",
+            ItemLine = 2,  // Reference the unique ItemLine ID
+            ItemGroup = 2,  // Reference the unique ItemGroup ID
+            ItemType = 2,  // Reference the unique ItemType ID
+            UnitPurchaseQuantity = 1,
+            UnitOrderQuantity = 1,
+            PackOrderQuantity = 1,
+            Height = 10,
+            Width = 100000,
+            Depth = 10,
+            SupplierId = 2,
+            SupplierCode = "null",
+            SupplierPartNumber = "null",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+        
+        context.Warehouses.Add(new Warehouse
+        {
+            WarehouseId = 1, // Ensure unique WarehouseId
+            Code = "WH001",  // Unique code for the warehouse
+            Name = "Main Warehouse",
+            Address = "123 Warehouse St.",
+            Zip = "12345",
+            City = "Sample City",
+            Province = "Sample Province",
+            Country = "Sample Country",
+            ContactName = "John Doe",
+            ContactPhone = "555-1234",
+            ContactEmail = "johndoe@example.com",
+            RestrictedClassificationsList = new List<string>{},
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+        
+        context.Warehouses.Add(new Warehouse
+        {
+            WarehouseId = 2, // Ensure unique WarehouseId
+            Code = "WH002",  // Unique code for the warehouse
+            Name = "Main Warehouse",
+            Address = "123 Warehouse St.",
+            Zip = "12345",
+            City = "Sample City",
+            Province = "Sample Province",
+            Country = "Sample Country",
+            ContactName = "John Doe",
+            ContactPhone = "555-1234",
+            ContactEmail = "johndoe@example.com",
+            RestrictedClassificationsList = new List<string>{"DummyRestricted"},
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
 
         // Seed Inventory with a unique InventoryId
         context.Inventories.Add(new Inventory { 
@@ -140,6 +268,30 @@ public class UnitTest_Inventory
             TotalOrdered = 1,
             TotalAllocated = 1,
             TotalAvailable = 1,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+        context.Locations.Add(new Location
+        {
+            LocationId = 1,
+            Name = "Row: A, Rack: 1, Shelf: 1",
+            Code = "LOC001",
+            WarehouseId = 1,
+            ItemAmounts = new Dictionary<string, int>{},
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        context.Locations.Add(new Location
+        {
+            LocationId = 2,
+            Name = "Row: B, Rack: 2, Shelf: 2",
+            Code = "LOC002",
+            ItemAmounts = new Dictionary<string, int>{},
+            WarehouseId = 2,
+            MaxHeight = 20,
+            MaxWidth = 20,
+            MaxDepth = 20,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         });
@@ -180,6 +332,9 @@ public class UnitTest_Inventory
             TotalOrdered = 1,
             TotalAllocated = 1,
             TotalAvailable = 1,
+            LocationsList = [
+                1
+            ],
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -188,6 +343,157 @@ public class UnitTest_Inventory
         Assert.AreEqual(returnedInventory != null, expectedresult);
     }
 
+    [TestMethod]
+     public void TestPostInvalidItemId() {
+        Inventory inventory = new Inventory { 
+            InventoryId = 100009,  // Ensure unique InventoryId
+            ItemId = "P999999",  // Reference the unique ItemId
+            Description = "dummyDescription",
+            ItemReference = "dummy1143q535",
+            TotalOnHand = 1,
+            TotalExpected = 1,
+            TotalOrdered = 1,
+            TotalAllocated = 1,
+            LocationsList = new List<int> {
+                1,
+                2
+            },
+            TotalAvailable = 1,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        InventoryService inventoryService = new InventoryService(_dbContext);
+        Inventory? returnedInventory = inventoryService.AddInventoryAsync(inventory).Result.returnedInventory;
+        Assert.AreEqual(returnedInventory != null, false);
+    }
+
+    [TestMethod]
+    public async Task TestPostInvalidItemClassification()
+    {
+        // Arrange
+        var inventory = new Inventory
+        {
+            InventoryId = 100009,  // Ensure unique InventoryId
+            ItemId = "P000011",    // Reference the unique ItemId
+            Description = "dummyDescription",
+            ItemReference = "dummy1143q535",
+            TotalOnHand = 1,
+            TotalExpected = 1,
+            TotalOrdered = 1,
+            TotalAllocated = 1,
+            TotalAvailable = 1,
+            LocationsList = new List<int> { 1, 2 },
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        // Use a mocked or properly configured DbContext
+        var inventoryService = new InventoryService(_dbContext);
+
+        // Act
+        var result = await inventoryService.AddInventoryAsync(inventory);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result.returnedInventory);
+        Assert.AreEqual(result.returnedInventory.LocationsList.Count, 1);
+    }
+
+    [TestMethod]
+    public async Task TestPostInvalidItemHeight()
+    {
+        // Arrange
+        var inventory = new Inventory
+        {
+            InventoryId = 100009,  // Ensure unique InventoryId
+            ItemId = "P000012",    // Reference the unique ItemId
+            Description = "dummyDescription",
+            ItemReference = "dummy1143q535",
+            TotalOnHand = 1,
+            TotalExpected = 1,
+            TotalOrdered = 1,
+            TotalAllocated = 1,
+            TotalAvailable = 1,
+            LocationsList = new List<int> { 1, 2 },
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        // Use a mocked or properly configured DbContext
+        var inventoryService = new InventoryService(_dbContext);
+
+        // Act
+        var result = await inventoryService.AddInventoryAsync(inventory);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result.returnedInventory);
+        Assert.AreEqual(result.returnedInventory.LocationsList.Count, 1);
+    }
+
+        [TestMethod]
+    public async Task TestPostInvalidItemWidth()
+    {
+        // Arrange
+        var inventory = new Inventory
+        {
+            InventoryId = 100009,  // Ensure unique InventoryId
+            ItemId = "P000013",    // Reference the unique ItemId
+            Description = "dummyDescription",
+            ItemReference = "dummy1143q535",
+            TotalOnHand = 1,
+            TotalExpected = 1,
+            TotalOrdered = 1,
+            TotalAllocated = 1,
+            TotalAvailable = 1,
+            LocationsList = new List<int> { 1, 2 },
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        // Use a mocked or properly configured DbContext
+        var inventoryService = new InventoryService(_dbContext);
+
+        // Act
+        var result = await inventoryService.AddInventoryAsync(inventory);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result.returnedInventory);
+        Assert.AreEqual(result.returnedInventory.LocationsList.Count, 1);
+    }
+
+    [TestMethod]
+    public async Task TestPostInvalidItemDepth()
+    {
+        // Arrange
+        var inventory = new Inventory
+        {
+            InventoryId = 100009,  // Ensure unique InventoryId
+            ItemId = "P000014",    // Reference the unique ItemId
+            Description = "dummyDescription",
+            ItemReference = "dummy1143q535",
+            TotalOnHand = 1,
+            TotalExpected = 1,
+            TotalOrdered = 1,
+            TotalAllocated = 1,
+            TotalAvailable = 1,
+            LocationsList = new List<int> { 1, 2 },
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        // Use a mocked or properly configured DbContext
+        var inventoryService = new InventoryService(_dbContext);
+
+        // Act
+        var result = await inventoryService.AddInventoryAsync(inventory);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result.returnedInventory);
+        Assert.AreEqual(result.returnedInventory.LocationsList.Count, 1);
+    }
 
     [TestMethod]
     [DataRow(1, "UpdatedReference", true)]  

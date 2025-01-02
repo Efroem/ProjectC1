@@ -6,6 +6,9 @@ GET http://localhost:5000/api/v1/Items
 GET http://localhost:5000/api/v1/Items/P000001
 ####
 
+GET http://localhost:5000/api/v1/Items/P000451/Locations/1
+####
+
 POST http://localhost:5000/api/v1/Items
 Content-Type: application/json
 

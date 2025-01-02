@@ -23,14 +23,19 @@ public class LocationService : ILocationService
         return await _context.Locations.ToListAsync();
     }
 
-    public async Task<Location> AddLocationAsync(string name, string code, int warehouseId)
+    public async Task<Location> AddLocationAsync(Location Location)
     {
         int nextId;
 
+        if (!_context.Warehouses.Any(x => x.WarehouseId == Location.WarehouseId)) {
+            return null;
+        }
+        
         if (_context.Locations.Any())
         {
             nextId = _context.Locations.Max(l => l.LocationId) + 1;
         }
+
         else
         {
             nextId = 1;
@@ -39,9 +44,15 @@ public class LocationService : ILocationService
         var location = new Location
         {
             LocationId = nextId,
-            Name = name,
-            Code = code,
-            WarehouseId = warehouseId,
+            Name = Location.Name,
+            Code = Location.Code,
+            WarehouseId = Location.WarehouseId,
+            ItemAmounts = new Dictionary<string, int>(),
+            MaxDepth = Location.MaxDepth,
+            MaxWeight = Location.MaxWeight,
+            MaxHeight = Location.MaxHeight,
+            MaxWidth = Location.MaxWidth,
+            IsDock = Location.IsDock,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -52,7 +63,7 @@ public class LocationService : ILocationService
         return location;
     }
 
-    public async Task<Location> UpdateLocationAsync(int id, string name, string code, int warehouseId)
+    public async Task<Location> UpdateLocationAsync(int id, Location Location)
     {
         var location = await _context.Locations.FirstOrDefaultAsync(l => l.LocationId == id);
         if (location == null)
@@ -60,14 +71,115 @@ public class LocationService : ILocationService
             return null;
         }
 
-        location.Name = name;
-        location.Code = code;
-        location.WarehouseId = warehouseId;
-        location.UpdatedAt = DateTime.UtcNow;
 
+        // Update Name if Location.Name is not null or empty
+        if (!string.IsNullOrEmpty(Location.Name))
+        {
+            location.Name = Location.Name;
+        }
+
+        // Update Code if Location.Code is not null or empty
+        if (!string.IsNullOrEmpty(Location.Code))
+        {
+            location.Code = Location.Code;
+        }
+
+        // Update WarehouseId if Location.WarehouseId is not null (assuming it's nullable)
+        if (Location.WarehouseId != 0)
+        {
+            location.WarehouseId = Location.WarehouseId;
+        }
+
+        // // Initialize or update ItemAmounts dictionary if Location.ItemAmounts is not null
+        // if (Location.ItemAmounts != null && Location.ItemAmounts.Any())
+        // {
+        //     location.ItemAmounts = Location.ItemAmounts;
+        // }
+
+        // Update MaxDepth if Location.MaxDepth is not null
+        if (Location.MaxDepth != 0)
+        {
+            location.MaxDepth = Location.MaxDepth;
+        }
+
+        // Update MaxWeight if Location.MaxWeight is not null
+        if (Location.MaxWeight != 0)
+        {
+            location.MaxWeight = Location.MaxWeight;
+        }
+
+        // Update MaxHeight if Location.MaxHeight is not null
+        if (Location.MaxHeight != 0)
+        {
+            location.MaxHeight = Location.MaxHeight;
+        }
+
+        // Update MaxWidth if Location.MaxWidth is not null
+        if (Location.MaxWidth != 0)
+        {
+            location.MaxWidth = Location.MaxWidth;
+        }
+
+        // Update IsDock if Location.IsDock has a valid value
+        location.IsDock = Location.IsDock; // Assuming you want to directly update this without null check.
+
+        // Update CreatedAt with the current UTC time
+        location.CreatedAt = DateTime.UtcNow;
+
+        // Update UpdatedAt with the current UTC time
+        location.UpdatedAt = DateTime.UtcNow;
+    
         _context.Locations.Update(location);
         await _context.SaveChangesAsync();
 
+        return location;
+    }
+
+    public async Task<Location> UpdateLocationItemsAsync(int id, List<LocationItem> LocationItems)
+    {
+        var location = await _context.Locations.FirstOrDefaultAsync(l => l.LocationId == id);
+        if (location == null)
+        {
+            return null;
+        }
+        foreach (LocationItem ItemToAdd in LocationItems) {
+            var warehouse = await _context.Warehouses.FindAsync(location.WarehouseId);
+            var inventory = await _context.Inventories.FirstOrDefaultAsync(i => i.ItemId == ItemToAdd.ItemId);
+            if (inventory == null) continue;
+            if (warehouse == null) continue;
+            List<string> RestrictedClassifications = warehouse.RestrictedClassificationsList != null ? warehouse.RestrictedClassificationsList : new List<string>();
+
+
+
+            if (location.MaxHeight != 0 && ItemToAdd.Height > location.MaxHeight ||
+                location.MaxWidth != 0 && ItemToAdd.Width > location.MaxWidth ||
+                location.MaxDepth != 0 && ItemToAdd.Depth > location.MaxDepth ||
+                location.MaxWeight != 0 && ItemToAdd.Weight > location.MaxWeight ||
+                RestrictedClassifications.Contains(ItemToAdd.Classification) 
+            ) continue;
+
+            if (inventory.LocationsList == null)
+            {
+                inventory.LocationsList = new List<int>();  // Initialize LocationsList if null
+            }
+            inventory.LocationsList.Add(location.LocationId);
+
+
+            if (location.ItemAmounts == null) {
+                location.ItemAmounts = new Dictionary<string, int>();
+            }
+            
+            if (location.ItemAmounts.ContainsKey(ItemToAdd.ItemId)) {
+                location.ItemAmounts[ItemToAdd.ItemId] += ItemToAdd.Amount;
+            }
+            else {
+                location.ItemAmounts.Add(ItemToAdd.ItemId, ItemToAdd.Amount);
+            }
+            inventory.TotalOnHand += ItemToAdd.Amount;
+        }
+        location.UpdatedAt = DateTime.UtcNow;
+        _context.Locations.Update(location);
+        await _context.SaveChangesAsync();
         return location;
     }
 
@@ -122,4 +234,5 @@ public class LocationService : ILocationService
 
         return true;
     }
+
 }

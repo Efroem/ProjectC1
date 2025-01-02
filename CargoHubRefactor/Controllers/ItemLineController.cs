@@ -1,72 +1,73 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
-
-[Route("api/v1/Item_Lines")]
-[ApiController]
-public class ItemLineController : ControllerBase
-{
-    private readonly IItemLineService _itemLineService;
-
-    public ItemLineController(IItemLineService itemLineService)
+namespace CargoHubRefactor.Controllers{
+    [Route("api/v1/Item_Lines")]
+    [ApiController]
+    public class ItemLineController : ControllerBase
     {
-        _itemLineService = itemLineService;
-    }
+        private readonly IItemLineService _itemLineService;
 
-    [HttpGet]
-    public async Task<ActionResult> GetItemLines()
-    {
-        var item_lines = await _itemLineService.GetItemLinesAsync();
-        if (item_lines == null || !item_lines.Any())
+        public ItemLineController(IItemLineService itemLineService)
         {
-            return NotFound("No item lines found");
+            _itemLineService = itemLineService;
         }
 
-        return Ok(item_lines);
-    }
-
-    [HttpGet("{lineId}")]
-    public async Task<ActionResult> GetItemLineById(int lineId)
-    {
-        var item_line = await _itemLineService.GetItemLineByIdAsync(lineId);
-        if (item_line == null)
+        [HttpGet]
+        public async Task<ActionResult> GetItemLines()
         {
-            return NotFound($"Item Line with ID: {lineId} not found.");
+            var item_lines = await _itemLineService.GetItemLinesAsync();
+            if (item_lines == null || !item_lines.Any())
+            {
+                return NotFound("No item lines found");
+            }
+
+            return Ok(item_lines);
         }
 
-        return Ok(item_line);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult> AddItemLine([FromBody] ItemLine itemLine)
-    {
-        var result = await _itemLineService.AddItemLineAsync(itemLine);
-        if (result.message.StartsWith("Error"))
+        [HttpGet("{lineId}")]
+        public async Task<ActionResult> GetItemLineById(int lineId)
         {
-            return BadRequest(result.message);
-        }
-        return Ok(result.returnedItemLine);
-    }
+            var item_line = await _itemLineService.GetItemLineByIdAsync(lineId);
+            if (item_line == null)
+            {
+                return NotFound($"Item Line with ID: {lineId} not found.");
+            }
 
-    [HttpPut("{lineId}")]
-    public async Task<ActionResult> UpdateItemLine(int lineId, [FromBody] ItemLine itemLine)
-    {
-        var result = await _itemLineService.UpdateItemLineAsync(lineId, itemLine);
-        if (result.message.StartsWith("Error"))
-        {
-            return BadRequest(result.message);
+            return Ok(item_line);
         }
-        return Ok(result.returnedItemLine);
-    }
 
-    [HttpDelete("{lineId}")]
-    public async Task<ActionResult> DeleteItemLine(int lineId)
-    {
-        var result = await _itemLineService.DeleteItemLineAsync(lineId);
-        if (result == false)
+        [HttpPost]
+        public async Task<ActionResult> AddItemLine([FromBody] ItemLine itemLine)
         {
-            return NotFound($"Item Line with ID: {lineId} not found.");
+            var result = await _itemLineService.AddItemLineAsync(itemLine);
+            if (result.message.StartsWith("Error"))
+            {
+                return BadRequest(result.message);
+            }
+            return Ok(result.returnedItemLine);
         }
-        return Ok("Successfully deleted Item Line");
+
+        [HttpPut("{lineId}")]
+        public async Task<ActionResult> UpdateItemLine(int lineId, [FromBody] ItemLine itemLine)
+        {
+            var result = await _itemLineService.UpdateItemLineAsync(lineId, itemLine);
+            if (result.message.StartsWith("Error"))
+            {
+                return BadRequest(result.message);
+            }
+            return Ok(result.returnedItemLine);
+        }
+
+        [HttpDelete("{lineId}")]
+        public async Task<ActionResult> DeleteItemLine(int lineId)
+        {
+            var result = await _itemLineService.DeleteItemLineAsync(lineId);
+            if (result == false)
+            {
+                return NotFound($"Item Line with ID: {lineId} not found.");
+            }
+            return Ok("Successfully deleted Item Line");
+        }
     }
 }

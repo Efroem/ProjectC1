@@ -122,6 +122,8 @@ def test_put_items_integration(_data):
     response_data = get_response.json()
     # response_data = response.json()
     dummy = requests.put(url, json=dummyJson)
+
+
     # Verify that the status code is 200 (OK) and the body in this code and the response data are basically equal
     assert status_code == 200 and response_data["uid"] == uid and response_data["code"] == body["code"] and response_data["description"] == body["description"]
 

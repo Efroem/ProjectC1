@@ -21,5 +21,5 @@ public class Shipment
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
-    public Warehouse SourceWarehouse { get; set; }
+    public Warehouse? SourceWarehouse { get; set; }
 }

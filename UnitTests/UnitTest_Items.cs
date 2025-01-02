@@ -128,13 +128,51 @@ public class UnitTest_Item
             UpdatedAt = DateTime.UtcNow
         });
 
+        context.Warehouses.Add(new Warehouse
+        {
+            WarehouseId = 1, // Ensure unique WarehouseId
+            Code = "WH001",  // Unique code for the warehouse
+            Name = "Main Warehouse",
+            Address = "123 Warehouse St.",
+            Zip = "12345",
+            City = "Sample City",
+            Province = "Sample Province",
+            Country = "Sample Country",
+            ContactName = "John Doe",
+            ContactPhone = "555-1234",
+            ContactEmail = "johndoe@example.com",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+
+        context.Locations.Add(new Location
+        {
+            LocationId = 1, // Ensure unique LocationId
+            WarehouseId = 1, // Reference the associated WarehouseId
+            Code = "LOC001", // Unique code for the location
+            Name = "Aisle 1",
+            ItemAmounts = new Dictionary<string, int> // Populate the ItemAmounts dictionary
+            {
+                { "P000001", 10 }, // Example: Item P000001 with 10 units
+                { "P000002", 5 }   // Example: Item P000002 with 5 units
+            },
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
         // Seed Item with a unique ItemId
         context.Inventories.Add(new Inventory { 
             InventoryId = 1,  // Ensure unique ItemId
             ItemId = "P000001",  // Reference the unique ItemId
             Description = "dummy",
             ItemReference = "dummy",
-            TotalOnHand = 1,
+            LocationsList = [
+                1,
+                2,
+                3
+            ],
+            TotalOnHand = 100,
             TotalExpected = 1,
             TotalOrdered = 1,
             TotalAllocated = 1,
@@ -163,6 +201,17 @@ public class UnitTest_Item
         ItemService ItemService = new ItemService(_dbContext);
         Item? Item = ItemService.GetItemByIdAsync(ItemId).Result;
         Assert.AreEqual((Item != null), expectedresult);
+    }
+
+    [TestMethod]
+    [DataRow("P000001", 1, true)]  
+    [DataRow("P000001", 4, false)] 
+    [DataRow("P000999", 1, false)] 
+
+    public void TestGetAmountByLocationId(string ItemId, int LocationId, Boolean expectedresult) {
+        ItemService ItemService = new ItemService(_dbContext);
+        int? itemAmount = ItemService.GetItemAmountAtLocationByIdAsync(ItemId, LocationId).Result;
+        Assert.AreEqual(itemAmount != -1, expectedresult);
     }
 
     [TestMethod]

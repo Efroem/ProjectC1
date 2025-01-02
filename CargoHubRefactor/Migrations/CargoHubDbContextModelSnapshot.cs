@@ -14,7 +14,7 @@ namespace CargoHubRefactor.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
 
             modelBuilder.Entity("Client", b =>
                 {
@@ -90,6 +90,10 @@ namespace CargoHubRefactor.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Locations")
+                        .HasColumnType("TEXT")
+                        .HasAnnotation("Relational:JsonPropertyName", "locationsString");
+
                     b.Property<int>("TotalAllocated")
                         .HasColumnType("INTEGER");
 
@@ -121,6 +125,10 @@ namespace CargoHubRefactor.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Uid");
 
+                    b.Property<string>("Classification")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -132,9 +140,15 @@ namespace CargoHubRefactor.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<double>("Depth")
+                        .HasColumnType("REAL");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<double>("Height")
+                        .HasColumnType("REAL");
 
                     b.Property<int>("ItemGroup")
                         .HasColumnType("INTEGER");
@@ -179,6 +193,12 @@ namespace CargoHubRefactor.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("Width")
+                        .HasColumnType("REAL");
 
                     b.HasKey("Uid");
 
@@ -291,6 +311,24 @@ namespace CargoHubRefactor.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsDock")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ItemAmountsString")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("MaxDepth")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("MaxHeight")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("MaxWeight")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("MaxWidth")
+                        .HasColumnType("REAL");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -308,13 +346,82 @@ namespace CargoHubRefactor.Migrations
                     b.ToTable("Locations");
                 });
 
+            modelBuilder.Entity("Models.Supplier", b =>
+                {
+                    b.Property<int>("SupplierId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AddressExtra")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContactName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Province")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Reference")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ZipCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("SupplierId");
+
+                    b.ToTable("Suppliers");
+                });
+
             modelBuilder.Entity("Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("BillTo")
+                    b.Property<int?>("BillTo")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedAt")
@@ -346,17 +453,17 @@ namespace CargoHubRefactor.Migrations
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ShipTo")
+                    b.Property<int?>("ShipTo")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ShipmentId")
+                    b.Property<int?>("ShipmentId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ShippingNotes")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("SourceId")
+                    b.Property<int?>("SourceId")
                         .HasColumnType("INTEGER");
 
                     b.Property<double>("TotalAmount")
@@ -378,10 +485,6 @@ namespace CargoHubRefactor.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BillTo");
-
-                    b.HasIndex("ShipTo");
 
                     b.HasIndex("WarehouseId");
 
@@ -510,67 +613,6 @@ namespace CargoHubRefactor.Migrations
                     b.ToTable("ShipmentItems");
                 });
 
-            modelBuilder.Entity("Supplier", b =>
-                {
-                    b.Property<int>("SupplierId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("AddressExtra")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ContactName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Province")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Reference")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ZipCode")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("SupplierId");
-
-                    b.ToTable("Suppliers");
-                });
-
             modelBuilder.Entity("Transfer", b =>
                 {
                     b.Property<int>("TransferId")
@@ -676,6 +718,9 @@ namespace CargoHubRefactor.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("RestrictedClassifications")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
@@ -719,7 +764,7 @@ namespace CargoHubRefactor.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Supplier", "Supplier")
+                    b.HasOne("Models.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -769,27 +814,11 @@ namespace CargoHubRefactor.Migrations
 
             modelBuilder.Entity("Order", b =>
                 {
-                    b.HasOne("Client", "BillToClient")
-                        .WithMany()
-                        .HasForeignKey("BillTo")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Client", "ShipToClient")
-                        .WithMany()
-                        .HasForeignKey("ShipTo")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Warehouse", "Warehouse")
                         .WithMany()
                         .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("BillToClient");
-
-                    b.Navigation("ShipToClient");
 
                     b.Navigation("Warehouse");
                 });
@@ -803,7 +832,7 @@ namespace CargoHubRefactor.Migrations
                         .IsRequired();
 
                     b.HasOne("Order", "Order")
-                        .WithMany("Items")
+                        .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -877,11 +906,6 @@ namespace CargoHubRefactor.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("Transfer");
-                });
-
-            modelBuilder.Entity("Order", b =>
-                {
-                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

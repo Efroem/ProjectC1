@@ -1,66 +1,69 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+namespace CargoHubRefactor.Controllers{
 
-
-[Route("api/v1/warehouses")]
-[ApiController]
-public class WarehouseController : ControllerBase
-{
-    private readonly IWarehouseService _warehouseService;
-
-    public WarehouseController(IWarehouseService warehouseService)
+    [Route("api/v1/warehouses")]
+    [ApiController]
+    public class WarehouseController : ControllerBase
     {
-        _warehouseService = warehouseService;
-    }
+        private readonly IWarehouseService _warehouseService;
 
-    [HttpGet]
-    public async Task<ActionResult<List<Warehouse>>> GetAllWarehouses()
-    {
-        return Ok(await _warehouseService.GetAllWarehousesAsync());
-    }
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Warehouse>> GetWarehouseById(int id)
-    {
-        var warehouse = await _warehouseService.GetWarehouseByIdAsync(id);
-        if (warehouse == null)
+        public WarehouseController(IWarehouseService warehouseService)
         {
-            return NotFound("Error: Warehouse not found.");
+            _warehouseService = warehouseService;
         }
-        return Ok(warehouse);
-    }
 
-    [HttpPost]
-    public async Task<ActionResult> AddWarehouse([FromBody] WarehouseDto warehouseDto)
-    {
-        var result = await _warehouseService.AddWarehouseAsync(warehouseDto);
-        if (result.message.StartsWith("Error"))
+        [HttpGet]
+        public async Task<ActionResult<List<Warehouse>>> GetAllWarehouses()
         {
-            return BadRequest(result);
+            return Ok(await _warehouseService.GetAllWarehousesAsync());
         }
-        return Ok(result.warehouse);
-    }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateWarehouse(int id, [FromBody] WarehouseDto warehouseDto)
-    {
-        var result = await _warehouseService.UpdateWarehouseAsync(id, warehouseDto);
-        if (result.StartsWith("Error"))
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Warehouse>> GetWarehouseById(int id)
         {
-            return BadRequest(result);
+            var warehouse = await _warehouseService.GetWarehouseByIdAsync(id);
+            if (warehouse == null)
+            {
+                return NotFound("Error: Warehouse not found.");
+            }
+            return Ok(warehouse);
         }
-        return Ok(result);
-    }
 
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteWarehouse(int id)
-    {
-        var result = await _warehouseService.DeleteWarehouseAsync(id);
-        if (result.StartsWith("Error"))
+        [HttpPost]
+        public async Task<ActionResult> AddWarehouse([FromBody] WarehouseDto warehouseDto)
         {
-            return NotFound(result);
+            var result = await _warehouseService.AddWarehouseAsync(warehouseDto);
+            if (result.message.StartsWith("Error"))
+            {
+                return BadRequest(result);
+            }
+            return Ok(result.warehouse);
         }
-        return Ok(result);
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateWarehouse(int id, [FromBody] WarehouseDto warehouseDto)
+        {
+            (string message, Warehouse ReturnedWarehouse) result = await _warehouseService.UpdateWarehouseAsync(id, warehouseDto);
+            if (result.message.StartsWith("Error"))
+            {
+                return BadRequest(result);
+            }
+            if (result.ReturnedWarehouse != null) return Ok(result.ReturnedWarehouse);
+            return BadRequest("Invalid Warehouse added");
+            
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteWarehouse(int id)
+        {
+            var result = await _warehouseService.DeleteWarehouseAsync(id);
+            if (result.StartsWith("Error"))
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
+        }
     }
 }

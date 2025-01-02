@@ -1,72 +1,73 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
-
-[Route("api/v1/Item_Groups")]
-[ApiController]
-public class ItemGroupController : ControllerBase
-{
-    private readonly IItemGroupService _itemGroupService;
-
-    public ItemGroupController(IItemGroupService itemGroupService)
+namespace CargoHubRefactor.Controllers{
+    [Route("api/v1/Item_Groups")]
+    [ApiController]
+    public class ItemGroupController : ControllerBase
     {
-        _itemGroupService = itemGroupService;
-    }
+        private readonly IItemGroupService _itemGroupService;
 
-    [HttpGet]
-    public async Task<ActionResult> GetItemGroups()
-    {
-        var item_groups = _itemGroupService.GetItemGroupsAsync();
-        if (item_groups == null)
+        public ItemGroupController(IItemGroupService itemGroupService)
         {
-            return NotFound("No item groups found.");
+            _itemGroupService = itemGroupService;
         }
 
-        return Ok(item_groups);
-    }
-
-    [HttpGet("{groupId}")]
-    public async Task<ActionResult> GetItemGroupById(int groupId)
-    {
-        var item_group = _itemGroupService.GetItemGroupByIdAsync(groupId);
-        if (item_group.Result == null)
+        [HttpGet]
+        public async Task<ActionResult> GetItemGroups()
         {
-            return NotFound($"Item Group with ID: {groupId} not found.");
+            var item_groups = _itemGroupService.GetItemGroupsAsync();
+            if (item_groups == null)
+            {
+                return NotFound("No item groups found.");
+            }
+
+            return Ok(item_groups);
         }
 
-        return Ok(item_group);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult> AddItemGroup([FromBody] ItemGroup itemGroup)
-    {
-        var result = await _itemGroupService.AddItemGroupAsync(itemGroup);
-        if (result.message.StartsWith("Error"))
+        [HttpGet("{groupId}")]
+        public async Task<ActionResult> GetItemGroupById(int groupId)
         {
-            return BadRequest(result.message);
-        }
-        return Ok(result.returnedItemGroup);
-    }
+            var item_group = _itemGroupService.GetItemGroupByIdAsync(groupId);
+            if (item_group.Result == null)
+            {
+                return NotFound($"Item Group with ID: {groupId} not found.");
+            }
 
-    [HttpPut("{groupId}")]
-    public async Task<ActionResult> UpdateItemGroup(int groupId, [FromBody] ItemGroup itemGroup)
-    {
-        var result = await _itemGroupService.UpdateItemGroupAsync(groupId, itemGroup);
-        if (result.message.StartsWith("Error"))
-        {
-            return BadRequest(result.message);
+            return Ok(item_group);
         }
-        return Ok(result.returnedItemGroup);
-    }
 
-    [HttpDelete("{groupId}")]
-    public async Task<ActionResult> DeleteItemGroup(int groupId)
-    {
-        var result = await _itemGroupService.DeleteItemGroupAsync(groupId);
-        if (result == false)
+        [HttpPost]
+        public async Task<ActionResult> AddItemGroup([FromBody] ItemGroup itemGroup)
         {
-            return NotFound($"Item Group with ID: {groupId} not found.");
+            var result = await _itemGroupService.AddItemGroupAsync(itemGroup);
+            if (result.message.StartsWith("Error"))
+            {
+                return BadRequest(result.message);
+            }
+            return Ok(result.returnedItemGroup);
         }
-        return Ok("Successfully deleted Item Group");
+
+        [HttpPut("{groupId}")]
+        public async Task<ActionResult> UpdateItemGroup(int groupId, [FromBody] ItemGroup itemGroup)
+        {
+            var result = await _itemGroupService.UpdateItemGroupAsync(groupId, itemGroup);
+            if (result.message.StartsWith("Error"))
+            {
+                return BadRequest(result.message);
+            }
+            return Ok(result.returnedItemGroup);
+        }
+
+        [HttpDelete("{groupId}")]
+        public async Task<ActionResult> DeleteItemGroup(int groupId)
+        {
+            var result = await _itemGroupService.DeleteItemGroupAsync(groupId);
+            if (result == false)
+            {
+                return NotFound($"Item Group with ID: {groupId} not found.");
+            }
+            return Ok("Successfully deleted Item Group");
+        }
     }
 }

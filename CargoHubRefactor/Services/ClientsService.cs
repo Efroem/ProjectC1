@@ -12,9 +12,14 @@ public class ClientService : IClientService
         _context = context;
     }
 
+    public IEnumerable<Client> GetClients(int limit)
+    {
+        return _context.Clients.Take(limit).ToList();
+    }
+
     public IEnumerable<Client> GetClients()
     {
-        return _context.Clients.ToList();
+        return _context.Clients.ToList(); 
     }
 
     public Client GetClient(int id)

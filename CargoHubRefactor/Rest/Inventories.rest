@@ -11,7 +11,12 @@ Content-Type: application/json
 {
   "itemId": "P000001",
   "description": "Test inventory item",
-  "itemReference": "REF-001",
+  "itemReference": "REF-999",
+  "locations": [
+    1,
+    2,
+    3
+  ],
   "totalOnHand": 100,
   "totalExpected": 150,
   "totalOrdered": 50,
@@ -27,6 +32,11 @@ Content-Type: application/json
   "itemId": "P000001",
   "description": "Dummy Test",
   "itemReference": "REF-999999999",
+  "locations": [
+    1,
+    2,
+    3
+  ],
   "totalOnHand": 100,
   "totalExpected": 150,
   "totalOrdered": 50,
@@ -35,5 +45,5 @@ Content-Type: application/json
 }
 ####
 
-DELETE http://localhost:5000/api/v1/Inventories/1
+DELETE http://localhost:5000/api/v1/Inventories/11721
 ####

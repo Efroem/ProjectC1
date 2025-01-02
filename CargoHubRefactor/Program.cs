@@ -1,11 +1,14 @@
+using CargoHubRefactor.DbSetup;
+using CargoHubRefactor.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
+using Services;
 
 namespace CargoHubRefactor
 {
     public class Program
     {
-        static void Main(string[] args)
+        public static async Task Main(string[] args) // Make Main async
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -13,14 +16,12 @@ namespace CargoHubRefactor
 
             builder.Services.AddDistributedMemoryCache();
 
-            builder.Services.AddSession(options => 
+            builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
-
-                options.Cookie.HttpOnly = true; 
-                options.Cookie.IsEssential = true; 
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
             });
-
 
             builder.Services.AddHttpContextAccessor();
 
@@ -28,8 +29,10 @@ namespace CargoHubRefactor
             builder.Services.AddDbContext<CargoHubDbContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("CargoHubDb")));
 
+            // Register services
             builder.Services.AddScoped<IWarehouseService, WarehouseService>();
             builder.Services.AddScoped<IClientService, ClientService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IItemGroupService, ItemGroupService>();
             builder.Services.AddScoped<IItemLineService, ItemLineService>();
             builder.Services.AddScoped<IItemTypeService, ItemTypeService>();
@@ -37,8 +40,19 @@ namespace CargoHubRefactor
             builder.Services.AddScoped<ITransferService, TransferService>();
             builder.Services.AddScoped<ILocationService, LocationService>();
             builder.Services.AddScoped<IInventoryService, InventoryService>();
-            builder.Services.AddScoped<SetupItems>();  // Register SetupItems as a service
-            
+            builder.Services.AddScoped<ISupplierService, SupplierService>();
+            builder.Services.AddScoped<ReportingService>();
+            builder.Services.AddScoped<IShipmentService, ShipmentService>();
+            builder.Services.AddScoped<SetupItems>();
+            builder.Services.AddScoped<AdminFilter>();
+            builder.Services.AddScoped<FloorManagerFilter>();
+
+
+
+            // Add health checks
+            builder.Services.AddHealthChecks();  // Registers health check services
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -61,14 +75,19 @@ namespace CargoHubRefactor
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
-            using (var scope = app.Services.CreateScope())
-                {
-                    var setupItems = scope.ServiceProvider.GetRequiredService<SetupItems>();
+            app.MapHealthChecks("/api/health");  // This maps the /api/health endpoint to check app health
 
-                    // Call GetItemCategoryRelations method (make sure this method is non-static)
-                    var relations = setupItems.GetItemCategoryRelations();
-                }
-            app.Run();
+
+            // Execute SetupItems logic within a valid scope
+            using (var scope = app.Services.CreateScope())
+            {
+                var setupItems = scope.ServiceProvider.GetRequiredService<SetupItems>();
+
+                // Ensure GetItemCategoryRelations is awaited if it’s asynchronous
+                await setupItems.GetItemCategoryRelations();
+            }
+
+            await app.RunAsync(); // Use RunAsync to work with async Main
         }
     }
 }

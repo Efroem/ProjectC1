@@ -1,0 +1,8 @@
+### Haal rapport op voor leveranciers
+GET http://localhost:5000/api/v1/reporting?entity=suppliers&fromDate=1999-12-01&toDate=2024-12-31
+
+###
+GET http://localhost:5000/api/v1/reporting?entity=warehouses&fromDate=1999-12-01&toDate=2024-12-31
+
+###
+GET http://localhost:5000/api/v1/reporting?entity=warehouses&fromDate=1999-12-01&toDate=2024-12-31&warehouseId=50

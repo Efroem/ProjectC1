@@ -2,71 +2,74 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 
-[Route("api/v1/Inventories")]
-[ApiController]
-public class InventoryController : ControllerBase
-{
-    private readonly IInventoryService _InventoryService;
+namespace CargoHubRefactor.Controllers{
+    [Route("api/v1/Inventories")]
+    [ApiController]
 
-    public InventoryController(IInventoryService InventoryService)
+    public class InventoryController : ControllerBase
     {
-        _InventoryService = InventoryService;
-    }
+        private readonly IInventoryService _InventoryService;
 
-    [HttpGet]
-    public async Task<ActionResult> GetInventories()
-    {
-        var inventories = _InventoryService.GetInventoriesAsync();
-        if (inventories == null)
+        public InventoryController(IInventoryService InventoryService)
         {
-            return NotFound("No item groups found.");
+            _InventoryService = InventoryService;
         }
 
-        return Ok(inventories);
-    }
-
-    [HttpGet("{inventoryId}")]
-    public async Task<ActionResult> GetInventoryById(int inventoryId)
-    {
-        var inventory = _InventoryService.GetInventoryByIdAsync(inventoryId);
-        if (inventory.Result == null)
+        [HttpGet]
+        public async Task<ActionResult> GetInventories()
         {
-            return NotFound($"Item Group with ID {inventoryId} not found.");
+            var inventories = _InventoryService.GetInventoriesAsync();
+            if (inventories == null)
+            {
+                return NotFound("No item groups found.");
+            }
+
+            return Ok(inventories);
         }
 
-        return Ok(inventory);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult> AddInventory([FromBody] Inventory Inventory)
-    {
-        var result = await _InventoryService.AddInventoryAsync(Inventory);
-        if (result.message.StartsWith("Error"))
+        [HttpGet("{inventoryId}")]
+        public async Task<ActionResult> GetInventoryById(int inventoryId)
         {
-            return BadRequest(result.message);
-        }
-        return Ok(result.returnedInventory);
-    }
+            var inventory = _InventoryService.GetInventoryByIdAsync(inventoryId);
+            if (inventory.Result == null)
+            {
+                return NotFound($"Item Group with ID {inventoryId} not found.");
+            }
 
-    [HttpPut("{inventoryId}")]
-    public async Task<ActionResult> UpdateInventory(int inventoryId, [FromBody] Inventory Inventory)
-    {
-        var result = await _InventoryService.UpdateInventoryAsync(inventoryId, Inventory);
-        if (result.message.StartsWith("Error"))
-        {
-            return BadRequest(result.message);
+            return Ok(inventory);
         }
-        return Ok(result.returnedInventory);
-    }
 
-    [HttpDelete("{inventoryId}")]
-    public async Task<ActionResult> DeleteInventory(int inventoryId)
-    {
-        var result = await _InventoryService.DeleteInventoryAsync(inventoryId);
-        if (result == false)
+        [HttpPost]
+        public async Task<ActionResult> AddInventory([FromBody] Inventory Inventory)
         {
-            return NotFound("Error: Inventory not found");
+            var result = await _InventoryService.AddInventoryAsync(Inventory);
+            if (result.message.StartsWith("Error"))
+            {
+                return BadRequest(result.message);
+            }
+            return Ok(result.returnedInventory);
         }
-        return Ok("Successfully deleted inventory");
+
+        [HttpPut("{inventoryId}")]
+        public async Task<ActionResult> UpdateInventory(int inventoryId, [FromBody] Inventory Inventory)
+        {
+            var result = await _InventoryService.UpdateInventoryAsync(inventoryId, Inventory);
+            if (result.message.StartsWith("Error"))
+            {
+                return BadRequest(result.message);
+            }
+            return Ok(result.returnedInventory);
+        }
+
+        [HttpDelete("{inventoryId}")]
+        public async Task<ActionResult> DeleteInventory(int inventoryId)
+        {
+            var result = await _InventoryService.DeleteInventoryAsync(inventoryId);
+            if (result == false)
+            {
+                return NotFound("Error: Inventory not found");
+            }
+            return Ok("Successfully deleted inventory");
+        }
     }
 }

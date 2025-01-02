@@ -56,6 +56,11 @@ def test_post_inventory_integration(_data):
         "itemId": "P000001",
         "description": "Dummy inventory item",
         "itemReference": "REF-999",
+        "locations": [
+            1,
+            2,
+            3
+        ],
         "totalOnHand": 100,
         "totalExpected": 150,
         "totalOrdered": 50,
@@ -74,7 +79,6 @@ def test_post_inventory_integration(_data):
     status_code = get_response.status_code
     response_data = get_response.json()["result"]
     # response_data = response.json()
-
     # Verify that the status code is 200 (OK)
     print(inventoryId)
     print(response_data)
@@ -89,6 +93,11 @@ def test_put_inventory_integration(_data):
         "itemId": "P000001",
         "description": "Changed inventory item",
         "itemReference": "REF-999",
+        "locations": [
+            1,
+            2,
+            3
+        ],
         "totalOnHand": 100,
         "totalExpected": 150,
         "totalOrdered": 50,
@@ -124,6 +133,11 @@ def test_delete_inventory_integration(_data):
         "itemId": "P000001",
         "description": "Dummy Test",
         "itemReference": "REF-999999999",
+        "locations": [
+            1,
+            2,
+            3
+        ],
         "totalOnHand": 100,
         "totalExpected": 150,
         "totalOrdered": 50,
@@ -137,6 +151,9 @@ def test_delete_inventory_integration(_data):
     inventoryId = post_response.json().get("inventoryId")
     
     url += f"/{inventoryId}"
+
+    get2_response = requests.get(url)
+    print(get2_response.json())
 
     # Send a DELETE request to the API and check if it was successful
     delete_response = requests.delete(url)
