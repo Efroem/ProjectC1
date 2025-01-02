@@ -16,7 +16,7 @@ namespace CargoHubRefactor.Controllers{
         [HttpGet]
         public async Task<ActionResult> GetItemTypes()
         {
-            var item_types = _itemTypeService.GetItemTypesAsync();
+            var item_types = await _itemTypeService.GetItemTypesAsync();
             if (item_types == null)
             {
                 return NotFound("No item lines found.");

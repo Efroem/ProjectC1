@@ -18,7 +18,7 @@ namespace CargoHubRefactor.Controllers{
         [HttpGet]
         public async Task<ActionResult> GetInventories()
         {
-            var inventories = _InventoryService.GetInventoriesAsync();
+            var inventories = await _InventoryService.GetInventoriesAsync();
             if (inventories == null)
             {
                 return NotFound("No item groups found.");
@@ -30,8 +30,8 @@ namespace CargoHubRefactor.Controllers{
         [HttpGet("{inventoryId}")]
         public async Task<ActionResult> GetInventoryById(int inventoryId)
         {
-            var inventory = _InventoryService.GetInventoryByIdAsync(inventoryId);
-            if (inventory.Result == null)
+            var inventory = await _InventoryService.GetInventoryByIdAsync(inventoryId);
+            if (inventory == null)
             {
                 return NotFound($"Item Group with ID {inventoryId} not found.");
             }

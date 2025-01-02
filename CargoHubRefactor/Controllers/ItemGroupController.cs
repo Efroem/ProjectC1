@@ -16,7 +16,7 @@ namespace CargoHubRefactor.Controllers{
         [HttpGet]
         public async Task<ActionResult> GetItemGroups()
         {
-            var item_groups = _itemGroupService.GetItemGroupsAsync();
+            var item_groups = await _itemGroupService.GetItemGroupsAsync();
             if (item_groups == null)
             {
                 return NotFound("No item groups found.");
@@ -28,8 +28,8 @@ namespace CargoHubRefactor.Controllers{
         [HttpGet("{groupId}")]
         public async Task<ActionResult> GetItemGroupById(int groupId)
         {
-            var item_group = _itemGroupService.GetItemGroupByIdAsync(groupId);
-            if (item_group.Result == null)
+            var item_group = await _itemGroupService.GetItemGroupByIdAsync(groupId);
+            if (item_group == null)
             {
                 return NotFound($"Item Group with ID: {groupId} not found.");
             }
