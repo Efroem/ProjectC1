@@ -105,7 +105,7 @@ public class ClientController : ControllerBase
             return NotFound($"Client with ID: {id} not found.");
         }
 
-        return Ok("Client successfully deleted.");
+        return Ok($"Client with ID: {id} successfully deleted");
     }
 
     // Helper method to validate client properties

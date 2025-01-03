@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
-namespace CargoHubRefactor.Controllers{
+namespace CargoHubRefactor.Controllers
+{
     [Route("api/v1/Items")]
     [ApiController]
     public class ItemController : ControllerBase
@@ -19,7 +20,7 @@ namespace CargoHubRefactor.Controllers{
             var item_s = await _itemService.GetItemsAsync();
             if (item_s == null)
             {
-                return NotFound("No item lines found.");
+                return NotFound("No items found in the inventory.");
             }
 
             return Ok(item_s);
@@ -43,7 +44,7 @@ namespace CargoHubRefactor.Controllers{
             var itemAmount = await _itemService.GetItemAmountAtLocationByIdAsync(ItemId, LocationId);
             if (itemAmount == null)
             {
-                return NotFound($"Item  with ID {ItemId} not found.");
+                return NotFound($"Item with ID '{ItemId}' not found at location ID {LocationId}.");
             }
 
             return Ok($"Location {LocationId} has {itemAmount} of Item {ItemId}");
