@@ -333,51 +333,91 @@ namespace CargoHubRefactor.DbSetup {
             return returnItemObject;
         }
 
-        public Transfer ReturnTransferObject(Dictionary<string, System.Text.Json.JsonElement> transferJson)
-        {
-            Transfer returnTransferObject = new Transfer();
-            string format = "yyyy-MM-ddTHH:mm:ssZ"; // Define the expected date-time format for the JSON (ISO 8601)
+        // public Transfer ReturnTransferObject(Dictionary<string, System.Text.Json.JsonElement> transferJson)
+        // {
+        //     Transfer returnTransferObject = new Transfer();
+        //     string format = "yyyy-MM-ddTHH:mm:ssZ"; // Define the expected date-time format for the JSON (ISO 8601)
 
-            try
-            {
-                // Check if TransferFrom and TransferTo are null or missing, and return null if so
-                if (!transferJson.ContainsKey("transfer_from") || !transferJson.ContainsKey("transfer_to") ||
-                    transferJson["transfer_from"].ValueKind.Equals(JsonValueKind.Null) ||
-                    transferJson["transfer_to"].ValueKind.Equals(JsonValueKind.Null))
-                {
-                    return null; // Return null if either transfer_from or transfer_to is missing or null
-                }
+        //     try
+        //     {
+        //         // Check if TransferFrom and TransferTo are null or missing, and return null if so
+        //         if (!transferJson.ContainsKey("transfer_from") || !transferJson.ContainsKey("transfer_to") ||
+        //             transferJson["transfer_from"].ValueKind.Equals(JsonValueKind.Null) ||
+        //             transferJson["transfer_to"].ValueKind.Equals(JsonValueKind.Null))
+        //         {
+        //             return null; // Return null if either transfer_from or transfer_to is missing or null
+        //         }
 
-                returnTransferObject = new Transfer
-                {
-                    // Mapping the JSON fields to Transfer properties
-                    TransferId = transferJson["id"].GetInt32(),
-                    Reference = transferJson["reference"].GetString(),
-                    TransferFrom = transferJson["transfer_from"].GetInt32(),
-                    TransferTo = transferJson["transfer_to"].GetInt32(),
-                    TransferStatus = transferJson["transfer_status"].GetString(),
+        //         returnTransferObject = new Transfer
+        //         {
+        //             // Mapping the JSON fields to Transfer properties
+        //             TransferId = transferJson["id"].GetInt32(),
+        //             Reference = transferJson["reference"].GetString(),
+        //             TransferFrom = transferJson["transfer_from"].GetInt32(),
+        //             TransferTo = transferJson["transfer_to"].GetInt32(),
+        //             TransferStatus = transferJson["transfer_status"].GetString(),
                     
-                    // Date fields
-                    CreatedAt = DateTime.UtcNow, // Default value; will be overridden below
-                    UpdatedAt = DateTime.UtcNow // Default value; will be overridden below
-                };
-            }
-            catch (Exception e)
-            {
-                // If an error occurs while processing the transfer object, log it
-                Console.WriteLine($"Error processing Transfer ID: {transferJson["id"].GetInt32()}\n {e}");
-            }
+        //             // Date fields
+        //             CreatedAt = DateTime.UtcNow, // Default value; will be overridden below
+        //             UpdatedAt = DateTime.UtcNow // Default value; will be overridden below
+        //         };
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         // If an error occurs while processing the transfer object, log it
+        //         Console.WriteLine($"Error processing Transfer ID: {transferJson["id"].GetInt32()}\n {e}");
+        //     }
 
-            try {
-                returnTransferObject.CreatedAt = DateTime.ParseExact(transferJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
-                returnTransferObject.UpdatedAt = DateTime.ParseExact(transferJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
-            } catch (FormatException e)
-            {
-                Console.WriteLine($"Date parsing error for Transfer ID: {returnTransferObject.TransferId}\n {e}");
-            }
+        //     try {
+        //         returnTransferObject.CreatedAt = DateTime.ParseExact(transferJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+        //         returnTransferObject.UpdatedAt = DateTime.ParseExact(transferJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+        //     } catch (FormatException e)
+        //     {
+        //         Console.WriteLine($"Date parsing error for Transfer ID: {returnTransferObject.TransferId}\n {e}");
+        //     }
             
 
-            return returnTransferObject;
+        //     return returnTransferObject;
+        // }
+
+        public Transfer ReturnTransferObject(Dictionary<string, JsonElement> transferJson)
+        {
+            try
+            {
+                return new Transfer
+                {
+                    TransferId = transferJson["id"].GetInt32(),
+                    Reference = transferJson["reference"].GetString(),
+                    TransferFrom = transferJson["transfer_from"].ValueKind == JsonValueKind.Null ? null : (int?)transferJson["transfer_from"].GetInt32(),
+                    TransferTo = transferJson["transfer_to"].ValueKind == JsonValueKind.Null ? null : (int?)transferJson["transfer_to"].GetInt32(),
+                    TransferStatus = transferJson["transfer_status"].GetString(),
+                    CreatedAt = DateTime.Parse(transferJson["created_at"].GetString()),
+                    UpdatedAt = DateTime.Parse(transferJson["updated_at"].GetString())
+                };
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText("transfer_log.txt", $"{DateTime.Now}: Error converting transfer JSON: {ex.Message}\nStack Trace: {ex.StackTrace}\nTransfer JSON: {JsonSerializer.Serialize(transferJson)}{Environment.NewLine}");
+                return null;
+            }
+        }
+
+        public TransferItem ReturnTransferItemObject(JsonElement itemJson, int transferId)
+        {
+            try
+            {
+                return new TransferItem
+                {
+                    TransferId = transferId,
+                    ItemId = itemJson.GetProperty("item_id").GetString(),
+                    Amount = itemJson.GetProperty("amount").GetInt32()
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error converting transfer item JSON: {ex.Message}\nItem JSON: {itemJson}");
+                return null;
+            }
         }
 
         public (Order orderObj, List<OrderItem> orderItems) ReturnOrderObject(Dictionary<string, System.Text.Json.JsonElement> orderJson)

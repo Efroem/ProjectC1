@@ -625,13 +625,13 @@ namespace CargoHubRefactor.Migrations
                     b.Property<string>("Reference")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("TransferFrom")
+                    b.Property<int?>("TransferFrom")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("TransferStatus")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("TransferTo")
+                    b.Property<int?>("TransferTo")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -874,14 +874,12 @@ namespace CargoHubRefactor.Migrations
                     b.HasOne("Location", null)
                         .WithMany()
                         .HasForeignKey("TransferFrom")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Location", null)
                         .WithMany()
                         .HasForeignKey("TransferTo")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("TransferItem", b =>

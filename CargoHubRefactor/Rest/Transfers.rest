@@ -3,11 +3,11 @@ Content-Type: application/json
 
 {
     "reference": "TR00001",
-    "transferFrom": 1,
-    "transferTo": 2,
+    "transferFrom": 2,
+    "transferTo": 3,
     "items": [
         {
-            "itemId": "P000451",
+            "itemId": "P004279",
             "amount": 10
         }
     ]
@@ -15,13 +15,13 @@ Content-Type: application/json
 ###
 
 ### Update Transfer Status to "Completed"
-PUT http://localhost:5000/api/v1/transfers/1/status
+PUT http://localhost:5000/api/v1/transfers/7/status
 Content-Type: application/json
 
 "Completed"
 ###
 
-PUT http://localhost:5000/api/v1/transfers/6/status
+PUT http://localhost:5000/api/v1/transfers/7/status
 Content-Type: application/json
 
 "InProgress"
