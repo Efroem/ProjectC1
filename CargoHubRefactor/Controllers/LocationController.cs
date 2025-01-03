@@ -120,7 +120,7 @@ namespace CargoHubRefactor.Controllers
             {
                 return NotFound($"Location with ID: {id} not found");
             }
-            return Ok($"Location succesfully deleted");
+            return Ok($"Location with ID: {id} successfully deleted");
         }
     }
 }
