@@ -58,7 +58,7 @@ namespace CargoHubRefactor.Services
             {
                 return reportData;
             }
-            
+
             // schrijft naar een bestand toe
             WriteReportToFile(entity, fromDate, toDate, warehouseId, reportData);
 
@@ -68,7 +68,7 @@ namespace CargoHubRefactor.Services
         // de method. Is te vinden bij de volgende path: GitHub\Processing-and-Tools-Team-2\CargoHubRefactor\bin\Debug\Reports
         private void WriteReportToFile(string entity, DateTime fromDate, DateTime toDate, int? warehouseId, IEnumerable<object> reportData)
         {
-            string fileName = $"{entity}_Report_{fromDate:yyyyMMdd}_{toDate:yyyyMMdd}.txt";
+            string fileName = $"{entity}_Report_{fromDate:yyyyyMMdd}_{toDate:yyyyMMdd}_Id_{warehouseId}.txt";
             string filePath = Path.Combine(_reportDirectory, fileName);
 
             using (StreamWriter writer = new StreamWriter(filePath, false))
