@@ -285,6 +285,19 @@ namespace CargoHubRefactor.DbSetup {
             Item returnItemObject = new Item();
             string format = "yyyy-MM-dd HH:mm:ss"; // Define the expected date-time format
 
+            Random random = new Random();
+
+            double minValue = 4.0;
+            double maxValue = 6.0;
+
+            // Generate random value in the range [4, 6]
+            double randomValue = minValue + (random.NextDouble() * (maxValue - minValue));
+
+            // Round to 2 decimal places
+            randomValue = Math.Round(randomValue, 2);
+
+            Console.WriteLine(randomValue);
+
             try
             {
                 returnItemObject = new Item
@@ -300,6 +313,7 @@ namespace CargoHubRefactor.DbSetup {
                     ItemLine = itemJson["item_line"].GetInt32(),
                     ItemGroup = itemJson["item_group"].GetInt32(),
                     ItemType = itemJson["item_type"].GetInt32(),
+                    Price = randomValue,
                     UnitPurchaseQuantity = itemJson["unit_purchase_quantity"].GetInt32(),
                     UnitOrderQuantity = itemJson["unit_order_quantity"].GetInt32(),
                     PackOrderQuantity = itemJson["pack_order_quantity"].GetInt32(),
@@ -332,53 +346,6 @@ namespace CargoHubRefactor.DbSetup {
 
             return returnItemObject;
         }
-
-        // public Transfer ReturnTransferObject(Dictionary<string, System.Text.Json.JsonElement> transferJson)
-        // {
-        //     Transfer returnTransferObject = new Transfer();
-        //     string format = "yyyy-MM-ddTHH:mm:ssZ"; // Define the expected date-time format for the JSON (ISO 8601)
-
-        //     try
-        //     {
-        //         // Check if TransferFrom and TransferTo are null or missing, and return null if so
-        //         if (!transferJson.ContainsKey("transfer_from") || !transferJson.ContainsKey("transfer_to") ||
-        //             transferJson["transfer_from"].ValueKind.Equals(JsonValueKind.Null) ||
-        //             transferJson["transfer_to"].ValueKind.Equals(JsonValueKind.Null))
-        //         {
-        //             return null; // Return null if either transfer_from or transfer_to is missing or null
-        //         }
-
-        //         returnTransferObject = new Transfer
-        //         {
-        //             // Mapping the JSON fields to Transfer properties
-        //             TransferId = transferJson["id"].GetInt32(),
-        //             Reference = transferJson["reference"].GetString(),
-        //             TransferFrom = transferJson["transfer_from"].GetInt32(),
-        //             TransferTo = transferJson["transfer_to"].GetInt32(),
-        //             TransferStatus = transferJson["transfer_status"].GetString(),
-                    
-        //             // Date fields
-        //             CreatedAt = DateTime.UtcNow, // Default value; will be overridden below
-        //             UpdatedAt = DateTime.UtcNow // Default value; will be overridden below
-        //         };
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         // If an error occurs while processing the transfer object, log it
-        //         Console.WriteLine($"Error processing Transfer ID: {transferJson["id"].GetInt32()}\n {e}");
-        //     }
-
-        //     try {
-        //         returnTransferObject.CreatedAt = DateTime.ParseExact(transferJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
-        //         returnTransferObject.UpdatedAt = DateTime.ParseExact(transferJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
-        //     } catch (FormatException e)
-        //     {
-        //         Console.WriteLine($"Date parsing error for Transfer ID: {returnTransferObject.TransferId}\n {e}");
-        //     }
-            
-
-        //     return returnTransferObject;
-        // }
 
         public Transfer ReturnTransferObject(Dictionary<string, JsonElement> transferJson)
         {
