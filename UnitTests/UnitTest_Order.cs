@@ -93,6 +93,8 @@ public class UnitTest_Order
             UnitPurchaseQuantity = 1,
             UnitOrderQuantity = 1,
             PackOrderQuantity = 1,
+            Price = 4.55,
+            Weight = 6.42,
             SupplierId = 1,
             SupplierCode = "null",
             SupplierPartNumber = "null",
@@ -114,6 +116,8 @@ public class UnitTest_Order
             UnitPurchaseQuantity = 1,
             UnitOrderQuantity = 1,
             PackOrderQuantity = 1,
+            Price = 5.25,
+            Weight = 3.42,
             SupplierId = 2,
             SupplierCode = "null",
             SupplierPartNumber = "null",
@@ -206,6 +210,23 @@ public class UnitTest_Order
             UpdatedAt = DateTime.UtcNow
         });
 
+        context.OrderItems.Add(new OrderItem
+        {
+            Id = 1,
+            OrderId = 1, // This links the OrderItem to the Order with Id 1
+            ItemId = "ITEM-001", // Example ItemId, adjust as needed
+            Amount = 10 // Example quantity, adjust as needed
+        });
+
+        context.OrderItems.Add(new OrderItem
+        {
+            Id = 2,
+            OrderId = 1, // This links the OrderItem to the Order with Id 1
+            ItemId = "ITEM-001", // Example ItemId, adjust as needed
+            Amount = 15 // Example quantity, adjust as needed
+        });
+
+
         context.SaveChanges();
     }
 
@@ -224,6 +245,9 @@ public class UnitTest_Order
         var order = orderService.GetOrderAsync(orderId);
         Assert.AreEqual(exists, order.Result != null);
     }
+
+    // [TestMethod]
+    // public void 
 
     [TestMethod]
     [DataRow(0, true)]
