@@ -20,6 +20,11 @@ public class InventoryService : IInventoryService
         return inventoryList != null ? inventoryList : new List<Inventory>();
     }
 
+    public async Task<IEnumerable<Inventory>> GetInventoriesAsync(int limit)
+    {
+        return await _context.Inventories.Take(limit).ToListAsync();
+    }
+
     public async Task<Inventory?> GetInventoryByIdAsync(int id)
     {
         return await _context.Inventories.FindAsync(id);

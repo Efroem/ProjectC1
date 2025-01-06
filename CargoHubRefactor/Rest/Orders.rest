@@ -1,6 +1,6 @@
 ### Get Order by ID
-GET http://localhost:5000/api/v1/Orders/1
-
+GET http://localhost:5000/api/v1/Orders/3052
+ApiToken: E5F6G7
 ### Expected Response:
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -31,6 +31,7 @@ Content-Type: application/json
 
 ### Get All Orders
 GET http://localhost:5000/api/v1/Orders
+ApiToken: E5F6G7
 
 ### Expected Response:
 HTTP/1.1 200 OK

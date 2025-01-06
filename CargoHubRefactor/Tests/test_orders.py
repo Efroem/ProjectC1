@@ -93,7 +93,7 @@ def test_post_orders_integration(_data):
 
 
 def test_put_orders_integration(_data):
-    url = _data[0]["URL"] + 'orders/3054'
+    url = _data[0]["URL"] + 'orders/3053'
 
     original_order = requests.get(url)
     assert original_order.status_code == 200

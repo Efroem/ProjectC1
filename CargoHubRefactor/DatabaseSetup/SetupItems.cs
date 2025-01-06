@@ -191,7 +191,7 @@ namespace CargoHubRefactor.DbSetup {
             
             foreach (var clientJsonObject in clientData) {
                 if (_context.Clients.Any(x => x.ClientId == clientJsonObject["id"].GetInt32())) {
-                    continue;
+                    break;
                 }
                 Client client = objectReturns.ReturnClientObject(clientJsonObject);
                 if (client == null) continue;
@@ -242,7 +242,7 @@ namespace CargoHubRefactor.DbSetup {
                 var itemExists = _context.Items.Any(x => x.Uid == inventoryJsonObject["item_id"].GetString());
                 var inventoryExists = _context.Inventories.Any(x => x.InventoryId == inventoryJsonObject["id"].GetInt32());
                 if (inventoryExists) {
-                    continue;
+                    break;
                 }
                 if (!itemExists) {
                     continue;
@@ -427,6 +427,10 @@ namespace CargoHubRefactor.DbSetup {
             {
                 try
                 {
+                    // Check if Database already has data and if so, skip filling the database
+                    if (_context.Transfers.Any(x => x.TransferId == transferJson["id"].GetInt32())) {
+                        break;
+                    }
                     // Convert JSON to Transfer object
                     Transfer transfer = objectReturns.ReturnTransferObject(transferJson);
 
