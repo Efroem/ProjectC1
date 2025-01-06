@@ -581,6 +581,3 @@ poetry.toml
 pyrightconfig.json
 
 # Database meuk
-.db
-.db-shm
-.db-wal
