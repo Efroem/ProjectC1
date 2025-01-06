@@ -13,6 +13,7 @@ def _data():
 # Helper function to get headers with AdminApiToken
 def get_headers(admin_api_token):
     return {"ApiToken": admin_api_token}
+
 def test_get_item_groups_integration(_data):
     url = _data[0]["URL"] + 'Item_Groups'
     headers = get_headers(_data[0]["AdminApiToken"])
