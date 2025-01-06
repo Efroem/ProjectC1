@@ -134,6 +134,7 @@ def test_put_orders_integration(_data):
 
     # Restore original order
     original_put_response = requests.put(url, json=original_body, headers=headers)
+    # print (original_put_response.status_code)
     assert original_put_response.status_code == 200
 
     # Verify that the status code is 200 (OK) and the order details are correct
