@@ -98,6 +98,7 @@ def test_put_orders_integration(_data):
     original_order = requests.get(url)
     assert original_order.status_code == 200
     original_body = original_order.json()
+    print(original_body)
 
     # header = _data[1]
     body = {
