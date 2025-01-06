@@ -7,15 +7,21 @@ using System.Runtime.CompilerServices;
 using System.Reflection;
 using Models;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 namespace CargoHubRefactor.DbSetup {
     public class SetupItems
     {
         private readonly CargoHubDbContext _context;
         private readonly ResourceObjectReturns objectReturns = new ResourceObjectReturns();
+        private readonly string logFilePath = "transfer_log.txt";
         private Dictionary<int, Dictionary<string, int>> ItemAmountLocations = new Dictionary<int, Dictionary<string, int>>();
         public SetupItems(CargoHubDbContext context)
         {
             _context = context;
+        }
+        private void LogMessage(string message)
+        {
+            File.AppendAllText(logFilePath, $"{DateTime.Now}: {message}{Environment.NewLine}");
         }
         public async Task GetItemCategoryRelations()
         {
@@ -163,6 +169,7 @@ namespace CargoHubRefactor.DbSetup {
             }
             await _context.SaveChangesAsync();
 
+            List<Warehouse> Warehouses = new List<Warehouse>();
             foreach (var warehouseJsonObject in warehouseData) {
                 if (_context.Warehouses.Any(x => x.WarehouseId == warehouseJsonObject["id"].GetInt32())) {
                     break;
@@ -171,9 +178,9 @@ namespace CargoHubRefactor.DbSetup {
                 if (warehouse == null) continue;
                 // PrintAllValues(supplier);
                 try{
+                   
                     await _context.Warehouses.AddAsync(warehouse);
-                    Console.WriteLine(warehouse.Name != null ? warehouse.Name : "null");
-                    
+                    Warehouses.Add(warehouse);
 
                 } catch (Exception ex) {
                     // Console.WriteLine(ex);
@@ -184,7 +191,7 @@ namespace CargoHubRefactor.DbSetup {
             
             foreach (var clientJsonObject in clientData) {
                 if (_context.Clients.Any(x => x.ClientId == clientJsonObject["id"].GetInt32())) {
-                    continue;
+                    break;
                 }
                 Client client = objectReturns.ReturnClientObject(clientJsonObject);
                 if (client == null) continue;
@@ -198,9 +205,6 @@ namespace CargoHubRefactor.DbSetup {
 
             }
             await _context.SaveChangesAsync();
-
-
-
 
 
             foreach (var itemJsonObject in itemData) {
@@ -219,7 +223,6 @@ namespace CargoHubRefactor.DbSetup {
                 }
                 Item item = objectReturns.ReturnItemObject(itemJsonObject);
                 if (item == null) continue;
-                Console.WriteLine($"Item ID: {itemJsonObject["uid"]}ItemLine: {item.ItemLine}, ItemGroup: {item.ItemGroup}, ItemType: {item.ItemType}, SupplierId: {item.SupplierId}");
                 try{
                     await _context.Items.AddAsync(item);
                     // Console.WriteLine(supplier.Name != null ? supplier.Name : "null");
@@ -239,7 +242,7 @@ namespace CargoHubRefactor.DbSetup {
                 var itemExists = _context.Items.Any(x => x.Uid == inventoryJsonObject["item_id"].GetString());
                 var inventoryExists = _context.Inventories.Any(x => x.InventoryId == inventoryJsonObject["id"].GetInt32());
                 if (inventoryExists) {
-                    continue;
+                    break;
                 }
                 if (!itemExists) {
                     continue;
@@ -332,50 +335,177 @@ namespace CargoHubRefactor.DbSetup {
                 }
 
             }
+
             await _context.SaveChangesAsync();
 
-            // foreach (var orderJsonObject in orderData) {
-            //     if (orderJsonObject["id"].GetInt32() == 40) break;
-            //     if (_context.Orders.Any(x => x.Id == orderJsonObject["id"].GetInt32())) {
-            //         break;
-            //     }
-            //     Order order = objectReturns.ReturnOrderObject(orderJsonObject);
-            //     if (order == null) continue;
-            //     try{
-            //         await _context.Orders.AddAsync(order);
-            //         await _context.SaveChangesAsync();
+            int NextLocationId = _context.Locations.Max(l => l.LocationId) + 1;
 
-            //     } catch (Exception ex) {
-            //         PrintAllValues(order);
-            //         Console.WriteLine(ex);
-            //         break;
-            //     }
 
-            // }
-            // await _context.SaveChangesAsync();
-
-            // foreach (var transferJsonObject in transferData) {
-            //     if (_context.Transfers.Any(x => x.TransferId == transferJsonObject["id"].GetInt32())) {
-            //         break;
-            //     }
-            //     Transfer transfer = objectReturns.ReturnTransferObject(transferJsonObject);
-            //     if (transfer == null) continue;
-            //     try{
-            //         await _context.Transfers.AddAsync(transfer);
-            //         await _context.SaveChangesAsync();
-            //     } catch (Exception ex) {
-            //         PrintAllValues(transfer);
-            //         Console.WriteLine(ex);
-            //     }
-
-            // }
-            // await _context.SaveChangesAsync();
+            // ADD WAREHOUSE DOCKS TO LOCATIONS
+            if (Warehouses.Count > 0) {
+                foreach (Warehouse warehouse in Warehouses) {
+                    NextLocationId++;
+                    // await File.AppendAllTextAsync("log.txt", $"NextId: {NextLocationId}\n");
+                    Location location = new Location() {
+                        LocationId = NextLocationId,
+                        WarehouseId = warehouse.WarehouseId,
+                        Code = $"D1WH{String.Concat(Enumerable.Repeat("0", 3 - warehouse.WarehouseId.ToString().Count()))}{warehouse.WarehouseId}",
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now,
+                        Name = $"Dock 1 Warehouse{String.Concat(Enumerable.Repeat("0", 3 - warehouse.WarehouseId.ToString().Count()))}{warehouse.WarehouseId}",
+                        ItemAmounts = new Dictionary<string, int>(),
+                        ItemAmountsString = {},
+                        IsDock = true
+                    };
+                    try {
+                        await _context.Locations.AddAsync(location);
+                    } catch (Exception ex) {
+                        PrintAllValues(location);
+                        Console.WriteLine(ex);
+                    } 
+                }
+                await _context.SaveChangesAsync();
+            }
             
 
-            // Print out the counts of the dictionaries (for debugging purposes)
+
+            List<int> existingOrder = new List<int>();
+            foreach (var orderJsonObject in orderData) {
+                if (_context.Orders.Any(x => x.Id == orderJsonObject["id"].GetInt32())) {
+                    break;
+                }
+                Boolean leaveCode = false;
+                (Order orderObj, List<OrderItem> orderItems) order = objectReturns.ReturnOrderObject(orderJsonObject);
+                bool OrderExists = await _context.Orders.AnyAsync(x => x.Id == orderJsonObject["id"].GetInt32());
+                if (order.orderObj == null || order.orderItems.Count == 0) continue;
+                try{
+                    if (!OrderExists && !existingOrder.Contains(order.orderObj.Id)) {
+                        await _context.Orders.AddAsync(order.orderObj);
+                        existingOrder.Add(order.orderObj.Id);
+                        foreach (var item in order.orderItems) {
+                            try {
+                                // Check if ItemId exists in Items table
+                                if (!_context.Items.Any(x => x.Uid == item.ItemId)) {
+                                    Console.WriteLine($"Item with Uid {item.ItemId} does not exist. Skipping.");
+                                    continue; // Skip this item
+                                }
+
+                                // Check if the combination of ItemId and Amount already exists in OrderItems
+                                if (_context.OrderItems.Any(x => x.ItemId == item.ItemId && x.Amount == item.Amount)) {
+                                    Console.WriteLine($"Duplicate OrderItem found for ItemId {item.ItemId} and Amount {item.Amount}. Skipping.");
+                                    continue; // Skip duplicate entries
+                                }
+
+                                // Assign the valid OrderId before inserting
+                                item.OrderId = order.orderObj.Id; 
+
+                                // Add to context (but don’t save immediately)
+                                await _context.OrderItems.AddAsync(item);
+
+                            } catch (Exception ex) {
+                                Console.WriteLine($"Error processing item with Id {item.ItemId}: {ex.Message}");
+                                leaveCode = true;
+                                break;
+                            }
+                        }
+
+                    }
+                } catch (Exception ex) {
+                    PrintAllValues(order.orderObj);
+                    Console.WriteLine(ex);
+                    break;
+                }
+                if (leaveCode) break;
+
+            }
+            await _context.SaveChangesAsync();
+
+            var transfersToAdd = new List<Transfer>();
+            var transferItemsToAdd = new List<TransferItem>();
+
+            foreach (var transferJson in transferData)
+            {
+                try
+                {
+                    // Check if Database already has data and if so, skip filling the database
+                    if (_context.Transfers.Any(x => x.TransferId == transferJson["id"].GetInt32())) {
+                        break;
+                    }
+                    // Convert JSON to Transfer object
+                    Transfer transfer = objectReturns.ReturnTransferObject(transferJson);
+
+                    // Validate Transfer object
+                    if (transfer == null)
+                    {
+                        LogMessage($"Transfer object creation failed. Transfer JSON: {JsonSerializer.Serialize(transferJson)}");
+                        continue;
+                    }
+
+                    if (transfer.TransferId == 0)
+                    {
+                        LogMessage($"Transfer has an invalid or null ID. Transfer JSON: {JsonSerializer.Serialize(transferJson)}");
+                        continue;
+                    }
+
+                    if (_context.Transfers.Any(x => x.TransferId == transfer.TransferId))
+                    {
+                        LogMessage($"Transfer with ID {transfer.TransferId} already exists. Skipping.");
+                        continue;
+                    }
+
+                    // Add Transfer to context
+                    await _context.Transfers.AddAsync(transfer);
+                    LogMessage($"Added Transfer with ID {transfer.TransferId}");
+
+                    // Process and add TransferItems
+                    if (transferJson.ContainsKey("items") && transferJson["items"].ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (var itemJson in transferJson["items"].EnumerateArray())
+                        {
+                            try
+                            {
+                                string itemId = itemJson.GetProperty("item_id").GetString();
+                                if (!_context.Items.Any(i => i.Uid == itemId))
+                                {
+                                    LogMessage($"Item with ID {itemId} does not exist. Skipping TransferItem for TransferId: {transfer.TransferId}");
+                                    continue;
+                                }
+
+                                TransferItem transferItem = objectReturns.ReturnTransferItemObject(itemJson, transfer.TransferId);
+
+                                if (transferItem == null || _context.TransferItems.Any(x => x.TransferItemId == transferItem.TransferItemId))
+                                    continue;
+
+                                await _context.TransferItems.AddAsync(transferItem);
+                                LogMessage($"Added TransferItem: TransferId={transfer.TransferId}, ItemId={itemId}");
+                            }
+                            catch (Exception itemEx)
+                            {
+                                LogMessage($"Error processing transfer item: {itemEx.Message}\nItem JSON: {itemJson}");
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogMessage($"Error processing transfer: {ex.Message}\nTransfer JSON: {JsonSerializer.Serialize(transferJson)}");
+                }
+            }
+
+            // Save all transfers and transfer items at once
+            try
+            {
+                await _context.Transfers.AddRangeAsync(transfersToAdd);
+                await _context.TransferItems.AddRangeAsync(transferItemsToAdd);
+                await _context.SaveChangesAsync();
+                LogMessage($"Successfully saved {transfersToAdd.Count} Transfers and {transferItemsToAdd.Count} TransferItems.");
+            }
+            catch (Exception saveEx)
+            {
+                LogMessage($"Error saving transfers or transfer items: {saveEx.Message}");
+            }
 
 
-            // Return the list of dictionaries (you can modify this as needed)
             return;
         }
 

@@ -1,0 +1,142 @@
+### Get Order by ID
+GET http://localhost:5000/api/v1/Orders/3052
+ApiToken: E5F6G7
+### Expected Response:
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "id": 1,
+  "SourceId": 123,
+  "OrderDate": "2024-12-01T10:00:00Z",
+  "RequestDate": "2024-12-02T10:00:00Z",
+  "Reference": "ORD12345",
+  "ReferenceExtra": "EXTRA123",
+  "OrderStatus": "Pending",
+  "Notes": "Please ship asap",
+  "ShippingNotes": "Handle with care",
+  "PickingNotes": "Pick first priority items",
+  "WarehouseId": 2,
+  "ShipTo": 45,
+  "BillTo": 67,
+  "ShipmentId": 89,
+  "TotalAmount": 1500.00,
+  "TotalDiscount": 100.00,
+  "TotalTax": 50.00,
+  "TotalSurcharge": 10.00,
+  "UpdatedAt": "2024-12-02T10:00:00Z"
+}
+
+---
+
+### Get All Orders
+GET http://localhost:5000/api/v1/Orders
+ApiToken: E5F6G7
+
+### Expected Response:
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[
+  {
+    "id": 1,
+    "SourceId": 123,
+    "OrderDate": "2024-12-01T10:00:00Z",
+    "RequestDate": "2024-12-02T10:00:00Z",
+    "Reference": "ORD12345",
+    "ReferenceExtra": "EXTRA123",
+    "OrderStatus": "Pending",
+    "Notes": "Please ship asap",
+    "ShippingNotes": "Handle with care",
+    "PickingNotes": "Pick first priority items",
+    "WarehouseId": 2,
+    "ShipTo": 45,
+    "BillTo": 67,
+    "ShipmentId": 89,
+    "TotalAmount": 1500.00,
+    "TotalDiscount": 100.00,
+    "TotalTax": 50.00,
+    "TotalSurcharge": 10.00,
+    "UpdatedAt": "2024-12-02T10:00:00Z"
+  },
+  {
+    "id": 2,
+    "SourceId": 124,
+    "OrderDate": "2024-12-05T10:00:00Z",
+    "RequestDate": "2024-12-06T10:00:00Z",
+    "Reference": "ORD12346",
+    "ReferenceExtra": "EXTRA124",
+    "OrderStatus": "Shipped",
+    "Notes": "Expedited shipping",
+    "ShippingNotes": "Fragile item",
+    "PickingNotes": "Pick priority",
+    "WarehouseId": 3,
+    "ShipTo": 55,
+    "BillTo": 88,
+    "ShipmentId": 90,
+    "TotalAmount": 2000.00,
+    "TotalDiscount": 150.00,
+    "TotalTax": 100.00,
+    "TotalSurcharge": 20.00,
+    "UpdatedAt": "2024-12-06T10:00:00Z"
+  }
+]
+
+---
+
+### Add a New Order
+POST http://localhost:5000/api/v1/Orders
+Content-Type: application/json
+
+{
+  "SourceId": 125,
+  "OrderDate": "2024-12-10T10:00:00Z",
+  "RequestDate": "2024-12-12T10:00:00Z",
+  "Reference": "ORD12347",
+  "ReferenceExtra": "EXTRA125",
+  "OrderStatus": "Pending",
+  "Notes": "Handle with care",
+  "ShippingNotes": "No special instructions",
+  "PickingNotes": "Pick all items",
+  "WarehouseId": 4,
+  "ShipTo": 60,
+  "BillTo": 100,
+  "ShipmentId": 91,
+  "TotalAmount": 2500.00,
+  "TotalDiscount": 200.00,
+  "TotalTax": 150.00,
+  "TotalSurcharge": 30.00
+}
+###
+
+
+--
+### Update an Existing Order
+PUT http://localhost:5000/api/v1/Orders/1
+Content-Type: application/json
+
+{
+  "SourceId": 123,
+  "OrderDate": "2024-12-01T10:00:00Z",
+  "RequestDate": "2024-12-02T10:00:00Z",
+  "Reference": "ORD12345",
+  "ReferenceExtra": "EXTRA123",
+  "OrderStatus": "Shipped",
+  "Notes": "Please ship asap",
+  "ShippingNotes": "Handle with care",
+  "PickingNotes": "Pick first priority items",
+  "WarehouseId": 2,
+  "ShipTo": 45,
+  "BillTo": 67,
+  "ShipmentId": 89,
+  "TotalAmount": 1500.00,
+  "TotalDiscount": 100.00,
+  "TotalTax": 50.00,
+  "TotalSurcharge": 10.00
+}
+
+
+DELETE http://localhost:5000/api/v1/Orders/1
+####
+
+GET http://localhost:5000/api/v1/orders/1/locations

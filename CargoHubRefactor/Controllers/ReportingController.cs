@@ -26,6 +26,8 @@ namespace CargoHubRefactor.Controllers
                 return BadRequest("Entity is required.");
             if (!fromDate.HasValue || !toDate.HasValue)
                 return BadRequest("fromDate and toDate are required.");
+            if (entity.Contains("..") || entity.Contains("/") || entity.Contains("\\"))
+                return BadRequest("Invalid entity value.");
 
             try
             {

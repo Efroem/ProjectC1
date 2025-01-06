@@ -25,6 +25,24 @@ namespace CargoHubRefactor.Controllers{
             return Ok(item_groups);
         }
 
+        [HttpGet("limit/{limit}")]
+        [ServiceFilter(typeof(FloorManagerFilter))]
+        public async Task<ActionResult<IEnumerable<ItemGroup>>> GetItemGroups(int limit)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show clients with a limit below 1.");
+            }
+
+            var itemgroups = await _itemGroupService.GetItemGroupsAsync(limit);
+            if (itemgroups == null || !itemgroups.Any())
+            {
+                return NotFound("No clients found.");
+            }
+
+            return Ok(itemgroups);
+        }
+
         [HttpGet("{groupId}")]
         public async Task<ActionResult> GetItemGroupById(int groupId)
         {

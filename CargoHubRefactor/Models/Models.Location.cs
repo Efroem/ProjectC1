@@ -47,6 +47,11 @@ public class Location
             }
         }
     }
+    public double MaxWeight { get; set; } = 0;
+    public double MaxHeight { get; set; } = 0;
+    public double MaxWidth {get; set; } = 0;
+    public double MaxDepth { get; set; } = 0;
+    public Boolean IsDock { get; set; } = false;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

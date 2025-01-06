@@ -62,17 +62,24 @@ jobs:
           nohup dotnet run > output.log &
         working-directory: CargoHubRefactor
 
-      - name: Wait for ASP.NET application to start
+      - name: Wait for ASP.NET application to start (health check)
         run: |
           echo "Waiting for ASP.NET application to start..."
-          for i in {1..12}; do  # Check every 10 seconds, up to 12 times
-            if curl -s http://localhost:5000/api/v1/Clients; then
-              echo "ASP.NET application is up!"
+
+          for i in {1..120}; do  # Retry every 5 seconds, up to 20 times (10 minutes total)
+            if curl -s http://localhost:5000/api/health | grep "Healthy"; then
+              echo "ASP.NET application is healthyt!"
               break
             fi
-            echo "Waiting for ASP.NET application to be available..."
-            sleep 10
+            echo "Still waiting for ASP.NET application... (Attempt $i)"
+            sleep 5
           done
+
+          if ! curl -s http://localhost:5000/api/health | grep "Healthy"; then
+            echo "Error: ASP.NET application is not healthy!"
+            cat output.log
+            exit 1
+          fi
 
       - name: Run Python Integration Tests
         run: pytest
