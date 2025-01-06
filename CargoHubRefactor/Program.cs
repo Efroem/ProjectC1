@@ -1,4 +1,5 @@
 using CargoHubRefactor.DbSetup;
+using CargoHubRefactor.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
 using Services;
@@ -40,6 +41,7 @@ namespace CargoHubRefactor
             builder.Services.AddScoped<ILocationService, LocationService>();
             builder.Services.AddScoped<IInventoryService, InventoryService>();
             builder.Services.AddScoped<ISupplierService, SupplierService>();
+            builder.Services.AddScoped<ReportingService>();
             builder.Services.AddScoped<IShipmentService, ShipmentService>();
             builder.Services.AddScoped<SetupItems>();
             builder.Services.AddScoped<AdminFilter>();

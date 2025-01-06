@@ -3,7 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-namespace CargoHubRefactor.Controllers {
+namespace CargoHubRefactor.Controllers
+{
 
 
     [ApiController]
@@ -118,7 +119,8 @@ namespace CargoHubRefactor.Controllers {
                 order.TotalAmount,
                 order.TotalDiscount,
                 order.TotalTax,
-                order.TotalSurcharge);
+                order.TotalSurcharge,
+                order.OrderItems);
 
             return Ok(CreatedOrder);
         }
@@ -190,7 +192,7 @@ namespace CargoHubRefactor.Controllers {
                 id,
                 order.SourceId,
                 order.OrderDate,
-                order.RequestDate,  
+                order.RequestDate,
                 order.Reference,
                 order.ReferenceExtra,
                 order.OrderStatus,
@@ -225,7 +227,7 @@ namespace CargoHubRefactor.Controllers {
                 return NotFound($"Order with ID: {id} was not found");
             }
 
-            return Ok($"Succesfully removed order with ID: {id}");
+            return Ok($"Order with ID: {id} successfully deleted");
         }
 
         [HttpGet("{orderId}/locations")]
