@@ -1,94 +1,28 @@
-### GET all transfers
-GET http://localhost:5000/api/v1/transfers
-Accept: application/json
-
-###
-
-### GET a single transfer by ID
-GET http://localhost:5000/api/v1/transfers/1
-Accept: application/json
-
-###
-
-### GET a non-existent transfer (error case)
-GET http://localhost:5000/api/v1/transfers/9999
-Accept: application/json
-
-###
-
-### POST a new transfer (success case)
 POST http://localhost:5000/api/v1/transfers
 Content-Type: application/json
 
 {
-    "reference": "TR0001",
-    "transferFrom": 1,
-    "transferTo": 2,
-    "transferStatus": "In Progress"
-}
-
-###
-
-### POST a new transfer with missing required fields (error case)
-POST http://localhost:5000/api/v1/transfers
-Content-Type: application/json
-
-{
-    "reference": "",
-    "transferFrom": 1,
-    "transferTo": 2,
-    "transferStatus": "In Progress"
-}
-
-###
-
-### POST a new transfer with the same TransferFrom and TransferTo (error case)
-POST http://localhost:5000/api/v1/transfers
-Content-Type: application/json
-
-{
-    "reference": "TR0002",
-    "transferFrom": 1,
-    "transferTo": 1,
-    "transferStatus": "In Progress"
-}
-
-###
-
-### PUT (update) an existing transfer
-PUT http://localhost:5000/api/v1/transfers/1
-Content-Type: application/json
-
-{
-    "transferId": 1,
-    "reference": "TR0001-Updated",
-    "transferFrom": 1,
-    "transferTo": 2,
-    "transferStatus": "Completed"
-}
-
-###
-
-### PUT (update) a non-existent transfer (error case)
-PUT http://localhost:5000/api/v1/transfers/9999
-Content-Type: application/json
-
-{
-    "transferId": 9999,
-    "reference": "TR9999",
-    "transferFrom": 1,
+    "reference": "TR00001",
+    "transferFrom": 2,
     "transferTo": 3,
-    "transferStatus": "Completed"
+    "items": [
+        {
+            "itemId": "P004279",
+            "amount": 10
+        }
+    ]
 }
-
 ###
 
-### DELETE an existing transfer
-DELETE http://localhost:5000/api/v1/transfers/1
-Accept: application/json
+### Update Transfer Status to "Completed"
+PUT http://localhost:5000/api/v1/transfers/7/status
+Content-Type: application/json
 
+"Completed"
 ###
 
-### DELETE a non-existent transfer (error case)
-DELETE http://localhost:5000/api/v1/transfers/9999
-Accept: application/json
+PUT http://localhost:5000/api/v1/transfers/7/status
+Content-Type: application/json
+
+"InProgress"
+###
