@@ -82,7 +82,7 @@ Content-Type: application/json
 ]
 
 ---
-###
+
 ### Add a New Order
 POST http://localhost:5000/api/v1/Orders
 Content-Type: application/json
@@ -109,6 +109,7 @@ Content-Type: application/json
 ###
 
 
+--
 ### Update an Existing Order
 PUT http://localhost:5000/api/v1/Orders/1
 Content-Type: application/json
@@ -132,7 +133,6 @@ Content-Type: application/json
   "TotalTax": 50.00,
   "TotalSurcharge": 10.00
 }
-###
 
 
 DELETE http://localhost:5000/api/v1/Orders/1
