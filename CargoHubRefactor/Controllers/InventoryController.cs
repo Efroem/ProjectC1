@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace CargoHubRefactor.Controllers{
+    [ServiceFilter(typeof(Filters))]
     [Route("api/v1/Inventories")]
     [ApiController]
 
