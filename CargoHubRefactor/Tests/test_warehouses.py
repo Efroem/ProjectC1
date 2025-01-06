@@ -117,10 +117,10 @@ def test_put_warehouses_integration(_data):
     status_code = get_response.status_code
     response_data = get_response.json()
     # response_data = response.json()
+
     dummy = requests.put(url, json=dummyJson)
     # Verify that the status code is 200 (OK) and the body in this code and the response data are basically equal
     assert status_code == 200 and response_data["warehouseId"] == warehouse_id and response_data["name"] == body["name"] and response_data["address"] == body["address"]
-
 
 def test_delete_warehouses_integration(_data):
     # Make a POST reqeust first to make a dummy warehouse

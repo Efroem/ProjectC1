@@ -25,7 +25,7 @@ public class ShipmentController : ControllerBase
         var shipment = await _shipmentService.GetShipmentByIdAsync(id);
         if (shipment == null)
         {
-            return NotFound("Error: Shipment not found.");
+            return NotFound($"Shipment with ID: {id} not found.");
         }
         return Ok(shipment);
     }

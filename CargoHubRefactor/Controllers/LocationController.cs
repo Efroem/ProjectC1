@@ -14,12 +14,6 @@ namespace CargoHubRefactor.Controllers
             _locationService = locationService;
         }
 
-        private bool IsValidLocationName(string name)
-        {
-            var regex = new System.Text.RegularExpressions.Regex(@"^Row: [A-Z], Rack: \d+, Shelf: \d+$");
-            return regex.IsMatch(name);
-        }
-
         [HttpGet("{id}")]
         public async Task<IActionResult> GetLocation(int id)
         {
@@ -126,7 +120,7 @@ namespace CargoHubRefactor.Controllers
             {
                 return NotFound($"Location with ID: {id} not found");
             }
-            return Ok($"Location succesfully deleted");
+            return Ok($"Location with ID: {id} successfully deleted");
         }
     }
 }

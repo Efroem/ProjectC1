@@ -1,0 +1,55 @@
+### Get all suppliers
+GET http://localhost:5000/api/v1/suppliers
+Accept: application/json
+
+### Get a supplier by ID
+GET http://localhost:5000/api/v1/suppliers/3
+Accept: application/json
+
+### Create a new supplier
+POST http://localhost:5000/api/v1/suppliers
+Content-Type: application/json
+
+{
+  "code": "SUP123", 
+  "name": "New Supplier",
+  "address": "123 Supplier St",
+  "addressExtra": "Suite 100", 
+  "city": "Supplier City",
+  "zipcode": "12345",
+  "province": "Supplier Province",
+  "country": "Supplier Country",
+  "contactName": "John Doe",
+  "phoneNumber": "123-456-7890",
+  "reference": "REF123"
+}
+
+### Update an existing supplier
+PUT http://localhost:5000/api/v1/suppliers/2
+Content-Type: application/json
+
+{
+  "supplierId": 2,
+  "code": "SUP123",
+  "name": "Updated Supplier",
+  "address": "456 Updated St",
+  "addressExtra": "Suite 200",
+  "city": "Updated City",
+  "zipcode": "54321",
+  "province": "Updated Province",
+  "country": "Updated Country",
+  "contactName": "Jane Doe",
+  "phoneNumber": "098-765-4321",
+  "reference": "REF456",
+  "createdAt": "2024-01-01T00:00:00Z",
+  "updatedAt": "2024-11-19T21:05:11Z"
+}
+
+
+### Delete a supplier
+DELETE http://localhost:5000/api/v1/suppliers/2
+Accept: application/json
+
+
+### Delete all suppliers
+DELETE http://localhost:5000/api/v1/suppliers/deleteAll
