@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-namespace CargoHubRefactor.Controllers{
-
+namespace CargoHubRefactor.Controllers
+{   
+    [ServiceFilter(typeof(Filters))]
     [Route("api/v1/warehouses")]
     [ApiController]
     public class WarehouseController : ControllerBase
@@ -26,7 +27,7 @@ namespace CargoHubRefactor.Controllers{
             var warehouse = await _warehouseService.GetWarehouseByIdAsync(id);
             if (warehouse == null)
             {
-                return NotFound("Error: Warehouse not found.");
+                return NotFound("No warehouses found.");
             }
             return Ok(warehouse);
         }
@@ -52,7 +53,7 @@ namespace CargoHubRefactor.Controllers{
             }
             if (result.ReturnedWarehouse != null) return Ok(result.ReturnedWarehouse);
             return BadRequest("Invalid Warehouse added");
-            
+
         }
 
         [HttpDelete("{id}")]

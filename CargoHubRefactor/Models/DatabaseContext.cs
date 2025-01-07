@@ -82,33 +82,35 @@ public class CargoHubDbContext : DbContext
             .HasForeignKey(i => i.ItemGroup)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Transfer - Warehouses (Many-to-One for TransferFrom and TransferTo)
         modelBuilder.Entity<Transfer>()
-            .HasOne(t => t.FromWarehouse)
-            .WithMany()
-            .HasForeignKey(t => t.TransferFrom)
-            .IsRequired(false)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<Transfer>()
-            .HasOne(t => t.ToWarehouse)
-            .WithMany()
-            .HasForeignKey(t => t.TransferTo)
-            .IsRequired(false)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        // TransferItem - Transfer (Many-to-One)
-        modelBuilder.Entity<TransferItem>()
-            .HasOne(ti => ti.Transfer)
-            .WithMany()
+            .HasMany(t => t.Items)
+            .WithOne(ti => ti.Transfer)
             .HasForeignKey(ti => ti.TransferId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // TransferItem - Item (Many-to-One)
         modelBuilder.Entity<TransferItem>()
             .HasOne(ti => ti.Item)
             .WithMany()
             .HasForeignKey(ti => ti.ItemId)
+            .HasPrincipalKey(i => i.Uid)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TransferItem>()
+        .HasOne(ti => ti.Transfer)
+        .WithMany(t => t.Items)
+        .HasForeignKey(ti => ti.TransferId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Transfer>()
+            .HasOne<Location>()
+            .WithMany()
+            .HasForeignKey(t => t.TransferFrom)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Transfer>()
+            .HasOne<Location>()
+            .WithMany()
+            .HasForeignKey(t => t.TransferTo)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Shipment - Warehouse (Many-to-One)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 public class ClientService : IClientService
@@ -12,29 +13,29 @@ public class ClientService : IClientService
         _context = context;
     }
 
-    public IEnumerable<Client> GetClients(int limit)
+    public async Task<IEnumerable<Client>> GetClientsAsync(int limit)
     {
-        return _context.Clients.Take(limit).ToList();
+        return await _context.Clients.Take(limit).ToListAsync();
     }
 
-    public IEnumerable<Client> GetClients()
+    public async Task<IEnumerable<Client>> GetClientsAsync()
     {
-        return _context.Clients.ToList(); 
+        return await _context.Clients.ToListAsync();
     }
 
-    public Client GetClient(int id)
+    public async Task<Client> GetClientAsync(int id)
     {
-        return _context.Clients.FirstOrDefault(x => x.ClientId == id);
+        return await _context.Clients.FirstOrDefaultAsync(x => x.ClientId == id);
     }
 
-    public Client AddClient(string name, string address, string city, string zipCode, string province, string country,
-                        string contactName, string contactPhone, string contactEmail)
+    public async Task<Client> AddClientAsync(string name, string address, string city, string zipCode, string province,
+                                             string country, string contactName, string contactPhone, string contactEmail)
     {
         int nextId;
 
-        if (_context.Clients.Any())
+        if (await _context.Clients.AnyAsync())
         {
-            nextId = _context.Clients.Max(c => c.ClientId) + 1;
+            nextId = await _context.Clients.MaxAsync(c => c.ClientId) + 1;
         }
         else
         {
@@ -57,17 +58,17 @@ public class ClientService : IClientService
             UpdatedAt = DateTime.Now
         };
 
-        _context.Clients.Add(client);
-        _context.SaveChanges();
+        await _context.Clients.AddAsync(client);
+        await _context.SaveChangesAsync();
 
         return client;
     }
 
-
-    public Client UpdateClient(int id, string name, string address, string city, string zipCode, string province, string country,
-                               string contactName, string contactPhone, string contactEmail)
+    public async Task<Client> UpdateClientAsync(int id, string name, string address, string city, string zipCode, 
+                                                string province, string country, string contactName, 
+                                                string contactPhone, string contactEmail)
     {
-        var client = _context.Clients.FirstOrDefault(c => c.ClientId == id);
+        var client = await _context.Clients.FirstOrDefaultAsync(c => c.ClientId == id);
         if (client == null)
         {
             throw new KeyNotFoundException($"Client with ID {id} not found.");
@@ -85,21 +86,21 @@ public class ClientService : IClientService
         client.UpdatedAt = DateTime.Now;
 
         _context.Clients.Update(client);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         return client;
     }
 
-    public bool DeleteClient(int id)
+    public async Task<bool> DeleteClientAsync(int id)
     {
-        var client = _context.Clients.FirstOrDefault(c => c.ClientId == id);
+        var client = await _context.Clients.FirstOrDefaultAsync(c => c.ClientId == id);
         if (client == null)
         {
             return false;
         }
 
         _context.Clients.Remove(client);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         return true;
     }

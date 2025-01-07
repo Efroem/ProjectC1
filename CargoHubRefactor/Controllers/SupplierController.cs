@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CargoHubRefactor.Controllers
 {
+    [ServiceFilter(typeof(Filters))]
     [Route("api/v1/suppliers")]
     [ApiController]
     public class SupplierController : ControllerBase
@@ -29,8 +30,9 @@ namespace CargoHubRefactor.Controllers
         {
             var supplier = await _supplierService.GetSupplierByIdAsync(id);
             if (supplier == null)
-                return NotFound();
-
+            {
+                return NotFound($"Supplier with ID: {id} not found.");
+            }
             return Ok(supplier);
         }
 
@@ -71,9 +73,11 @@ namespace CargoHubRefactor.Controllers
         {
             var deleted = await _supplierService.DeleteSupplierAsync(id);
             if (!deleted)
-                return NotFound();
+            {
+                return NotFound($"Supplier with ID: {id} not found.");
 
-            return Ok($"{id} ID deleted succesfully");
+            }
+            return Ok($"Supplier with ID: {id} successfully deleted");
         }
 
         [HttpDelete("deleteAll")]

@@ -13,10 +13,15 @@ namespace CargoHubRefactor.DbSetup {
     {
         private readonly CargoHubDbContext _context;
         private readonly ResourceObjectReturns objectReturns = new ResourceObjectReturns();
+        private readonly string logFilePath = "transfer_log.txt";
         private Dictionary<int, Dictionary<string, int>> ItemAmountLocations = new Dictionary<int, Dictionary<string, int>>();
         public SetupItems(CargoHubDbContext context)
         {
             _context = context;
+        }
+        private void LogMessage(string message)
+        {
+            File.AppendAllText(logFilePath, $"{DateTime.Now}: {message}{Environment.NewLine}");
         }
         public async Task GetItemCategoryRelations()
         {
@@ -186,7 +191,7 @@ namespace CargoHubRefactor.DbSetup {
             
             foreach (var clientJsonObject in clientData) {
                 if (_context.Clients.Any(x => x.ClientId == clientJsonObject["id"].GetInt32())) {
-                    continue;
+                    break;
                 }
                 Client client = objectReturns.ReturnClientObject(clientJsonObject);
                 if (client == null) continue;
@@ -237,7 +242,7 @@ namespace CargoHubRefactor.DbSetup {
                 var itemExists = _context.Items.Any(x => x.Uid == inventoryJsonObject["item_id"].GetString());
                 var inventoryExists = _context.Inventories.Any(x => x.InventoryId == inventoryJsonObject["id"].GetInt32());
                 if (inventoryExists) {
-                    continue;
+                    break;
                 }
                 if (!itemExists) {
                     continue;
@@ -415,28 +420,92 @@ namespace CargoHubRefactor.DbSetup {
             }
             await _context.SaveChangesAsync();
 
-            // foreach (var transferJsonObject in transferData) {
-            //     if (_context.Transfers.Any(x => x.TransferId == transferJsonObject["id"].GetInt32())) {
-            //         break;
-            //     }
-            //     Transfer transfer = objectReturns.ReturnTransferObject(transferJsonObject);
-            //     if (transfer == null) continue;
-            //     try{
-            //         await _context.Transfers.AddAsync(transfer);
-            //         await _context.SaveChangesAsync();
-            //     } catch (Exception ex) {
-            //         PrintAllValues(transfer);
-            //         Console.WriteLine(ex);
-            //     }
+            var transfersToAdd = new List<Transfer>();
+            var transferItemsToAdd = new List<TransferItem>();
 
-            // }
-            // await _context.SaveChangesAsync();
-            
+            foreach (var transferJson in transferData)
+            {
+                try
+                {
+                    // Check if Database already has data and if so, skip filling the database
+                    if (_context.Transfers.Any(x => x.TransferId == transferJson["id"].GetInt32())) {
+                        break;
+                    }
+                    // Convert JSON to Transfer object
+                    Transfer transfer = objectReturns.ReturnTransferObject(transferJson);
 
-            // Print out the counts of the dictionaries (for debugging purposes)
+                    // Validate Transfer object
+                    if (transfer == null)
+                    {
+                        LogMessage($"Transfer object creation failed. Transfer JSON: {JsonSerializer.Serialize(transferJson)}");
+                        continue;
+                    }
+
+                    if (transfer.TransferId == 0)
+                    {
+                        LogMessage($"Transfer has an invalid or null ID. Transfer JSON: {JsonSerializer.Serialize(transferJson)}");
+                        continue;
+                    }
+
+                    if (_context.Transfers.Any(x => x.TransferId == transfer.TransferId))
+                    {
+                        LogMessage($"Transfer with ID {transfer.TransferId} already exists. Skipping.");
+                        continue;
+                    }
+
+                    // Add Transfer to context
+                    await _context.Transfers.AddAsync(transfer);
+                    LogMessage($"Added Transfer with ID {transfer.TransferId}");
+
+                    // Process and add TransferItems
+                    if (transferJson.ContainsKey("items") && transferJson["items"].ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (var itemJson in transferJson["items"].EnumerateArray())
+                        {
+                            try
+                            {
+                                string itemId = itemJson.GetProperty("item_id").GetString();
+                                if (!_context.Items.Any(i => i.Uid == itemId))
+                                {
+                                    LogMessage($"Item with ID {itemId} does not exist. Skipping TransferItem for TransferId: {transfer.TransferId}");
+                                    continue;
+                                }
+
+                                TransferItem transferItem = objectReturns.ReturnTransferItemObject(itemJson, transfer.TransferId);
+
+                                if (transferItem == null || _context.TransferItems.Any(x => x.TransferItemId == transferItem.TransferItemId))
+                                    continue;
+
+                                await _context.TransferItems.AddAsync(transferItem);
+                                LogMessage($"Added TransferItem: TransferId={transfer.TransferId}, ItemId={itemId}");
+                            }
+                            catch (Exception itemEx)
+                            {
+                                LogMessage($"Error processing transfer item: {itemEx.Message}\nItem JSON: {itemJson}");
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogMessage($"Error processing transfer: {ex.Message}\nTransfer JSON: {JsonSerializer.Serialize(transferJson)}");
+                }
+            }
+
+            // Save all transfers and transfer items at once
+            try
+            {
+                await _context.Transfers.AddRangeAsync(transfersToAdd);
+                await _context.TransferItems.AddRangeAsync(transferItemsToAdd);
+                await _context.SaveChangesAsync();
+                LogMessage($"Successfully saved {transfersToAdd.Count} Transfers and {transferItemsToAdd.Count} TransferItems.");
+            }
+            catch (Exception saveEx)
+            {
+                LogMessage($"Error saving transfers or transfer items: {saveEx.Message}");
+            }
 
 
-            // Return the list of dictionaries (you can modify this as needed)
             return;
         }
 

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 public class OrderService : IOrderService
 {
@@ -13,7 +15,7 @@ public class OrderService : IOrderService
         _context = context;
     }
 
-    public async Task<Order> GetOrderAsync(int orderId)
+    public async Task<Order?> GetOrderAsync(int orderId)
     {
         return await _context.Orders.FirstOrDefaultAsync(l => l.Id == orderId);
     }
@@ -23,11 +25,41 @@ public class OrderService : IOrderService
         return await _context.Orders.ToListAsync();
     }
 
+    public async Task<double> GetOrderPriceTotalAsync(int id) {
+        List<OrderItem> orderItems = await _context.OrderItems.Where(o => o.OrderId == id).ToListAsync();
+        if (orderItems.IsNullOrEmpty()) return -1;
+
+        double totalPrice = 0;
+
+        foreach (var orderItem in orderItems) {
+            var item = await _context.Items.FirstOrDefaultAsync(o => o.Uid == orderItem.ItemId);
+            if (item == null) continue;
+            double price = item.Price;
+            totalPrice += price;
+        }
+        return totalPrice;
+    }
+
+    public async Task<double> GetOrderWeightTotalAsync(int id) {
+        List<OrderItem> orderItems = await _context.OrderItems.Where(o => o.OrderId == id).ToListAsync();
+        if (orderItems.IsNullOrEmpty()) return -1;
+
+        double totalWeight = 0;
+
+        foreach (var orderItem in orderItems) {
+            var item = await _context.Items.FirstOrDefaultAsync(o => o.Uid == orderItem.ItemId);
+            if (item == null) continue;
+            double weight = item.Weight * orderItem.Amount;
+            totalWeight += weight;
+        }
+        return totalWeight;
+    }
+
     public async Task<Order> AddOrderAsync(int? sourceId, DateTime orderDate, DateTime requestDate, string reference,
                                            string referenceExtra, string orderStatus, string notes,
                                            string shippingNotes, string pickingNotes, int warehouseId,
                                            int? shipTo, int? billTo, int? shipmentId, double totalAmount,
-                                           double totalDiscount, double totalTax, double totalSurcharge)
+                                           double totalDiscount, double totalTax, double totalSurcharge, List<OrderItem> orderItems)
     {
         int nextId;
 
@@ -62,8 +94,33 @@ public class OrderService : IOrderService
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
-
         _context.Orders.Add(order);
+        int nextOrderItemId;
+        if (_context.OrderItems.Any())
+        {
+            nextOrderItemId = _context.OrderItems.Max(l => l.Id) + 1;
+        }
+        else
+        {
+            nextOrderItemId = 1;
+        }
+        foreach (OrderItem Item in orderItems) {
+            Item? dummyItem = await _context.Items.FirstOrDefaultAsync(l => l.Uid == Item.ItemId);
+            if (dummyItem == null) continue;
+
+            var orderItem = new OrderItem{
+                Id = nextOrderItemId,
+                OrderId = nextId,
+                ItemId = Item.ItemId,
+                Amount = Item.Amount
+            };
+
+            nextOrderItemId++;
+            
+            await _context.OrderItems.AddAsync(orderItem);
+        }
+
+        
         await _context.SaveChangesAsync();
 
         return order;
