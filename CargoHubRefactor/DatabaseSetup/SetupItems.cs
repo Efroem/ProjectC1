@@ -14,16 +14,12 @@ namespace CargoHubRefactor.DbSetup {
     {
         private readonly CargoHubDbContext _context;
         private readonly ResourceObjectReturns objectReturns = new ResourceObjectReturns();
-        private readonly string logFilePath = "transfer_log.txt";
         private Dictionary<int, Dictionary<string, int>> ItemAmountLocations = new Dictionary<int, Dictionary<string, int>>();
         public SetupItems(CargoHubDbContext context)
         {
             _context = context;
         }
-        private void LogMessage(string message)
-        {
-            File.AppendAllText(logFilePath, $"{DateTime.Now}: {message}{Environment.NewLine}");
-        }
+ 
         public async Task GetItemCategoryRelations()
         {
             List<Dictionary<int, List<int>>> ItemRelationsLists = new List<Dictionary<int, List<int>>>();
@@ -438,25 +434,21 @@ namespace CargoHubRefactor.DbSetup {
                     // Validate Transfer object
                     if (transfer == null)
                     {
-                        LogMessage($"Transfer object creation failed. Transfer JSON: {JsonSerializer.Serialize(transferJson)}");
                         continue;
                     }
 
                     if (transfer.TransferId == 0)
                     {
-                        LogMessage($"Transfer has an invalid or null ID. Transfer JSON: {JsonSerializer.Serialize(transferJson)}");
                         continue;
                     }
 
                     if (_context.Transfers.Any(x => x.TransferId == transfer.TransferId))
                     {
-                        LogMessage($"Transfer with ID {transfer.TransferId} already exists. Skipping.");
                         continue;
                     }
 
                     // Add Transfer to context
                     await _context.Transfers.AddAsync(transfer);
-                    LogMessage($"Added Transfer with ID {transfer.TransferId}");
 
                     // Process and add TransferItems
                     if (transferJson.ContainsKey("items") && transferJson["items"].ValueKind == JsonValueKind.Array)
@@ -468,7 +460,6 @@ namespace CargoHubRefactor.DbSetup {
                                 string itemId = itemJson.GetProperty("item_id").GetString();
                                 if (!_context.Items.Any(i => i.Uid == itemId))
                                 {
-                                    LogMessage($"Item with ID {itemId} does not exist. Skipping TransferItem for TransferId: {transfer.TransferId}");
                                     continue;
                                 }
 
@@ -488,7 +479,6 @@ namespace CargoHubRefactor.DbSetup {
                 }
                 catch (Exception ex)
                 {
-                    LogMessage($"Error processing transfer: {ex.Message}\nTransfer JSON: {JsonSerializer.Serialize(transferJson)}");
                 }
             }
 
@@ -498,11 +488,9 @@ namespace CargoHubRefactor.DbSetup {
                 await _context.Transfers.AddRangeAsync(transfersToAdd);
                 await _context.TransferItems.AddRangeAsync(transferItemsToAdd);
                 await _context.SaveChangesAsync();
-                LogMessage($"Successfully saved {transfersToAdd.Count} Transfers and {transferItemsToAdd.Count} TransferItems.");
             }
             catch (Exception saveEx)
             {
-                LogMessage($"Error saving transfers or transfer items: {saveEx.Message}");
             }
 
 
