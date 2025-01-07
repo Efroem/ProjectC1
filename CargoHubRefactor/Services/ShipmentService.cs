@@ -43,7 +43,7 @@ public class ShipmentService : IShipmentService
         _context.Shipments.Add(shipment);
         await _context.SaveChangesAsync();
 
-        // Update ShipmentId in the Orders table for each OrderId
+        // Update ShipmentId in the Orders table for each OrderId and create ShipmentItems
         foreach (var orderId in shipment.OrderIdsList)
         {
             if (int.TryParse(orderId, out int parsedOrderId)) // Convert string to int
@@ -52,12 +52,28 @@ public class ShipmentService : IShipmentService
                 if (order != null)
                 {
                     order.ShipmentId = shipment.ShipmentId; // Update ShipmentId in the Orders table
+
+                    // Fetch OrderItems for this OrderId
+                    var orderItems = await _context.OrderItems
+                                                   .Where(oi => oi.OrderId == parsedOrderId)
+                                                   .ToListAsync();
+
+                    // Create ShipmentItems
+                    foreach (var orderItem in orderItems)
+                    {
+                        var shipmentItem = new ShipmentItem
+                        {
+                            ShipmentId = shipment.ShipmentId,
+                            ItemId = orderItem.ItemId,
+                            Amount = orderItem.Amount
+                        };
+                        _context.ShipmentItems.Add(shipmentItem);
+                    }
                 }
             }
         }
 
         await _context.SaveChangesAsync();
-
 
         return ("Shipment successfully created.", shipment);
     }
