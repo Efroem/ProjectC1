@@ -107,19 +107,40 @@ public class ShipmentService : IShipmentService
         // Ensure the shipment entity is updated
         _context.Shipments.Update(existingShipment);
 
-        // Update ShipmentId in the Orders table for each OrderId
+        // Remove existing ShipmentItems for this shipment
+        var existingShipmentItems = _context.ShipmentItems.Where(si => si.ShipmentId == id);
+        _context.ShipmentItems.RemoveRange(existingShipmentItems);
+
+        // Update ShipmentId in the Orders table for each OrderId and repopulate ShipmentItems
         foreach (var orderId in shipment.OrderIdsList)
         {
-            // Directly parse the orderId to an integer
             int parsedOrderId = int.Parse(orderId);
 
             var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == parsedOrderId);
             if (order != null)
             {
                 order.ShipmentId = existingShipment.ShipmentId; // Update ShipmentId in the Orders table
-                _context.Orders.Update(order); // Ensure EF Core tracks the update
+                _context.Orders.Update(order);
+
+                // Fetch OrderItems for this OrderId
+                var orderItems = await _context.OrderItems
+                                               .Where(oi => oi.OrderId == parsedOrderId)
+                                               .ToListAsync();
+
+                // Create new ShipmentItems
+                foreach (var orderItem in orderItems)
+                {
+                    var shipmentItem = new ShipmentItem
+                    {
+                        ShipmentId = existingShipment.ShipmentId,
+                        ItemId = orderItem.ItemId,
+                        Amount = orderItem.Amount
+                    };
+                    _context.ShipmentItems.Add(shipmentItem);
+                }
             }
         }
+
         await _context.SaveChangesAsync();
 
         return "Shipment successfully updated.";
