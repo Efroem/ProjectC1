@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 namespace CargoHubRefactor.Controllers
 {
+    [ServiceFilter(typeof(Filters))]
     [Route("api/v1/Locations")]
     public class LocationController : ControllerBase
     {
@@ -12,12 +13,6 @@ namespace CargoHubRefactor.Controllers
         public LocationController(ILocationService locationService)
         {
             _locationService = locationService;
-        }
-
-        private bool IsValidLocationName(string name)
-        {
-            var regex = new System.Text.RegularExpressions.Regex(@"^Row: [A-Z], Rack: \d+, Shelf: \d+$");
-            return regex.IsMatch(name);
         }
 
         [HttpGet("{id}")]
@@ -126,7 +121,7 @@ namespace CargoHubRefactor.Controllers
             {
                 return NotFound($"Location with ID: {id} not found");
             }
-            return Ok($"Location succesfully deleted");
+            return Ok($"Location with ID: {id} successfully deleted");
         }
     }
 }

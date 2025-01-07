@@ -3,9 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-namespace CargoHubRefactor.Controllers {
+namespace CargoHubRefactor.Controllers
+{
 
-
+    [ServiceFilter(typeof(Filters))]
     [ApiController]
     [Route("api/v1/Orders")]
     public class OrdersController : ControllerBase
@@ -39,6 +40,26 @@ namespace CargoHubRefactor.Controllers {
             return Ok(orders);
         }
 
+        [HttpGet("{id}/TotalPrice")]
+        public async Task<IActionResult> GetOrderPriceTotal(int id) 
+        {
+            var totalPrice = await _orderService.GetOrderPriceTotalAsync(id);
+            if (totalPrice <= 0) {
+                return BadRequest("Error: Order does not exist or Order contains invalid prices");
+            }
+            return Ok($"Total Price for Order {id}: €\n{totalPrice:F2}");
+        }
+
+        [HttpGet("{id}/TotalWeight")]
+        public async Task<IActionResult> GetOrderWeightTotal(int id) 
+        {
+            var totalWeight = await _orderService.GetOrderWeightTotalAsync(id);
+            if (totalWeight <= 0) {
+                return BadRequest("Error: Order does not exist or Order contains invalid weights");
+            }
+            return Ok($"Total Weight for Order {id}:  \n{totalWeight:F2} KG");
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddOrder([FromBody] Order order)
         {
@@ -67,12 +88,12 @@ namespace CargoHubRefactor.Controllers {
                 return BadRequest("WarehouseId must be a valid positive integer");
             }
 
-            if (order.ShipTo <= 0)
+            if (order.ShipTo < 0)
             {
                 return BadRequest("ShipTo must be a valid positive integer");
             }
 
-            if (order.BillTo <= 0)
+            if (order.BillTo < 0)
             {
                 return BadRequest("BillTo must be a valid positive integer");
             }
@@ -118,7 +139,8 @@ namespace CargoHubRefactor.Controllers {
                 order.TotalAmount,
                 order.TotalDiscount,
                 order.TotalTax,
-                order.TotalSurcharge);
+                order.TotalSurcharge,
+                order.OrderItems);
 
             return Ok(CreatedOrder);
         }
@@ -190,7 +212,7 @@ namespace CargoHubRefactor.Controllers {
                 id,
                 order.SourceId,
                 order.OrderDate,
-                order.RequestDate,  
+                order.RequestDate,
                 order.Reference,
                 order.ReferenceExtra,
                 order.OrderStatus,
@@ -225,7 +247,7 @@ namespace CargoHubRefactor.Controllers {
                 return NotFound($"Order with ID: {id} was not found");
             }
 
-            return Ok($"Succesfully removed order with ID: {id}");
+            return Ok($"Order with ID: {id} successfully deleted");
         }
 
         [HttpGet("{orderId}/locations")]

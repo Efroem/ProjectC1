@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 namespace CargoHubRefactor.Controllers{
+    [ServiceFilter(typeof(Filters))]
     [Route("api/v1/Item_Groups")]
     [ApiController]
     public class ItemGroupController : ControllerBase
@@ -23,6 +24,23 @@ namespace CargoHubRefactor.Controllers{
             }
 
             return Ok(item_groups);
+        }
+
+        [HttpGet("limit/{limit}")]
+        public async Task<ActionResult<IEnumerable<ItemGroup>>> GetItemGroups(int limit)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show clients with a limit below 1.");
+            }
+
+            var itemgroups = await _itemGroupService.GetItemGroupsAsync(limit);
+            if (itemgroups == null || !itemgroups.Any())
+            {
+                return NotFound("No clients found.");
+            }
+
+            return Ok(itemgroups);
         }
 
         [HttpGet("{groupId}")]

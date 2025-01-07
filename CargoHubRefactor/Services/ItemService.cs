@@ -19,6 +19,11 @@ public class ItemService : IItemService
         return await _context.Items.ToListAsync();
     }
 
+    public async Task<IEnumerable<Item>> GetItemsAsync(int limit)
+    {
+        return await _context.Items.Take(limit).ToListAsync();
+    }
+
     public async Task<Item?> GetItemByIdAsync(string uid)
     {
         return await _context.Items.FindAsync(uid);

@@ -25,6 +25,23 @@ namespace CargoHubRefactor.Controllers{
             return Ok(item_lines);
         }
 
+        [HttpGet("limit/{limit}")]
+        public async Task<ActionResult<IEnumerable<Inventory>>> GetInventories(int limit)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show clients with a limit below 1.");
+            }
+
+            var itemlines = await _itemLineService.GetItemLinesAsync(limit);
+            if (itemlines == null || !itemlines.Any())
+            {
+                return NotFound("No clients found.");
+            }
+
+            return Ok(itemlines);
+        }
+
         [HttpGet("{lineId}")]
         public async Task<ActionResult> GetItemLineById(int lineId)
         {
