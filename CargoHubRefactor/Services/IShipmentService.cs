@@ -8,4 +8,7 @@ public interface IShipmentService
     Task<(string message, Shipment? shipment)> AddShipmentAsync(Shipment shipment);
     Task<string> UpdateShipmentAsync(int id, Shipment shipment);
     Task<string> DeleteShipmentAsync(int id);
+
+    // New method to get items in a shipment
+    Task<List<ShipmentItem>> GetShipmentItemsAsync(int shipmentId);
 }

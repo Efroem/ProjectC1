@@ -52,6 +52,20 @@ public class ShipmentController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("{id}/items")]
+    public async Task<ActionResult<List<ShipmentItem>>> GetShipmentItems(int id)
+    {
+        var shipmentItems = await _shipmentService.GetShipmentItemsAsync(id);
+
+        if (shipmentItems == null || shipmentItems.Count == 0)
+        {
+            return NotFound("No items found for the given shipment.");
+        }
+
+        return Ok(shipmentItems);
+    }
+
+
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteShipment(int id)
     {

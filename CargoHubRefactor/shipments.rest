@@ -83,6 +83,10 @@ Content-Type: application/json
 }
 
 ###
+GET /api/v1/shipments/1/items
+Content-Type: application/json
+
+###
 
 # Verwijdert een shipment
 DELETE http://localhost:5000/api/v1/shipments/10104

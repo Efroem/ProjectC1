@@ -145,6 +145,16 @@ public class ShipmentService : IShipmentService
 
         return "Shipment successfully updated.";
     }
+    public async Task<List<ShipmentItem>> GetShipmentItemsAsync(int shipmentId)
+    {
+        // Fetch the items related to the shipment
+        var shipmentItems = await _context.ShipmentItems
+                                           .Where(si => si.ShipmentId == shipmentId)
+                                           .ToListAsync();
+
+        return shipmentItems;
+    }
+
 
     public async Task<string> DeleteShipmentAsync(int id)
     {
