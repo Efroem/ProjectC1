@@ -221,12 +221,11 @@ var assemblies = [
   {
     "name": "CargoHubRefactor",
     "classes": [
-      { "name": "AdminFilter", "rp": "CargoHubRefactor_AdminFilter.html", "cl": 0, "ucl": 27, "cal": 27, "tl": 44, "cb": 0, "tb": 6, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "CargoHubDbContext", "rp": "CargoHubRefactor_CargoHubDbContext.html", "cl": 114, "ucl": 0, "cal": 114, "tl": 167, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "CargoHubRefactor.Services.ReportingService", "rp": "CargoHubRefactor_ReportingService.html", "cl": 38, "ucl": 15, "cal": 53, "tl": 95, "cb": 10, "tb": 14, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Client", "rp": "CargoHubRefactor_Client.html", "cl": 12, "ucl": 0, "cal": 12, "tl": 17, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "ClientService", "rp": "CargoHubRefactor_ClientService.html", "cl": 62, "ucl": 6, "cal": 68, "tl": 107, "cb": 5, "tb": 6, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "FloorManagerFilter", "rp": "CargoHubRefactor_FloorManagerFilter.html", "cl": 0, "ucl": 35, "cal": 35, "tl": 55, "cb": 0, "tb": 6, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Filters", "rp": "CargoHubRefactor_Filters.html", "cl": 0, "ucl": 53, "cal": 53, "tl": 71, "cb": 0, "tb": 16, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Inventory", "rp": "CargoHubRefactor_Inventory.html", "cl": 21, "ucl": 10, "cal": 31, "tl": 58, "cb": 3, "tb": 4, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "InventoryService", "rp": "CargoHubRefactor_InventoryService.html", "cl": 106, "ucl": 21, "cal": 127, "tl": 196, "cb": 51, "tb": 70, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Item", "rp": "CargoHubRefactor_Item.html", "cl": 28, "ucl": 0, "cal": 28, "tl": 39, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
@@ -251,9 +250,9 @@ var assemblies = [
       { "name": "Transfer", "rp": "CargoHubRefactor_Transfer.html", "cl": 0, "ucl": 8, "cal": 8, "tl": 11, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "TransferItem", "rp": "CargoHubRefactor_TransferItem.html", "cl": 0, "ucl": 6, "cal": 6, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "TransferService", "rp": "CargoHubRefactor_TransferService.html", "cl": 0, "ucl": 112, "cal": 112, "tl": 172, "cb": 0, "tb": 48, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Warehouse", "rp": "CargoHubRefactor_Warehouse.html", "cl": 15, "ucl": 17, "cal": 32, "tl": 53, "cb": 0, "tb": 4, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "WarehouseDto", "rp": "CargoHubRefactor_WarehouseDto.html", "cl": 0, "ucl": 12, "cal": 12, "tl": 15, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "WarehouseService", "rp": "CargoHubRefactor_WarehouseService.html", "cl": 0, "ucl": 112, "cal": 112, "tl": 153, "cb": 0, "tb": 50, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Warehouse", "rp": "CargoHubRefactor_Warehouse.html", "cl": 15, "ucl": 12, "cal": 27, "tl": 43, "cb": 0, "tb": 4, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "WarehouseDto", "rp": "CargoHubRefactor_WarehouseDto.html", "cl": 11, "ucl": 2, "cal": 13, "tl": 16, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "WarehouseService", "rp": "CargoHubRefactor_WarehouseService.html", "cl": 94, "ucl": 3, "cal": 97, "tl": 140, "cb": 16, "tb": 18, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
     ]},
 ];
 
@@ -268,22 +267,16 @@ var riskHotspotMetrics = [
 
 var riskHotspots = [
   {
-    "assembly": "CargoHubRefactor", "class": "WarehouseService", "reportPath": "CargoHubRefactor_WarehouseService.html", "methodName": "AddWarehouseAsync()", "methodShortName": "AddWarehouseAsync()", "fileIndex": 0, "line": 27,
-    "metrics": [
-      { "value": 600, "exceeded": true },
-      { "value": 24, "exceeded": true },
-    ]},
-  {
-    "assembly": "CargoHubRefactor", "class": "WarehouseService", "reportPath": "CargoHubRefactor_WarehouseService.html", "methodName": "UpdateWarehouseAsync()", "methodShortName": "UpdateWarehouseAsync()", "fileIndex": 0, "line": 90,
-    "metrics": [
-      { "value": 600, "exceeded": true },
-      { "value": 24, "exceeded": true },
-    ]},
-  {
     "assembly": "CargoHubRefactor", "class": "TransferService", "reportPath": "CargoHubRefactor_TransferService.html", "methodName": "UpdateTransferStatusAsync()", "methodShortName": "UpdateTransferStatusAsync()", "fileIndex": 0, "line": 65,
     "metrics": [
       { "value": 420, "exceeded": true },
       { "value": 20, "exceeded": true },
+    ]},
+  {
+    "assembly": "CargoHubRefactor", "class": "Filters", "reportPath": "CargoHubRefactor_Filters.html", "methodName": "OnActionExecutionAsync()", "methodShortName": "OnActionExecutionAsync()", "fileIndex": 0, "line": 14,
+    "metrics": [
+      { "value": 342, "exceeded": true },
+      { "value": 18, "exceeded": true },
     ]},
   {
     "assembly": "CargoHubRefactor", "class": "TransferService", "reportPath": "CargoHubRefactor_TransferService.html", "methodName": "AddTransferAsync()", "methodShortName": "AddTransferAsync()", "fileIndex": 0, "line": 17,
@@ -304,12 +297,6 @@ var riskHotspots = [
       { "value": 10, "exceeded": false },
     ]},
   {
-    "assembly": "CargoHubRefactor", "class": "FloorManagerFilter", "reportPath": "CargoHubRefactor_FloorManagerFilter.html", "methodName": "OnActionExecutionAsync()", "methodShortName": "OnActionExecutionAsync()", "fileIndex": 0, "line": 15,
-    "metrics": [
-      { "value": 72, "exceeded": true },
-      { "value": 8, "exceeded": false },
-    ]},
-  {
     "assembly": "CargoHubRefactor", "class": "ItemService", "reportPath": "CargoHubRefactor_ItemService.html", "methodName": "AddItemAsync()", "methodShortName": "AddItemAsync()", "fileIndex": 0, "line": 40,
     "metrics": [
       { "value": 67, "exceeded": true },
@@ -320,12 +307,6 @@ var riskHotspots = [
     "metrics": [
       { "value": 56, "exceeded": true },
       { "value": 50, "exceeded": true },
-    ]},
-  {
-    "assembly": "CargoHubRefactor", "class": "AdminFilter", "reportPath": "CargoHubRefactor_AdminFilter.html", "methodName": "OnActionExecutionAsync()", "methodShortName": "OnActionExecutionAsync()", "fileIndex": 0, "line": 13,
-    "metrics": [
-      { "value": 42, "exceeded": true },
-      { "value": 6, "exceeded": false },
     ]},
   {
     "assembly": "CargoHubRefactor", "class": "OrderService", "reportPath": "CargoHubRefactor_OrderService.html", "methodName": "GetOrderPriceTotalAsync()", "methodShortName": "GetOrderPriceTotalAsync()", "fileIndex": 0, "line": 28,

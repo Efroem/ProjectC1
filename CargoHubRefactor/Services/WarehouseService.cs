@@ -40,6 +40,7 @@ public class WarehouseService : IWarehouseService
     {
         if (string.IsNullOrWhiteSpace(warehouseDto.Code))
             return ("Error: 'Code' field must be filled in.", null);
+
         if (warehouseDto.RestrictedClassificationsList != null)
         {
             foreach (var classification in warehouseDto.RestrictedClassificationsList)
@@ -51,8 +52,15 @@ public class WarehouseService : IWarehouseService
             }
         }
 
+        // Find the smallest unused ID
+        var existingIds = await _context.Warehouses.Select(w => w.WarehouseId).ToListAsync();
+        var firstAvailableId = Enumerable.Range(1, existingIds.Count + 1)
+                                        .Except(existingIds)
+                                        .FirstOrDefault();
+
         var warehouse = new Warehouse
         {
+            WarehouseId = firstAvailableId, // Assign the first available ID
             Code = warehouseDto.Code,
             Name = warehouseDto.Name,
             Address = warehouseDto.Address,

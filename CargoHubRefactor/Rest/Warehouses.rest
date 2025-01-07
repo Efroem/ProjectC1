@@ -49,7 +49,7 @@ ApiToken: A1B2C3D4
 }
 
 ### Update a warehouse (success)
-PUT http://localhost:5000/api/v1/warehouses/68
+PUT http://localhost:5000/api/v1/warehouses/59
 ApiToken: A1B2C3D4
 Content-Type: application/json
 
@@ -87,7 +87,7 @@ Content-Type: application/json
 }
 
 ### Delete a warehouse (success)
-DELETE http://localhost:5000/api/v1/warehouses/68
+DELETE http://localhost:5000/api/v1/warehouses/59
 ApiToken: A1B2C3D4
 
 ### Delete a warehouse (not found)
