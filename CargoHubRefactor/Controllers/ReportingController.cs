@@ -4,6 +4,7 @@ using System;
 
 namespace CargoHubRefactor.Controllers
 {
+    [ServiceFilter(typeof(Filters))]
     [ApiController]
     [Route("api/v1/reporting")]
     public class ReportingController : ControllerBase

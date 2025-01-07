@@ -32,16 +32,47 @@ public class ShipmentService : IShipmentService
             return ("Error: Invalid shipment data.", null);
         }
 
-        //Checks
-        if (shipment.OrderId <= 0)
-            return ("Error: 'OrderId' must be greater than zero.", null);
-        if (shipment.SourceId <= 0)
-            return ("Error: 'SourceId' must be greater than zero.", null);
-
+        // Validation checks
         shipment.CreatedAt = DateTime.Now;
         shipment.UpdatedAt = DateTime.Now;
 
+        // Convert OrderIdsList to a comma-separated string before saving
+        shipment.OrderId = string.Join(",", shipment.OrderIdsList);
+
+        // Add shipment
         _context.Shipments.Add(shipment);
+        await _context.SaveChangesAsync();
+
+        // Update ShipmentId in the Orders table for each OrderId and create ShipmentItems
+        foreach (var orderId in shipment.OrderIdsList)
+        {
+            if (int.TryParse(orderId, out int parsedOrderId)) // Convert string to int
+            {
+                var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == parsedOrderId);
+                if (order != null)
+                {
+                    order.ShipmentId = shipment.ShipmentId; // Update ShipmentId in the Orders table
+
+                    // Fetch OrderItems for this OrderId
+                    var orderItems = await _context.OrderItems
+                                                   .Where(oi => oi.OrderId == parsedOrderId)
+                                                   .ToListAsync();
+
+                    // Create ShipmentItems
+                    foreach (var orderItem in orderItems)
+                    {
+                        var shipmentItem = new ShipmentItem
+                        {
+                            ShipmentId = shipment.ShipmentId,
+                            ItemId = orderItem.ItemId,
+                            Amount = orderItem.Amount
+                        };
+                        _context.ShipmentItems.Add(shipmentItem);
+                    }
+                }
+            }
+        }
+
         await _context.SaveChangesAsync();
 
         return ("Shipment successfully created.", shipment);
@@ -55,7 +86,8 @@ public class ShipmentService : IShipmentService
             return "Error: Shipment not found.";
         }
 
-        existingShipment.OrderId = shipment.OrderId;
+        // Update shipment fields
+        existingShipment.OrderId = string.Join(",", shipment.OrderIdsList); // Update OrderIds as comma-separated string
         existingShipment.SourceId = shipment.SourceId;
         existingShipment.OrderDate = shipment.OrderDate;
         existingShipment.RequestDate = shipment.RequestDate;
@@ -72,9 +104,57 @@ public class ShipmentService : IShipmentService
         existingShipment.TotalPackageWeight = shipment.TotalPackageWeight;
         existingShipment.UpdatedAt = DateTime.Now;
 
+        // Ensure the shipment entity is updated
+        _context.Shipments.Update(existingShipment);
+
+        // Remove existing ShipmentItems for this shipment
+        var existingShipmentItems = _context.ShipmentItems.Where(si => si.ShipmentId == id);
+        _context.ShipmentItems.RemoveRange(existingShipmentItems);
+
+        // Update ShipmentId in the Orders table for each OrderId and repopulate ShipmentItems
+        foreach (var orderId in shipment.OrderIdsList)
+        {
+            int parsedOrderId = int.Parse(orderId);
+
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == parsedOrderId);
+            if (order != null)
+            {
+                order.ShipmentId = existingShipment.ShipmentId; // Update ShipmentId in the Orders table
+                _context.Orders.Update(order);
+
+                // Fetch OrderItems for this OrderId
+                var orderItems = await _context.OrderItems
+                                               .Where(oi => oi.OrderId == parsedOrderId)
+                                               .ToListAsync();
+
+                // Create new ShipmentItems
+                foreach (var orderItem in orderItems)
+                {
+                    var shipmentItem = new ShipmentItem
+                    {
+                        ShipmentId = existingShipment.ShipmentId,
+                        ItemId = orderItem.ItemId,
+                        Amount = orderItem.Amount
+                    };
+                    _context.ShipmentItems.Add(shipmentItem);
+                }
+            }
+        }
+
         await _context.SaveChangesAsync();
+
         return "Shipment successfully updated.";
     }
+    public async Task<List<ShipmentItem>> GetShipmentItemsAsync(int shipmentId)
+    {
+        // Fetch the items related to the shipment
+        var shipmentItems = await _context.ShipmentItems
+                                           .Where(si => si.ShipmentId == shipmentId)
+                                           .ToListAsync();
+
+        return shipmentItems;
+    }
+
 
     public async Task<string> DeleteShipmentAsync(int id)
     {
@@ -89,3 +169,4 @@ public class ShipmentService : IShipmentService
         return "Shipment successfully deleted.";
     }
 }
+

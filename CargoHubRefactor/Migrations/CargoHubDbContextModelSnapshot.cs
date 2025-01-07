@@ -543,8 +543,9 @@ namespace CargoHubRefactor.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("OrderId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("OrderId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PaymentType")
                         .IsRequired()

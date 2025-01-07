@@ -118,34 +118,39 @@ def test_put_orders_integration(_data):
     }
 
     body = {
-        "sourceId": 1255,
-        "orderDate": "2024-12-10T10:00:00Z",
-        "requestDate": "2024-12-12T10:00:00Z",
-        "reference": "ORD12347",
-        "referenceExtra": "EXTRA125",
-        "orderStatus": "Pending",
-        "notes": "Handle with care",
-        "shippingNotes": "No special instructions",
-        "pickingNotes": "Pick all items",
-        "warehouseId": 4,
-        "shipTo": 60,
-        "billTo": 100,
-        "shipmentId": 91,
-        "totalAmount": 2500.00,
-        "totalDiscount": 200.00,
-        "totalTax": 150.00,
-        "totalSurcharge": 30.00,
-        "orderItems": [
-            {
-                "itemId": "P000001",
-                "amount": 5
-            }
-        ]
+    "sourceId": 1255,
+    "orderDate": "2024-12-10T10:00:00Z",
+    "requestDate": "2024-12-12T10:00:00Z",
+    "reference": "ORD12347",
+    "referenceExtra": "EXTRA125",
+    "orderStatus": "Pending",
+    "notes": "Handle with care",
+    "shippingNotes": "No special instructions",
+    "pickingNotes": "Pick all items",
+    "warehouseId": 4,
+    "shipTo": 60,
+    "billTo": 100,
+    "shipmentId": 91,
+    "totalAmount": 2500.00,
+    "totalDiscount": 200.00,
+    "totalTax": 150.00,
+    "totalSurcharge": 30.00,
+    "orderItems": [
+        {
+        "itemId": "P000001",
+        "amount": 5
+        },
+        {
+        "itemId": "P000002",
+        "amount": 3
+        }
+    ],
+    "createdAt": "2024-01-01T10:00:00Z",
+    "updatedAt": "2024-12-01T10:00:00Z"
     }
 
 
 
-    # Send a PUT request to the API and check if it was successful
     put_response = requests.put(url, json=body, headers=headers)
 
     assert put_response.status_code == 200

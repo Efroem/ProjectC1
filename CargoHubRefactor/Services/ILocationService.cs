@@ -5,6 +5,7 @@ public interface ILocationService
 {
     Task<Location> GetLocationAsync(int locationId);
     Task<IEnumerable<Location>> GetLocationsAsync();
+    Task<IEnumerable<Location>> GetLocationsAsync(int limit);
     Task<Location> AddLocationAsync(Location Location);
     Task<Location> UpdateLocationAsync(int id, Location Location);
     Task<Location> UpdateLocationItemsAsync(int id, List<LocationItem> LocationItems);

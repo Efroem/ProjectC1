@@ -23,6 +23,11 @@ public class LocationService : ILocationService
         return await _context.Locations.ToListAsync();
     }
 
+    public async Task<IEnumerable<Location>> GetLocationsAsync(int limit)
+    {
+        return await _context.Locations.Take(limit).ToListAsync();
+    }
+
     public async Task<Location> AddLocationAsync(Location Location)
     {
         int nextId;
