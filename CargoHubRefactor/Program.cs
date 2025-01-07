@@ -44,8 +44,8 @@ namespace CargoHubRefactor
             builder.Services.AddScoped<ReportingService>();
             builder.Services.AddScoped<IShipmentService, ShipmentService>();
             builder.Services.AddScoped<SetupItems>();
-            builder.Services.AddScoped<AdminFilter>();
-            builder.Services.AddScoped<FloorManagerFilter>();
+            builder.Services.AddScoped<Filters>();
+
 
 
 
