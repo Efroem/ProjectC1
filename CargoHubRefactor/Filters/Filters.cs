@@ -1,13 +1,16 @@
 using Microsoft.AspNetCore.Mvc.Filters;
+
 public class Filters : IAsyncActionFilter
 {
     private readonly IConfiguration _configuration;
     private readonly string[] _floorManagerAllowedPaths;
+    private readonly string[] _warehouseManagerAllowedPaths;
 
     public Filters(IConfiguration configuration)
     {
         _configuration = configuration;
         _floorManagerAllowedPaths = new[] { "/api/v1/Orders", "/api/v1/Shipments" };
+        _warehouseManagerAllowedPaths = new[] { "/api/v1/Warehouses" }; 
     }
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -17,10 +20,11 @@ public class Filters : IAsyncActionFilter
         var adminToken = _configuration["ApiKeys:AdminApiToken"];
         var employeeToken = _configuration["ApiKeys:EmployeeApiToken"];
         var floorManagerToken = _configuration["ApiKeys:FloorManagerApiToken"];
+        var warehouseManagerToken = _configuration["ApiKeys:WarehouseManagerToken"];
 
-        if (string.IsNullOrEmpty(adminToken) || string.IsNullOrEmpty(employeeToken) || string.IsNullOrEmpty(floorManagerToken))
+        if (string.IsNullOrEmpty(adminToken) || string.IsNullOrEmpty(employeeToken) ||
+            string.IsNullOrEmpty(floorManagerToken) || string.IsNullOrEmpty(warehouseManagerToken))
         {
-            Console.WriteLine("One or more API tokens are not properly configured.");
             httpContext.Response.StatusCode = 500;
             await httpContext.Response.WriteAsync("API tokens are not properly configured.");
             return;
@@ -28,44 +32,56 @@ public class Filters : IAsyncActionFilter
 
         if (!httpContext.Request.Headers.ContainsKey("ApiToken"))
         {
-            Console.WriteLine($"Request to {httpContext.Request.Path} is missing the ApiToken header.");
-            httpContext.Response.StatusCode = 401; 
+            httpContext.Response.StatusCode = 401;
             await httpContext.Response.WriteAsync("Missing ApiToken header.");
             return;
         }
 
-        var apiToken = httpContext.Request.Headers["ApiToken"];
+        var apiToken = httpContext.Request.Headers["ApiToken"].ToString();
         var requestPath = httpContext.Request.Path;
 
         if (apiToken == adminToken)
         {
-            Console.WriteLine("Admin access granted.");
-            await next(); 
+            await next();
+            return;
         }
-        else if (apiToken == employeeToken && HttpMethods.IsGet(httpContext.Request.Method))
+
+        if (apiToken == employeeToken && HttpMethods.IsGet(httpContext.Request.Method))
         {
-            Console.WriteLine("Employee access granted for GET request.");
-            await next(); 
+            await next();
+            return;
         }
-        else if (apiToken == floorManagerToken)
+
+        if (apiToken == floorManagerToken && HttpMethods.IsPut(httpContext.Request.Method))
         {
             if (_floorManagerAllowedPaths.Any(path => requestPath.StartsWithSegments(path)))
             {
-                Console.WriteLine($"Floor Manager access granted for path: {requestPath}.");
                 await next();
+                return;
             }
             else
             {
-                Console.WriteLine($"Access denied for Floor Manager on path: {requestPath}.");
-                httpContext.Response.StatusCode = 403; 
-                await httpContext.Response.WriteAsync("Access denied. Floor Manager is not authorized for this path.");
+                httpContext.Response.StatusCode = 403;
+                await httpContext.Response.WriteAsync($"Floor Manager is not authorized for the path {requestPath}.");
+                return;
             }
         }
-        else
+
+        if (apiToken == warehouseManagerToken && HttpMethods.IsPut(httpContext.Request.Method))
         {
-            Console.WriteLine($"Access denied for invalid or unauthorized ApiToken: {apiToken}.");
-            httpContext.Response.StatusCode = 403; 
-            await httpContext.Response.WriteAsync($"Access denied for invalid or unauthorized ApiToken: {apiToken}.");
+            if (_warehouseManagerAllowedPaths.Any(path => requestPath.StartsWithSegments(path)))
+            {
+                await next();
+                return;
+            }
+            else
+            {
+                httpContext.Response.StatusCode = 403;
+                await httpContext.Response.WriteAsync($"Warehouse Manager is not authorized for the path {requestPath}.");
+                return;
+            }
         }
+        httpContext.Response.StatusCode = 403;
+        await httpContext.Response.WriteAsync("Forbidden: Invalid or unauthorized ApiToken.");
     }
 }
