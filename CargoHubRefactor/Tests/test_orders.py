@@ -91,7 +91,8 @@ def test_post_orders_integration(_data):
 def test_put_orders_integration(_data):
 
     url = _data[0]["URL"] + 'orders/1424'
-    original_order = requests.get(url)
+    headers = get_headers(_data[0]["AdminApiToken"])
+    original_order = requests.get(url, headers=headers)
     assert original_order.status_code == 200
     original_json = original_order.json()
     # print(original_body)
@@ -150,7 +151,7 @@ def test_put_orders_integration(_data):
     assert put_response.status_code == 200
 
     # Get the updated order
-    get_response = requests.get(url)
+    get_response = requests.get(url, headers=headers)
 
     status_code = get_response.status_code
     response_data = get_response.json()
