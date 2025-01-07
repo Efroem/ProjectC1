@@ -25,6 +25,11 @@ public class OrderService : IOrderService
         return await _context.Orders.ToListAsync();
     }
 
+    public async Task<IEnumerable<Order>> GetOrdersAsync(int limit)
+    {
+        return await _context.Orders.Take(limit).ToListAsync();
+    }
+
     public async Task<double> GetOrderPriceTotalAsync(int id) {
         List<OrderItem> orderItems = await _context.OrderItems.Where(o => o.OrderId == id).ToListAsync();
         if (orderItems.IsNullOrEmpty()) return -1;

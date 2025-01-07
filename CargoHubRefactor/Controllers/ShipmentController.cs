@@ -62,8 +62,32 @@ public class ShipmentController : ControllerBase
             return NotFound("No items found for the given shipment.");
         }
 
+<<<<<<< Updated upstream
         return Ok(shipmentItems);
     }
+=======
+        [HttpGet]
+        public async Task<ActionResult<List<Shipment>>> GetAllShipments()
+        {
+            return Ok(await _shipmentService.GetAllShipmentsAsync());
+        }
+        [HttpGet("limit/{limit}")]
+        public async Task<ActionResult<IEnumerable<Client>>> GetAllShipments(int limit)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show shipments with a limit below 1.");
+            }
+
+            var shipments = await _shipmentService.GetAllShipmentsAsync(limit);
+            if (shipments == null || !shipments.Any())
+            {
+                return NotFound("No shipments found.");
+            }
+
+            return Ok(shipments);
+        }
+>>>>>>> Stashed changes
 
 
     [HttpDelete("{id}")]

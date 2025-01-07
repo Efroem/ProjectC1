@@ -33,13 +33,13 @@ namespace CargoHubRefactor.Controllers{
         {
             if (limit <= 0)
             {
-                return BadRequest("Cannot show clients with a limit below 1.");
+                return BadRequest("Cannot show inventories with a limit below 1.");
             }
 
             var inventories = await _InventoryService.GetInventoriesAsync(limit);
             if (inventories == null || !inventories.Any())
             {
-                return NotFound("No clients found.");
+                return NotFound("No inventories found.");
             }
 
             return Ok(inventories);
