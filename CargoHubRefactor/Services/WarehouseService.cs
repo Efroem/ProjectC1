@@ -80,6 +80,8 @@ public class WarehouseService : IWarehouseService
         {
             return ("Error: Warehouse not found.", null);
         }
+
+        // Validate Restricted Classifications
         if (warehouseDto.RestrictedClassificationsList != null)
         {
             foreach (var classification in warehouseDto.RestrictedClassificationsList)
@@ -91,8 +93,25 @@ public class WarehouseService : IWarehouseService
             }
         }
 
+        // Update all fields from DTO
+        warehouse.Code = warehouseDto.Code;
+        warehouse.Name = warehouseDto.Name;
+        warehouse.Address = warehouseDto.Address;
+        warehouse.Zip = warehouseDto.Zip;
+        warehouse.City = warehouseDto.City;
+        warehouse.Province = warehouseDto.Province;
+        warehouse.Country = warehouseDto.Country;
+        warehouse.ContactName = warehouseDto.ContactName;
+        warehouse.ContactPhone = warehouseDto.ContactPhone;
+        warehouse.ContactEmail = warehouseDto.ContactEmail;
+
+        // Update Restricted Classifications
         warehouse.RestrictedClassificationsList = warehouseDto.RestrictedClassificationsList;
+
+        // Update the timestamp
         warehouse.UpdatedAt = DateTime.Now;
+
+        // Save changes to the database
         await _context.SaveChangesAsync();
 
         return ("Warehouse successfully updated.", warehouse);
