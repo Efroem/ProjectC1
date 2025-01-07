@@ -158,7 +158,7 @@ def test_put_orders_integration(_data):
 
 
     # Restore original body
-    original_put_response = requests.put(url, json=original_body)
+    original_put_response = requests.put(url, json=original_body, headers=headers)
     print(original_put_response.text)
     assert original_put_response.status_code == 200
 
