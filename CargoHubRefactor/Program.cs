@@ -86,7 +86,6 @@ namespace CargoHubRefactor
                 // Ensure GetItemCategoryRelations is awaited if it’s asynchronous
                 await setupItems.GetItemCategoryRelations();
             }
-            app.UseMiddleware<RequestLoggingMiddleware>();
 
             await app.RunAsync(); // Use RunAsync to work with async Main
         }
