@@ -1,8 +1,22 @@
 ### Haal rapport op voor leveranciers
 GET http://localhost:5000/api/v1/reporting?entity=suppliers&fromDate=1999-12-01&toDate=2024-12-31
+ApiToken: A1B2C3D4
 
 ### Zoekt warehouses tussen 1999-12-01 en 2024-12-31
 GET http://localhost:5000/api/v1/reporting?entity=warehouses&fromDate=1999-12-01&toDate=2024-12-31
+ApiToken: A1B2C3D4
 
 ### Report warehouses bij Id=50
 GET http://localhost:5000/api/v1/reporting?entity=warehouses&fromDate=1999-12-01&toDate=2024-12-31&warehouseId=50
+ApiToken: A1B2C3D4
+
+### Download report for warehouses between 1999-12-01 and 2024-12-31 with warehouseId 50
+GET http://localhost:5000/api/v1/reporting/download?entity=warehouses&fromDate=1999-12-01&toDate=2024-12-31&warehouseId=50
+Accept: application/json
+ApiToken: A1B2C3D4
+Content-Disposition: attachment; filename=warehouses_Report_19991201_20241231_Id_50.csv; filename*=UTF-8''warehouses_Report_19991201_20241231_Id_50.csv
+
+### Download report for clients between 2023-01-01 and 2023-12-31
+GET http://localhost:5000/api/v1/reporting/download?entity=clients&fromDate=2023-01-01&toDate=2023-12-31
+Accept: application/octet-stream
+ApiToken: A1B2C3D4

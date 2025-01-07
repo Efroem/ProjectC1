@@ -68,7 +68,8 @@ namespace CargoHubRefactor.Services
         // de method. Is te vinden bij de volgende path: GitHub\Processing-and-Tools-Team-2\CargoHubRefactor\bin\Debug\Reports
         private void WriteReportToFile(string entity, DateTime fromDate, DateTime toDate, int? warehouseId, IEnumerable<object> reportData)
         {
-            string fileName = $"{entity}_Report_{fromDate:yyyyyMMdd}_{toDate:yyyyMMdd}_Id_{warehouseId}.txt";
+            // Construct the file name dynamically
+            string fileName = $"{entity}_Report_{fromDate:yyyyMMdd}_{toDate:yyyyMMdd}{(warehouseId.HasValue ? "_Id_" + warehouseId : "")}.csv";
             string filePath = Path.Combine(_reportDirectory, fileName);
 
             using (StreamWriter writer = new StreamWriter(filePath, false))
@@ -81,9 +82,49 @@ namespace CargoHubRefactor.Services
                 }
                 writer.WriteLine("--------------------------------------------------");
 
-                foreach (var record in reportData)
+                // Handle entity-specific headers and data
+                if (entity.Equals("clients", StringComparison.OrdinalIgnoreCase))
                 {
-                    writer.WriteLine(JsonSerializer.Serialize(record, new JsonSerializerOptions { WriteIndented = true }));
+                    // Clients-specific logic
+                    var headers = "ClientId,Name,CreatedAt";
+                    writer.WriteLine(headers); // Write CSV header for Clients
+
+                    foreach (var record in reportData)
+                    {
+                        var client = (dynamic)record; // Cast to dynamic for flexibility
+                        var values = $"{client.ClientId},{client.Name},{client.CreatedAt:yyyy-MM-dd}";
+                        writer.WriteLine(values);
+                    }
+                }
+                else if (entity.Equals("suppliers", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Suppliers-specific logic
+                    var headers = "SupplierId,Name,CreatedAt";
+                    writer.WriteLine(headers); // Write CSV header for Suppliers
+
+                    foreach (var record in reportData)
+                    {
+                        var supplier = (dynamic)record;
+                        var values = $"{supplier.SupplierId},{supplier.Name},{supplier.CreatedAt:yyyy-MM-dd}";
+                        writer.WriteLine(values);
+                    }
+                }
+                else if (entity.Equals("warehouses", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Warehouses-specific logic
+                    var headers = "WarehouseId,Name,CreatedAt";
+                    writer.WriteLine(headers); // Write CSV header for Warehouses
+
+                    foreach (var record in reportData)
+                    {
+                        var warehouse = (dynamic)record;
+                        var values = $"{warehouse.WarehouseId},{warehouse.Name},{warehouse.CreatedAt:yyyy-MM-dd}";
+                        writer.WriteLine(values);
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Unsupported entity: {entity}");
                 }
 
                 writer.WriteLine("--------------------------------------------------");
