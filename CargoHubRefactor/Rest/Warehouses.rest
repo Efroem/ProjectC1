@@ -1,43 +1,95 @@
-###
+### Get all warehouses
+GET http://localhost:5000/api/v1/warehouses
+ApiToken: A1B2C3D4
+
+### Get warehouse by ID (success)
+GET http://localhost:5000/api/v1/warehouses/1
+ApiToken: A1B2C3D4
+
+### Get warehouse by ID (not found)
+GET http://localhost:5000/api/v1/warehouses/999
+ApiToken: A1B2C3D4
+
+### Add a new warehouse (success)
 POST http://localhost:5000/api/v1/warehouses
 Content-Type: application/json
+ApiToken: A1B2C3D4
 
 {
-  "code": "WH003",
+  "code": "WH123",
   "name": "Main Warehouse",
-  "address": "123 Warehouse Lane",
+  "address": "123 Warehouse St",
   "zip": "12345",
-  "city": "CityName",
-  "province": "ProvinceName",
-  "country": "CountryName",
+  "city": "Warehouse City",
+  "province": "WC",
+  "country": "USA",
   "contactName": "John Doe",
-  "contactPhone": "555-1234",
-  "contactEmail": "johndoe@example.com"
+  "contactPhone": "123-456-7890",
+  "contactEmail": "johndoe@example.com",
+  "restrictedClassificationsList": ["1.1", "2.2", "3"]
 }
-####
 
-GET http://localhost:5000/api/v1/warehouses
-####
+### Add a new warehouse (invalid classification)
+POST http://localhost:5000/api/v1/warehouses
+Content-Type: application/json
+ApiToken: A1B2C3D4
 
-GET http://localhost:5000/api/v1/warehouses/1
-####
+{
+  "code": "WH124",
+  "name": "Secondary Warehouse",
+  "address": "456 Warehouse Blvd",
+  "zip": "67890",
+  "city": "Warehouse City",
+  "province": "WC",
+  "country": "USA",
+  "contactName": "Jane Smith",
+  "contactPhone": "987-654-3210",
+  "contactEmail": "janesmith@example.com",
+  "restrictedClassificationsList": ["1.1", "Lmao"]
+}
 
+### Update a warehouse (success)
 PUT http://localhost:5000/api/v1/warehouses/1
+ApiToken: A1B2C3D4
 Content-Type: application/json
 
 {
-  "code": "WH001",
-  "name": "Updated Warehouse Name",
-  "address": "456 New Address Blvd",
-  "zip": "67890",
-  "city": "NewCity",
-  "province": "NewProvince",
-  "country": "NewCountry",
-  "contactName": "Jane Smith",
-  "contactPhone": "555-6789",
-  "contactEmail": "jane.smith@example.com"
+  "code": "WH123",
+  "name": "Updated Warehouse",
+  "address": "123 Updated St",
+  "zip": "54321",
+  "city": "Updated City",
+  "province": "UC",
+  "country": "USA",
+  "contactName": "Updated Contact",
+  "contactPhone": "321-654-9870",
+  "contactEmail": "updatedcontact@example.com",
+  "restrictedClassificationsList": ["4.1", "5.2"]
 }
-####
 
-DELETE http://localhost:5000/api/v1/warehouses/5
-####
+### Update a warehouse (invalid classification)
+PUT http://localhost:5000/api/v1/warehouses/1
+ApiToken: A1B2C3D4
+Content-Type: application/json
+
+{
+  "code": "WH123",
+  "name": "Updated Warehouse",
+  "address": "123 Updated St",
+  "zip": "54321",
+  "city": "Updated City",
+  "province": "UC",
+  "country": "USA",
+  "contactName": "Updated Contact",
+  "contactPhone": "321-654-9870",
+  "contactEmail": "updatedcontact@example.com",
+  "restrictedClassificationsList": ["Lmao"]
+}
+
+### Delete a warehouse (success)
+DELETE http://localhost:5000/api/v1/warehouses/59
+ApiToken: A1B2C3D4
+
+### Delete a warehouse (not found)
+DELETE http://localhost:5000/api/v1/warehouses/999
+ApiToken: A1B2C3D4
