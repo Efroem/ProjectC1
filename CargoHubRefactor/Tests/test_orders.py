@@ -89,12 +89,33 @@ def test_post_orders_integration(_data):
     assert status_code == 200 and response_data["shippingNotes"] == body["shippingNotes"] and response_data["pickingNotes"] == body["pickingNotes"]
 
 def test_put_orders_integration(_data):
-    url = _data[0]["URL"] + 'orders/3053'
-    headers = get_headers(_data[0]["AdminApiToken"])
 
+    url = _data[0]["URL"] + 'orders/1424'
+    headers = get_headers(_data[0]["AdminApiToken"])
     original_order = requests.get(url, headers=headers)
     assert original_order.status_code == 200
-    original_body = original_order.json()
+    original_json = original_order.json()
+    # print(original_body)
+    original_body = {
+        "sourceId": original_json.get("sourceId"),  # Corrected syntax for .get method
+        "orderDate": original_json.get("orderDate", "2024-12-10T10:00:00Z"),
+        "requestDate": original_json.get("requestDate", "2024-12-12T10:00:00Z"),
+        "reference": original_json.get("reference", "ORD12347"),
+        "referenceExtra": original_json.get("referenceExtra", "EXTRA125"),
+        "orderStatus": original_json.get("orderStatus", "Pending"),
+        "notes": original_json.get("notes", "Handle with care"),
+        "shippingNotes": original_json.get("shippingNotes", "No special instructions"),
+        "pickingNotes": original_json.get("pickingNotes", "Pick all items"),
+        "warehouseId": original_json.get("warehouseId", 4),
+        "shipTo": original_json.get("shipTo", 60),
+        "billTo": original_json.get("billTo", 100),
+        "shipmentId": original_json.get("shipmentId", 91),
+        "totalAmount": original_json.get("totalAmount", 2500.00),
+        "totalDiscount": original_json.get("totalDiscount", 200.00),
+        "totalTax": original_json.get("totalTax", 150.00),
+        "totalSurcharge": original_json.get("totalSurcharge", 30.00),
+        "orderItems": original_json.get("orderItems", []),
+    }
 
     body = {
         "sourceId": 1255,
@@ -122,8 +143,11 @@ def test_put_orders_integration(_data):
         ]
     }
 
-    # Send a PUT request to the API
+
+
+    # Send a PUT request to the API and check if it was successful
     put_response = requests.put(url, json=body, headers=headers)
+
     assert put_response.status_code == 200
 
     # Get the updated order
@@ -132,13 +156,15 @@ def test_put_orders_integration(_data):
     status_code = get_response.status_code
     response_data = get_response.json()
 
-    # Restore original order
+
+    # Restore original body
     original_put_response = requests.put(url, json=original_body, headers=headers)
-    # print (original_put_response.status_code)
+    print(original_put_response.text)
     assert original_put_response.status_code == 200
 
-    # Verify that the status code is 200 (OK) and the order details are correct
-    assert status_code == 200 and response_data["id"] == original_body["id"] and response_data["notes"] == body["notes"]
+    # Verify that the status code is 200 (OK) and the body in this code and the response data are basically equal
+    assert status_code == 200 and response_data["id"] == original_json["id"] and response_data["notes"] == body["notes"]
+
 
 def test_delete_orders_integration(_data):
     url = _data[0]["URL"] + 'orders'
