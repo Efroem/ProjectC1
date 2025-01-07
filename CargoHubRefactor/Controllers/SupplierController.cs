@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CargoHubRefactor.Controllers
 {
+    [ServiceFilter(typeof(Filters))]
     [Route("api/v1/suppliers")]
     [ApiController]
     public class SupplierController : ControllerBase
