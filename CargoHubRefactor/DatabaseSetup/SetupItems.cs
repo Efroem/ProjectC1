@@ -8,6 +8,7 @@ using System.Reflection;
 using Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Testing.Platform.Extensions.Messages;
 namespace CargoHubRefactor.DbSetup {
     public class SetupItems
     {
@@ -477,11 +478,10 @@ namespace CargoHubRefactor.DbSetup {
                                     continue;
 
                                 await _context.TransferItems.AddAsync(transferItem);
-                                LogMessage($"Added TransferItem: TransferId={transfer.TransferId}, ItemId={itemId}");
                             }
                             catch (Exception itemEx)
                             {
-                                LogMessage($"Error processing transfer item: {itemEx.Message}\nItem JSON: {itemJson}");
+                                
                             }
                         }
                     }

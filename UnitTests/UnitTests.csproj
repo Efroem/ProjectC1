@@ -43,6 +43,7 @@
     <PackageReference Include="MSTest.TestAdapter" Version="3.7.0" />
     <PackageReference Include="MSTest.TestFrameWork" Version="3.7.0" />
     <ExcludeByFile Include="**Car/*" />
+    <PackageReference Include="ReportGenerator" Version="5.4.3" />
   </ItemGroup>
 
 

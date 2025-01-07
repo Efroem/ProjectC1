@@ -173,12 +173,12 @@ namespace CargoHubRefactor.Controllers
                 return BadRequest("WarehouseId must be a valid positive integer");
             }
 
-            if (order.ShipTo <= 0)
+            if (order.ShipTo < 0)
             {
                 return BadRequest("ShipTo must be a valid positive integer");
             }
 
-            if (order.BillTo <= 0)
+            if (order.BillTo < 0)
             {
                 return BadRequest("BillTo must be a valid positive integer");
             }
