@@ -97,7 +97,6 @@ def test_put_orders_integration(_data):
     original_body = original_order.json()
 
     body = {
-    "id": 3053,
     "sourceId": 1255,
     "orderDate": "2024-12-10T10:00:00Z",
     "requestDate": "2024-12-12T10:00:00Z",
