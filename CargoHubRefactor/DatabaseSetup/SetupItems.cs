@@ -14,12 +14,13 @@ namespace CargoHubRefactor.DbSetup {
     {
         private readonly CargoHubDbContext _context;
         private readonly ResourceObjectReturns objectReturns = new ResourceObjectReturns();
+
         private Dictionary<int, Dictionary<string, int>> ItemAmountLocations = new Dictionary<int, Dictionary<string, int>>();
         public SetupItems(CargoHubDbContext context)
         {
             _context = context;
         }
- 
+
         public async Task GetItemCategoryRelations()
         {
             List<Dictionary<int, List<int>>> ItemRelationsLists = new List<Dictionary<int, List<int>>>();
@@ -472,7 +473,7 @@ namespace CargoHubRefactor.DbSetup {
                             }
                             catch (Exception itemEx)
                             {
-                                
+
                             }
                         }
                     }
@@ -492,8 +493,6 @@ namespace CargoHubRefactor.DbSetup {
             catch (Exception saveEx)
             {
             }
-
-
             return;
         }
 

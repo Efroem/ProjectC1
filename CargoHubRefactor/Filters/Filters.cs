@@ -29,7 +29,7 @@ public class Filters : IAsyncActionFilter
         if (!httpContext.Request.Headers.ContainsKey("ApiToken"))
         {
             Console.WriteLine($"Request to {httpContext.Request.Path} is missing the ApiToken header.");
-            httpContext.Response.StatusCode = 401; // Unauthorized
+            httpContext.Response.StatusCode = 401; 
             await httpContext.Response.WriteAsync("Missing ApiToken header.");
             return;
         }
@@ -45,27 +45,27 @@ public class Filters : IAsyncActionFilter
         else if (apiToken == employeeToken && HttpMethods.IsGet(httpContext.Request.Method))
         {
             Console.WriteLine("Employee access granted for GET request.");
-            await next(); // Proceed for Employees (only GET requests)
+            await next(); 
         }
         else if (apiToken == floorManagerToken)
         {
             if (_floorManagerAllowedPaths.Any(path => requestPath.StartsWithSegments(path)))
             {
                 Console.WriteLine($"Floor Manager access granted for path: {requestPath}.");
-                await next(); // Proceed for Floor Managers within allowed paths
+                await next();
             }
             else
             {
                 Console.WriteLine($"Access denied for Floor Manager on path: {requestPath}.");
-                httpContext.Response.StatusCode = 403; // Forbidden
+                httpContext.Response.StatusCode = 403; 
                 await httpContext.Response.WriteAsync("Access denied. Floor Manager is not authorized for this path.");
             }
         }
         else
         {
             Console.WriteLine($"Access denied for invalid or unauthorized ApiToken: {apiToken}.");
-            httpContext.Response.StatusCode = 403; // Forbidden
-            await httpContext.Response.WriteAsync("Access denied.");
+            httpContext.Response.StatusCode = 403; 
+            await httpContext.Response.WriteAsync($"Access denied for invalid or unauthorized ApiToken: {apiToken}.");
         }
     }
 }
