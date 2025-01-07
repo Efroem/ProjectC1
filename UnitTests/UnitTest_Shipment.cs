@@ -43,7 +43,7 @@ public class UnitTest_Shipment
         {
             ShipmentId = 1,
             SourceId = 1,
-            OrderId = 5,
+            OrderId = "5,8,10",
             OrderDate = DateTime.UtcNow.AddDays(-5),
             RequestDate = DateTime.UtcNow.AddDays(-3),
             ShipmentDate = DateTime.UtcNow.AddDays(-1),
@@ -65,7 +65,7 @@ public class UnitTest_Shipment
         {
             ShipmentId = 2,
             SourceId = 2,
-            OrderId = 2,
+            OrderId = "2",
             OrderDate = DateTime.UtcNow.AddDays(-7),
             RequestDate = DateTime.UtcNow.AddDays(-4),
             ShipmentDate = DateTime.UtcNow.AddDays(-2),
@@ -104,7 +104,7 @@ public class UnitTest_Shipment
         {
             ShipmentId = 3,
             SourceId = 3,
-            OrderId = 3,
+            OrderId = "3,7,8,10",
             OrderDate = DateTime.UtcNow,
             RequestDate = DateTime.UtcNow,
             ShipmentDate = DateTime.UtcNow,
@@ -138,7 +138,7 @@ public class UnitTest_Shipment
         {
             ShipmentId = 1,
             SourceId = 1,
-            OrderId = 6,
+            OrderId = "6",
             OrderDate = DateTime.UtcNow,
             RequestDate = DateTime.UtcNow,
             ShipmentDate = DateTime.UtcNow,

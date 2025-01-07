@@ -1,33 +1,43 @@
 using System.Text.Json;
 using Models;
-namespace CargoHubRefactor.DbSetup {
+namespace CargoHubRefactor.DbSetup
+{
 
 
-    public class ResourceObjectReturns {
-        public ItemGroup ReturnItemGroupObject(Dictionary<string, System.Text.Json.JsonElement> itemGroupJson) {
+    public class ResourceObjectReturns
+    {
+        public ItemGroup ReturnItemGroupObject(Dictionary<string, System.Text.Json.JsonElement> itemGroupJson)
+        {
             ItemGroup returnItemGroupObject = new ItemGroup();
             string format = "yyyy-MM-dd HH:mm:ss";
-            try {
-                returnItemGroupObject = new ItemGroup {   
+            try
+            {
+                returnItemGroupObject = new ItemGroup
+                {
                     // GroupId = itemGroupJson["id"].GetInt32(),
                     Name = itemGroupJson["name"].GetString(),
-                    
+
                     Description = itemGroupJson["description"].GetString(),
 
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 };
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine($"GroupId: {itemGroupJson["id"].GetInt32()}\n {e}");
             }
-            try {
+            try
+            {
                 returnItemGroupObject.CreatedAt = DateTime.ParseExact(itemGroupJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
                 returnItemGroupObject.UpdatedAt = DateTime.ParseExact(itemGroupJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
-            } catch (FormatException e) {
+            }
+            catch (FormatException e)
+            {
                 // Do nothing
             }
 
-            if (string.IsNullOrEmpty(returnItemGroupObject.Name)) 
+            if (string.IsNullOrEmpty(returnItemGroupObject.Name))
             {
                 throw new ArgumentException("Name cannot be null or empty");
             }
@@ -35,21 +45,26 @@ namespace CargoHubRefactor.DbSetup {
             return returnItemGroupObject;
         }
 
-        public ItemLine ReturnItemLineObject(Dictionary<string, System.Text.Json.JsonElement> itemLineJson, Dictionary<int, List<int>> itemGroupRelations) {
+        public ItemLine ReturnItemLineObject(Dictionary<string, System.Text.Json.JsonElement> itemLineJson, Dictionary<int, List<int>> itemGroupRelations)
+        {
             ItemLine returnItemLineObject = new ItemLine();
             int correspondingItemGroup = -1;
             Console.WriteLine($"ItemLine: {itemLineJson["id"].GetInt32()}\n corresponding Item Group: {correspondingItemGroup}");
             string format = "yyyy-MM-dd HH:mm:ss";
-            foreach (KeyValuePair<int, List<int>> itemGroup in itemGroupRelations) {
-                if(itemGroup.Value.Contains(itemLineJson["id"].GetInt32())) {
+            foreach (KeyValuePair<int, List<int>> itemGroup in itemGroupRelations)
+            {
+                if (itemGroup.Value.Contains(itemLineJson["id"].GetInt32()))
+                {
                     correspondingItemGroup = itemGroup.Key;
                     break;
                 }
             }
             if (correspondingItemGroup == -1) return null;
-                    Console.WriteLine($"ItemLine: {itemLineJson["id"].GetInt32()}\n corresponding Item Group: {correspondingItemGroup}");
-            try {
-                returnItemLineObject = new ItemLine {   
+            Console.WriteLine($"ItemLine: {itemLineJson["id"].GetInt32()}\n corresponding Item Group: {correspondingItemGroup}");
+            try
+            {
+                returnItemLineObject = new ItemLine
+                {
                     Name = itemLineJson["name"].GetString(),
                     ItemGroup = correspondingItemGroup,
                     Description = itemLineJson["description"].GetString(),
@@ -57,17 +72,22 @@ namespace CargoHubRefactor.DbSetup {
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 };
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine($"GroupId: {itemLineJson["id"].GetInt32()}\n {e}");
             }
-            try {
+            try
+            {
                 returnItemLineObject.CreatedAt = DateTime.ParseExact(itemLineJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
                 returnItemLineObject.UpdatedAt = DateTime.ParseExact(itemLineJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
-            } catch (FormatException e) {
+            }
+            catch (FormatException e)
+            {
                 // Do nothing
             }
 
-            if (string.IsNullOrEmpty(returnItemLineObject.Name)) 
+            if (string.IsNullOrEmpty(returnItemLineObject.Name))
             {
                 throw new ArgumentException("Name cannot be null or empty");
             }
@@ -75,19 +95,24 @@ namespace CargoHubRefactor.DbSetup {
             return returnItemLineObject;
         }
 
-        public ItemType ReturnItemTypeObject(Dictionary<string, System.Text.Json.JsonElement> itemTypeJson, Dictionary<int, List<int>> itemLineRelations) {
+        public ItemType ReturnItemTypeObject(Dictionary<string, System.Text.Json.JsonElement> itemTypeJson, Dictionary<int, List<int>> itemLineRelations)
+        {
             ItemType returnItemTypeObject = new ItemType();
             int correspondingItemLine = -1;
             string format = "yyyy-MM-dd HH:mm:ss";
-            foreach (KeyValuePair<int, List<int>> itemLine in itemLineRelations) {
-                if(itemLine.Value.Contains(itemTypeJson["id"].GetInt32())) {
+            foreach (KeyValuePair<int, List<int>> itemLine in itemLineRelations)
+            {
+                if (itemLine.Value.Contains(itemTypeJson["id"].GetInt32()))
+                {
                     correspondingItemLine = itemLine.Key;
                     break;
                 }
             }
             if (correspondingItemLine == -1) return null;
-            try {
-                returnItemTypeObject = new ItemType {   
+            try
+            {
+                returnItemTypeObject = new ItemType
+                {
                     Name = itemTypeJson["name"].GetString(),
                     ItemLine = correspondingItemLine,
                     Description = itemTypeJson["description"].GetString(),
@@ -95,17 +120,22 @@ namespace CargoHubRefactor.DbSetup {
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 };
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine($"GroupId: {itemTypeJson["id"].GetInt32()}\n {e}");
             }
-            try {
+            try
+            {
                 returnItemTypeObject.CreatedAt = DateTime.ParseExact(itemTypeJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
                 returnItemTypeObject.UpdatedAt = DateTime.ParseExact(itemTypeJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
-            } catch (FormatException e) {
+            }
+            catch (FormatException e)
+            {
                 // Do nothing
             }
 
-            if (string.IsNullOrEmpty(returnItemTypeObject.Name)) 
+            if (string.IsNullOrEmpty(returnItemTypeObject.Name))
             {
                 throw new ArgumentException("Name cannot be null or empty");
             }
@@ -184,7 +214,7 @@ namespace CargoHubRefactor.DbSetup {
                     City = warehouseJson["city"].GetString(),
                     Province = warehouseJson["province"].GetString(),
                     Country = warehouseJson["country"].GetString(),
-                    
+
                     // Contact is a nested object, so we handle it separately
                     ContactName = warehouseJson["contact"].GetProperty("name").GetString(),
                     ContactPhone = warehouseJson["contact"].GetProperty("phone").GetString(),
@@ -217,7 +247,7 @@ namespace CargoHubRefactor.DbSetup {
             {
                 Console.WriteLine($"Date parsing error for Supplier ID: {returnWarehouseObject.WarehouseId}\n {e}");
             }
-            
+
 
             return returnWarehouseObject;
         }
@@ -241,7 +271,7 @@ namespace CargoHubRefactor.DbSetup {
                         ? clientJson["province"].GetString()
                         : "Unknown", // Default value if province is null or missing
                     Country = clientJson["country"].GetString(),
-                    
+
                     // Contact information mapping
                     ContactName = clientJson["contact_name"].GetString(),
                     ContactPhone = clientJson["contact_phone"].GetString(),
@@ -285,6 +315,19 @@ namespace CargoHubRefactor.DbSetup {
             Item returnItemObject = new Item();
             string format = "yyyy-MM-dd HH:mm:ss"; // Define the expected date-time format
 
+            Random random = new Random();
+
+            double minValue = 4.0;
+            double maxValue = 6.0;
+
+            // Generate random value in the range [4, 6]
+            double randomValue = minValue + (random.NextDouble() * (maxValue - minValue));
+
+            // Round to 2 decimal places
+            randomValue = Math.Round(randomValue, 2);
+
+            Console.WriteLine(randomValue);
+
             try
             {
                 returnItemObject = new Item
@@ -300,6 +343,7 @@ namespace CargoHubRefactor.DbSetup {
                     ItemLine = itemJson["item_line"].GetInt32(),
                     ItemGroup = itemJson["item_group"].GetInt32(),
                     ItemType = itemJson["item_type"].GetInt32(),
+                    Price = randomValue,
                     UnitPurchaseQuantity = itemJson["unit_purchase_quantity"].GetInt32(),
                     UnitOrderQuantity = itemJson["unit_order_quantity"].GetInt32(),
                     PackOrderQuantity = itemJson["pack_order_quantity"].GetInt32(),
@@ -316,10 +360,12 @@ namespace CargoHubRefactor.DbSetup {
             }
 
             // Parse created_at and updated_at with the specific format
-            try {
+            try
+            {
                 returnItemObject.CreatedAt = DateTime.ParseExact(itemJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
                 returnItemObject.UpdatedAt = DateTime.ParseExact(itemJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
-            } catch (FormatException e)
+            }
+            catch (FormatException e)
             {
                 Console.WriteLine($"Date parsing error for Item UID: {returnItemObject.Uid}\n {e}");
             }
@@ -332,53 +378,6 @@ namespace CargoHubRefactor.DbSetup {
 
             return returnItemObject;
         }
-
-        // public Transfer ReturnTransferObject(Dictionary<string, System.Text.Json.JsonElement> transferJson)
-        // {
-        //     Transfer returnTransferObject = new Transfer();
-        //     string format = "yyyy-MM-ddTHH:mm:ssZ"; // Define the expected date-time format for the JSON (ISO 8601)
-
-        //     try
-        //     {
-        //         // Check if TransferFrom and TransferTo are null or missing, and return null if so
-        //         if (!transferJson.ContainsKey("transfer_from") || !transferJson.ContainsKey("transfer_to") ||
-        //             transferJson["transfer_from"].ValueKind.Equals(JsonValueKind.Null) ||
-        //             transferJson["transfer_to"].ValueKind.Equals(JsonValueKind.Null))
-        //         {
-        //             return null; // Return null if either transfer_from or transfer_to is missing or null
-        //         }
-
-        //         returnTransferObject = new Transfer
-        //         {
-        //             // Mapping the JSON fields to Transfer properties
-        //             TransferId = transferJson["id"].GetInt32(),
-        //             Reference = transferJson["reference"].GetString(),
-        //             TransferFrom = transferJson["transfer_from"].GetInt32(),
-        //             TransferTo = transferJson["transfer_to"].GetInt32(),
-        //             TransferStatus = transferJson["transfer_status"].GetString(),
-                    
-        //             // Date fields
-        //             CreatedAt = DateTime.UtcNow, // Default value; will be overridden below
-        //             UpdatedAt = DateTime.UtcNow // Default value; will be overridden below
-        //         };
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         // If an error occurs while processing the transfer object, log it
-        //         Console.WriteLine($"Error processing Transfer ID: {transferJson["id"].GetInt32()}\n {e}");
-        //     }
-
-        //     try {
-        //         returnTransferObject.CreatedAt = DateTime.ParseExact(transferJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
-        //         returnTransferObject.UpdatedAt = DateTime.ParseExact(transferJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
-        //     } catch (FormatException e)
-        //     {
-        //         Console.WriteLine($"Date parsing error for Transfer ID: {returnTransferObject.TransferId}\n {e}");
-        //     }
-            
-
-        //     return returnTransferObject;
-        // }
 
         public Transfer ReturnTransferObject(Dictionary<string, JsonElement> transferJson)
         {
@@ -455,13 +454,15 @@ namespace CargoHubRefactor.DbSetup {
                     OrderDate = DateTime.UtcNow, // Default value; will be overridden below
                     RequestDate = DateTime.UtcNow // Default value; will be overridden below
                 };
-                            // Parse created_at and updated_at with the specific format
-                try {
+                // Parse created_at and updated_at with the specific format
+                try
+                {
                     returnOrderObject.CreatedAt = DateTime.ParseExact(orderJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
                     returnOrderObject.UpdatedAt = DateTime.ParseExact(orderJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
                     returnOrderObject.OrderDate = DateTime.ParseExact(orderJson["order_date"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
                     returnOrderObject.RequestDate = DateTime.ParseExact(orderJson["request_date"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
-                } catch (FormatException e)
+                }
+                catch (FormatException e)
                 {
                     Console.WriteLine($"Date parsing error for Order UID: {returnOrderObject.Id}\n {e}");
                 }
@@ -510,7 +511,7 @@ namespace CargoHubRefactor.DbSetup {
                         ? inventoryJson["description"].GetString()
                         : "No description available",  // Default value if description is missing or null
                     ItemReference = inventoryJson["item_reference"].GetString(),
-                    
+
                     // Handling Locations as JSON array and converting it to List<int>
                     LocationsList = inventoryJson["locations"].EnumerateArray()
                         .Select(location => location.GetInt32())
@@ -533,11 +534,13 @@ namespace CargoHubRefactor.DbSetup {
             {
                 Console.WriteLine($"Error processing Inventory ID: {inventoryJson["id"].GetInt32()}\n {e}");
             }
-                    // Parse created_at and updated_at with the specific format
-            try {
+            // Parse created_at and updated_at with the specific format
+            try
+            {
                 returnInventoryObject.CreatedAt = DateTime.ParseExact(inventoryJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
                 returnInventoryObject.UpdatedAt = DateTime.ParseExact(inventoryJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
-            } catch (FormatException e)
+            }
+            catch (FormatException e)
             {
                 Console.WriteLine($"Date parsing error for Inventory ID: {returnInventoryObject.InventoryId}\n {e}");
             }
@@ -559,7 +562,7 @@ namespace CargoHubRefactor.DbSetup {
                 returnShipmentObject = new Shipment
                 {
                     ShipmentId = shipmentJson["id"].GetInt32(),
-                    OrderId = shipmentJson["order_id"].GetInt32(),
+                    OrderId = shipmentJson["order_id"].GetInt32().ToString(),
                     SourceId = shipmentJson["source_id"].GetInt32(),
                     OrderDate = DateTime.Parse(shipmentJson["order_date"].GetString()),
                     RequestDate = DateTime.Parse(shipmentJson["request_date"].GetString()),
@@ -623,7 +626,7 @@ namespace CargoHubRefactor.DbSetup {
                     // Assuming a property or method exists to associate items with Shipment
                     shipment.shipmentItems = shipmentItems;
                 }
-                
+
             }
             catch (Exception e)
             {
