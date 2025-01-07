@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CargoHubRefactor.Controllers {
 
-    [ServiceFilter(typeof(AdminFilter))]
+    [ServiceFilter(typeof(Filters))]
     [Route("api/v1/Clients")]
     [ApiController]
     public class ClientController : ControllerBase
