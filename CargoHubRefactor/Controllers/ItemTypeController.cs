@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 namespace CargoHubRefactor.Controllers{
+    [ServiceFilter(typeof(Filters))]
     [Route("api/v1/Item_Types")]
     [ApiController]
     public class ItemTypeController : ControllerBase
