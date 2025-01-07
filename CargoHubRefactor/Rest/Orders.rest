@@ -84,6 +84,28 @@ Content-Type: application/json
 
 ---
 
+
+### Get total price for an order
+GET http://localhost:5000/api/v1/Orders/25/TotalPrice
+# ApiToken: E5F6G7
+
+###
+# Expected Response:
+HTTP/1.1 200 OK
+Connection: close
+Content-Type: text/plain; charset=utf-8
+Date: Mon, 06 Jan 2025 15:05:24 GMT
+Server: Kestrel
+Transfer-Encoding: chunked
+
+Total Price for Order 25: 105.62
+
+### Get total Weight for an order
+GET http://localhost:5000/api/v1/Orders/25/TotalWeight
+# ApiToken: E5F6G7
+
+###
+
 ### Add a New Order
 POST http://localhost:5000/api/v1/Orders
 Content-Type: application/json
@@ -109,14 +131,14 @@ Content-Type: application/json
 }
 ###
 
+###
 
---
 ### Update an Existing Order
-PUT http://localhost:5000/api/v1/Orders/1
+PUT http://localhost:5000/api/v1/Orders/3502
 Content-Type: application/json
 
 {
-  "SourceId": 123,
+  "SourceId": 121,
   "OrderDate": "2024-12-01T10:00:00Z",
   "RequestDate": "2024-12-02T10:00:00Z",
   "Reference": "ORD12345",
@@ -132,7 +154,8 @@ Content-Type: application/json
   "TotalAmount": 1500.00,
   "TotalDiscount": 100.00,
   "TotalTax": 50.00,
-  "TotalSurcharge": 10.00
+  "TotalSurcharge": 10.00,
+  "OrderItems": []
 }
 
 

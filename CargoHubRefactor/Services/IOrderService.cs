@@ -6,6 +6,8 @@ public interface IOrderService
 {
     Task<Order?> GetOrderAsync(int orderId);
     Task<IEnumerable<Order>> GetOrdersAsync();
+    Task<double> GetOrderPriceTotalAsync(int id);
+    Task<double> GetOrderWeightTotalAsync(int id);
     
     Task<Order> AddOrderAsync(
         int? sourceId,
