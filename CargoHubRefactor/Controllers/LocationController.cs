@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 namespace CargoHubRefactor.Controllers
 {
+    [ServiceFilter(typeof(Filters))]
     [Route("api/v1/Locations")]
     public class LocationController : ControllerBase
     {

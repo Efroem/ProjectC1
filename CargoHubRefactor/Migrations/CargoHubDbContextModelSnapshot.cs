@@ -166,6 +166,9 @@ namespace CargoHubRefactor.Migrations
                     b.Property<int>("PackOrderQuantity")
                         .HasColumnType("INTEGER");
 
+                    b.Property<double>("Price")
+                        .HasColumnType("REAL");
+
                     b.Property<string>("ShortDescription")
                         .IsRequired()
                         .HasColumnType("TEXT");
