@@ -8,6 +8,7 @@ using System.Reflection;
 using Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Testing.Platform.Extensions.Messages;
 namespace CargoHubRefactor.DbSetup {
     public class SetupItems
     {
@@ -472,6 +473,7 @@ namespace CargoHubRefactor.DbSetup {
                             }
                             catch (Exception itemEx)
                             {
+
                             }
                         }
                     }
