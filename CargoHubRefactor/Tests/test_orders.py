@@ -146,7 +146,7 @@ def test_put_orders_integration(_data):
 
 
     # Send a PUT request to the API and check if it was successful
-    put_response = requests.put(url, json=body)
+    put_response = requests.put(url, json=body, headers=headers)
 
     assert put_response.status_code == 200
 
