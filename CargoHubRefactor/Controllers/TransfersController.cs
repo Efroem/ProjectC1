@@ -63,6 +63,15 @@ namespace CargoHubRefactor.Controllers
             return Ok(message);
         }
 
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateTransfer(int id, [FromBody] Transfer transfer)
+        {
+            var (message, updatedTransfer) = await _transferService.UpdateTransferAsync(id, transfer);
+            if (updatedTransfer == null) return BadRequest(message);
+            return Ok(updatedTransfer);
+        }
+
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteTransfer(int id)
         {
