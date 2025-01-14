@@ -73,7 +73,11 @@ namespace CargoHubRefactor.Services
         private void WriteReportToFile(string entity, DateTime fromDate, DateTime toDate, int? warehouseId, IEnumerable<object> reportData)
         {
             string fileName = $"{entity}_Report_{fromDate:yyyyyMMdd}_{toDate:yyyyMMdd}_Id_{warehouseId}.txt";
-            string filePath = Path.Combine(_reportDirectory, fileName);
+            string filePath = Path.GetFullPath(Path.Combine(_reportDirectory, fileName));
+            if (!filePath.StartsWith(_reportDirectory))
+            {
+                throw new UnauthorizedAccessException("Invalid file path.");
+            }
 
             using (StreamWriter writer = new StreamWriter(filePath, false))
             {

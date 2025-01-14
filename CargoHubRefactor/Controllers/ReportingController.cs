@@ -30,7 +30,7 @@ namespace CargoHubRefactor.Controllers
                 return BadRequest("Entity is required.");
             if (!fromDate.HasValue || !toDate.HasValue)
                 return BadRequest("fromDate and toDate are required.");
-            if (entity.Contains("..") || entity.Contains("/") || entity.Contains("\\"))
+            if (!IsValidEntity(entity))
                 return BadRequest("Invalid entity value.");
 
             try
@@ -71,4 +71,8 @@ namespace CargoHubRefactor.Controllers
             return File(fileBytes, "text/csv", fileName);
         }
     }
-}
+        private bool IsValidEntity(string entity)
+        {
+            return entity.All(c => char.IsLetterOrDigit(c) || c == '_');
+        }
+    }
