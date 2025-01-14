@@ -56,11 +56,35 @@ namespace CargoHubRefactor
                 {
                     Title = "CargoHub API",
                     Version = "v1",
-                    Description = "API documentation for CargoHubRefactor",
+                    Description = "De nieuwe CargoHub API",
                     Contact = new Microsoft.OpenApi.Models.OpenApiContact
                     {
-                        Name = "Your Name",
-                        Email = "your.email@example.com"
+                        Name = "De Bijna Altijd Werkers",
+                        Email = "altijdwerkers@gmail.com"
+                    }
+                });
+
+                // Add API key support
+                options.AddSecurityDefinition("ApiKey", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Name = "ApiToken",
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Description = "API Key required for access"
+                });
+
+                options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+                {
+                    {
+                        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                        {
+                            Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                            {
+                                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                                Id = "ApiKey"
+                            }
+                        },
+                        Array.Empty<string>()
                     }
                 });
 
@@ -71,6 +95,7 @@ namespace CargoHubRefactor
                     options.IncludeXmlComments(xmlPath);
                 }
             });
+
 
             var app = builder.Build();
 
