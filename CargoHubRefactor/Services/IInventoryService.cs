@@ -9,4 +9,5 @@ public interface IInventoryService
     Task<(string message, Inventory? returnedInventory)> AddInventoryAsync(Inventory Inventory);
     Task<(string message, Inventory? returnedInventory)> UpdateInventoryAsync(int id, Inventory Inventory);
     Task<bool> DeleteInventoryAsync(int id);
+    Task<IEnumerable<Inventory>> GetInventoriesPagedAsync(int limit, int page);
 }

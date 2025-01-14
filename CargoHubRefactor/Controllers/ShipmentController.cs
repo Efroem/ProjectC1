@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+[ServiceFilter(typeof(Filters))]
 [Route("api/v1/shipments")]
 [ApiController]
 public class ShipmentController : ControllerBase
@@ -17,6 +17,23 @@ public class ShipmentController : ControllerBase
     public async Task<ActionResult<List<Shipment>>> GetAllShipments()
     {
         return Ok(await _shipmentService.GetAllShipmentsAsync());
+    }
+
+    [HttpGet("limit/{limit}")]
+    public async Task<ActionResult<IEnumerable<Client>>> GetAllShipments(int limit)
+    {
+        if (limit <= 0)
+        {
+            return BadRequest("Cannot show shipments with a limit below 1.");
+        }
+
+        var shipments = await _shipmentService.GetAllShipmentsAsync(limit);
+        if (shipments == null || !shipments.Any())
+        {
+            return NotFound("No shipments found.");
+        }
+
+        return Ok(shipments);
     }
 
     [HttpGet("{id}")]
@@ -79,10 +96,8 @@ public class ShipmentController : ControllerBase
         {
             return NotFound("No items found for the given shipment.");
         }
-
         return Ok(shipmentItems);
     }
-
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteShipment(int id)

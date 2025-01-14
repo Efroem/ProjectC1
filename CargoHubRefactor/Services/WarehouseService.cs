@@ -8,6 +8,19 @@ public class WarehouseService : IWarehouseService
 {
     private readonly CargoHubDbContext _context;
 
+    private static readonly HashSet<string> DangerousGoodsClassifications = new HashSet<string>
+    {
+        "1.1", "1.2", "1.3", "1.4", "1.5", "1.6",
+        "2.1", "2.2", "2.3",
+        "3",
+        "4.1", "4.2", "4.3",
+        "5.1", "5.2",
+        "6.1", "6.2",
+        "7",
+        "8",
+        "9"
+    };
+
     public WarehouseService(CargoHubDbContext context)
     {
         _context = context;
@@ -25,48 +38,29 @@ public class WarehouseService : IWarehouseService
 
     public async Task<(string message, Warehouse? warehouse)> AddWarehouseAsync(WarehouseDto warehouseDto)
     {
-        // Validate that all fields are filled in
         if (string.IsNullOrWhiteSpace(warehouseDto.Code))
             return ("Error: 'Code' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.Name))
-            return ("Error: 'Name' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.Address))
-            return ("Error: 'Address' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.Zip))
-            return ("Error: 'Zip' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.City))
-            return ("Error: 'City' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.Province))
-            return ("Error: 'Province' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.Country))
-            return ("Error: 'Country' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.ContactName))
-            return ("Error: 'ContactName' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.ContactPhone))
-            return ("Error: 'ContactPhone' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.ContactEmail))
-            return ("Error: 'ContactEmail' field must be filled in.", null);
 
-        // Check for duplicate code
-        if (await _context.Warehouses.AnyAsync(w => w.Code == warehouseDto.Code))
+        if (warehouseDto.RestrictedClassificationsList != null)
         {
-            return ("Error: A warehouse with this code already exists.", null);
+            foreach (var classification in warehouseDto.RestrictedClassificationsList)
+            {
+                if (!DangerousGoodsClassifications.Contains(classification))
+                {
+                    return ($"Error: Invalid classification '{classification}'.", null);
+                }
+            }
         }
 
-        int nextId;
-
-        if (_context.Warehouses.Any())
-        {
-            nextId = _context.Warehouses.Max(w => w.WarehouseId) + 1;
-        }
-        else
-        {
-            nextId = 1;
-        }
+        // Find the smallest unused ID
+        var existingIds = await _context.Warehouses.Select(w => w.WarehouseId).ToListAsync();
+        var firstAvailableId = Enumerable.Range(1, existingIds.Count + 1)
+                                        .Except(existingIds)
+                                        .FirstOrDefault();
 
         var warehouse = new Warehouse
         {
-            WarehouseId = nextId,
+            WarehouseId = firstAvailableId, // Assign the first available ID
             Code = warehouseDto.Code,
             Name = warehouseDto.Name,
             Address = warehouseDto.Address,
@@ -77,8 +71,9 @@ public class WarehouseService : IWarehouseService
             ContactName = warehouseDto.ContactName,
             ContactPhone = warehouseDto.ContactPhone,
             ContactEmail = warehouseDto.ContactEmail,
-            CreatedAt = DateTime.Now, // Set CreatedAt to current time
-            UpdatedAt = DateTime.Now  // Initialize UpdatedAt as well
+            RestrictedClassificationsList = warehouseDto.RestrictedClassificationsList,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now
         };
 
         _context.Warehouses.Add(warehouse);
@@ -86,7 +81,7 @@ public class WarehouseService : IWarehouseService
         return ("Warehouse successfully created.", warehouse);
     }
 
-    public async Task<(string message, Warehouse? ReturnedWarehouse)> UpdateWarehouseAsync(int id, WarehouseDto warehouseDto)
+    public async Task<(string message, Warehouse ReturnedWarehouse)> UpdateWarehouseAsync(int id, WarehouseDto warehouseDto)
     {
         var warehouse = await _context.Warehouses.FindAsync(id);
         if (warehouse == null)
@@ -94,34 +89,19 @@ public class WarehouseService : IWarehouseService
             return ("Error: Warehouse not found.", null);
         }
 
-        // Validate that all fields are filled in
-        if (string.IsNullOrWhiteSpace(warehouseDto.Code))
-            return ("Error: 'Code' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.Name))
-            return ("Error: 'Name' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.Address))
-            return ("Error: 'Address' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.Zip))
-            return ("Error: 'Zip' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.City))
-            return ("Error: 'City' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.Province))
-            return ("Error: 'Province' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.Country))
-            return ("Error: 'Country' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.ContactName))
-            return ("Error: 'ContactName' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.ContactPhone))
-            return ("Error: 'ContactPhone' field must be filled in.", null);
-        if (string.IsNullOrWhiteSpace(warehouseDto.ContactEmail))
-            return ("Error: 'ContactEmail' field must be filled in.", null);
-
-        // Check for duplicate code, excluding the current warehouse
-        if (await _context.Warehouses.AnyAsync(w => w.Code == warehouseDto.Code && w.WarehouseId != id))
+        // Validate Restricted Classifications
+        if (warehouseDto.RestrictedClassificationsList != null)
         {
-            return ("Error: A warehouse with this code already exists.", null);
+            foreach (var classification in warehouseDto.RestrictedClassificationsList)
+            {
+                if (!DangerousGoodsClassifications.Contains(classification))
+                {
+                    return ($"Error: Invalid classification '{classification}'.", null);
+                }
+            }
         }
 
+        // Update all fields from DTO
         warehouse.Code = warehouseDto.Code;
         warehouse.Name = warehouseDto.Name;
         warehouse.Address = warehouseDto.Address;
@@ -132,9 +112,16 @@ public class WarehouseService : IWarehouseService
         warehouse.ContactName = warehouseDto.ContactName;
         warehouse.ContactPhone = warehouseDto.ContactPhone;
         warehouse.ContactEmail = warehouseDto.ContactEmail;
-        warehouse.UpdatedAt = DateTime.Now; // Set UpdatedAt to current time
 
+        // Update Restricted Classifications
+        warehouse.RestrictedClassificationsList = warehouseDto.RestrictedClassificationsList;
+
+        // Update the timestamp
+        warehouse.UpdatedAt = DateTime.Now;
+
+        // Save changes to the database
         await _context.SaveChangesAsync();
+
         return ("Warehouse successfully updated.", warehouse);
     }
 

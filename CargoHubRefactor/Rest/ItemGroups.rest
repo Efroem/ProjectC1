@@ -5,6 +5,10 @@ GET http://localhost:5000/api/v1/Item_Groups
 GET http://localhost:5000/api/v1/Item_Groups/2
 ####
 
+GET http://localhost:5000/api/v1/Item_Groups/limit/10/page/1
+ApiToken: H8I9J10
+####
+
 POST http://localhost:5000/api/v1/Item_Groups
 Content-Type: application/json
 

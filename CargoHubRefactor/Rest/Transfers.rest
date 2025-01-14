@@ -1,8 +1,14 @@
+###
+GET http://localhost:5000/api/v1/transfers/limit/10
+ApiToken: A1B2C3D4
+###
+
 POST http://localhost:5000/api/v1/transfers
+ApiToken: A1B2C3D4
 Content-Type: application/json
 
 {
-    "reference": "TR00001",
+    "reference": "H5000",
     "transferFrom": 2,
     "transferTo": 3,
     "items": [
@@ -26,3 +32,58 @@ Content-Type: application/json
 
 "InProgress"
 ###
+
+# Test to ensure only pending transfers can be updated
+
+### Create a new transfer (status: Pending)
+POST http://localhost:5000/api/v1/transfers
+ApiToken: A1B2C3D4
+Content-Type: application/json
+
+{
+  "reference": "REF123",
+  "transferFrom": 1,
+  "transferTo": 2,
+  "items": [
+    {"itemId": "P004279", "amount": 5}
+  ]
+}
+
+### Attempt to update the transfer while it is pending (success)
+PUT http://localhost:5000/api/v1/transfers/119242
+ApiToken: A1B2C3D4
+Content-Type: application/json
+
+{
+  "reference": "REF123-UPDATED",
+  "transferFrom": 1,
+  "transferTo": 2,
+  "items": [
+    {"itemId": "P000451", "amount": 2}
+  ]
+}
+
+### Update the status of the transfer to "InProgress"
+PUT http://localhost:5000/api/v1/transfers/119242/status
+ApiToken: A1B2C3D4
+Content-Type: application/json
+
+"InProgress"
+
+### Attempt to update the transfer after status is changed to "InProgress" (should fail)
+PUT http://localhost:5000/api/v1/transfers/119242
+ApiToken: A1B2C3D4
+Content-Type: application/json
+
+{
+  "reference": "REF123-INVALID",
+  "transferFrom": 1,
+  "transferTo": 2,
+  "items": [
+    {"itemId": "P004279", "amount": 1}
+  ]
+}
+
+###
+DELETE http://localhost:5000/api/v1/transfers/119241
+ApiToken: A1B2C3D4
