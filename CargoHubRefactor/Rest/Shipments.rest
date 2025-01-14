@@ -2,18 +2,21 @@
 
 # Geeft alle shipments
 GET http://localhost:5000/api/v1/shipments
+ApiToken: A1B2C3D4
 Content-Type: application/json
 
 ###
 
 # Geeft een specifieke shipment op basis van ID
 GET http://localhost:5000/api/v1/shipments/1
+ApiToken: A1B2C3D4
 Content-Type: application/json
 
 ###
 
 # Voegt een nieuwe shipment toe
 POST http://localhost:5000/api/v1/shipments
+ApiToken: A1B2C3D4
 Content-Type: application/json
 
 {
@@ -38,6 +41,7 @@ Content-Type: application/json
 
 # Voegt een andere shipment toe
 POST http://localhost:5000/api/v1/shipments
+ApiToken: A1B2C3D4
 Content-Type: application/json
 
 {
@@ -62,6 +66,7 @@ Content-Type: application/json
 
 # Update een bestaande shipment
 PUT http://localhost:5000/api/v1/shipments/10107
+ApiToken: A1B2C3D4
 Content-Type: application/json
 
 {
@@ -83,7 +88,8 @@ Content-Type: application/json
 }
 ###
 //update status van shipment en update automatisch the inventory voor de items in de shipment
-PUT http://localhost:5000/api/v1/shipments/10107/status
+PUT http://localhost:5000/api/v1/shipments/10108/status
+ApiToken: A1B2C3D4
 Content-Type: application/json
 
 {
@@ -94,18 +100,20 @@ Content-Type: application/json
 
 #get items in een shipment
 GET http://localhost:5000/api/v1/shipments/10107/items
+ApiToken: A1B2C3D4
 Content-Type: application/json
 
 ###
 
 # Verwijdert een shipment
-DELETE http://localhost:5000/api/v1/shipments/10104
+DELETE http://localhost:5000/api/v1/shipments/10107
+ApiToken: A1B2C3D4
 Content-Type: application/json
 
 ###
 //
 POST http://localhost:5000/api/v1/shipments/split
-ApiToken: E5F6G7
+ApiToken: A1B2C3D4
 Content-Type: application/json
 
 {
