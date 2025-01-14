@@ -25,13 +25,15 @@ public class OrderService : IOrderService
         return await _context.Orders.ToListAsync();
     }
 
-    public async Task<double> GetOrderPriceTotalAsync(int id) {
+    public async Task<double> GetOrderPriceTotalAsync(int id)
+    {
         List<OrderItem> orderItems = await _context.OrderItems.Where(o => o.OrderId == id).ToListAsync();
         if (orderItems.IsNullOrEmpty()) return -1;
 
         double totalPrice = 0;
 
-        foreach (var orderItem in orderItems) {
+        foreach (var orderItem in orderItems)
+        {
             var item = await _context.Items.FirstOrDefaultAsync(o => o.Uid == orderItem.ItemId);
             if (item == null) continue;
             double price = item.Price;
@@ -40,13 +42,15 @@ public class OrderService : IOrderService
         return totalPrice;
     }
 
-    public async Task<double> GetOrderWeightTotalAsync(int id) {
+    public async Task<double> GetOrderWeightTotalAsync(int id)
+    {
         List<OrderItem> orderItems = await _context.OrderItems.Where(o => o.OrderId == id).ToListAsync();
         if (orderItems.IsNullOrEmpty()) return -1;
 
         double totalWeight = 0;
 
-        foreach (var orderItem in orderItems) {
+        foreach (var orderItem in orderItems)
+        {
             var item = await _context.Items.FirstOrDefaultAsync(o => o.Uid == orderItem.ItemId);
             if (item == null) continue;
             double weight = item.Weight * orderItem.Amount;
@@ -55,7 +59,7 @@ public class OrderService : IOrderService
         return totalWeight;
     }
 
-    public async Task<Order> AddOrderAsync(int? sourceId, DateTime orderDate, DateTime requestDate, string reference,
+    public async Task<Order> AddOrderAsync(int sourceId, DateTime orderDate, DateTime requestDate, string reference,
                                            string referenceExtra, string orderStatus, string notes,
                                            string shippingNotes, string pickingNotes, int warehouseId,
                                            int? shipTo, int? billTo, int? shipmentId, double totalAmount,
@@ -104,11 +108,13 @@ public class OrderService : IOrderService
         {
             nextOrderItemId = 1;
         }
-        foreach (OrderItem Item in orderItems) {
+        foreach (OrderItem Item in orderItems)
+        {
             Item? dummyItem = await _context.Items.FirstOrDefaultAsync(l => l.Uid == Item.ItemId);
             if (dummyItem == null) continue;
 
-            var orderItem = new OrderItem{
+            var orderItem = new OrderItem
+            {
                 Id = nextOrderItemId,
                 OrderId = nextId,
                 ItemId = Item.ItemId,
@@ -116,17 +122,17 @@ public class OrderService : IOrderService
             };
 
             nextOrderItemId++;
-            
+
             await _context.OrderItems.AddAsync(orderItem);
         }
 
-        
+
         await _context.SaveChangesAsync();
 
         return order;
     }
 
-    public async Task<Order> UpdateOrderAsync(int id, int? sourceId, DateTime orderDate, DateTime requestDate,
+    public async Task<Order> UpdateOrderAsync(int id, int sourceId, DateTime orderDate, DateTime requestDate,
                                               string reference, string referenceExtra, string orderStatus,
                                               string notes, string shippingNotes, string pickingNotes,
                                               int warehouseId, int? shipTo, int? billTo, int? shipmentId,

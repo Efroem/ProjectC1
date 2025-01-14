@@ -8,9 +8,9 @@ public interface IOrderService
     Task<IEnumerable<Order>> GetOrdersAsync();
     Task<double> GetOrderPriceTotalAsync(int id);
     Task<double> GetOrderWeightTotalAsync(int id);
-    
+
     Task<Order> AddOrderAsync(
-        int? sourceId,
+        int sourceId,
         DateTime orderDate,
         DateTime requestDate,
         string reference,
@@ -28,10 +28,10 @@ public interface IOrderService
         double totalTax,
         double totalSurcharge,
         List<OrderItem> orderItems);
-    
+
     Task<Order> UpdateOrderAsync(
         int id,
-        int? sourceId,
+        int sourceId,
         DateTime orderDate,
         DateTime requestDate,
         string reference,
@@ -48,7 +48,7 @@ public interface IOrderService
         double totalDiscount,
         double totalTax,
         double totalSurcharge);
-    
+
     Task<bool> DeleteOrderAsync(int orderId);
     Task<Dictionary<string, List<Location>>> GetLocationsForOrderItemsAsync(int orderId);
 }

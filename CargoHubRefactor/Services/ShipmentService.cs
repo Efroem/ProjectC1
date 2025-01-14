@@ -7,10 +7,12 @@ using Microsoft.EntityFrameworkCore;
 public class ShipmentService : IShipmentService
 {
     private readonly CargoHubDbContext _context;
+    private readonly IOrderService _orderService;
 
-    public ShipmentService(CargoHubDbContext context)
+    public ShipmentService(CargoHubDbContext context, IOrderService orderService)
     {
         _context = context;
+        _orderService = orderService;
     }
 
     public async Task<List<Shipment>> GetAllShipmentsAsync()
@@ -168,5 +170,97 @@ public class ShipmentService : IShipmentService
         await _context.SaveChangesAsync();
         return "Shipment successfully deleted.";
     }
+
+    public async Task<string> SplitOrderIntoShipmentsAsync(int orderId, List<SplitOrderItem> itemsToSplit)
+    {
+        // Fetch the order using the order service
+        var order = await _orderService.GetOrderAsync(orderId); // Fetch the order using _orderService
+        if (order == null)
+            return "Error: Order not found.";
+
+        // Validate items exist in the order and have sufficient quantity
+        var orderItemsDict = order.OrderItems.ToDictionary(i => i.ItemId, i => i.Amount);
+        foreach (var item in itemsToSplit)
+        {
+            if (!orderItemsDict.ContainsKey(item.ItemId) || orderItemsDict[item.ItemId] < item.Quantity)
+                return $"Error: Invalid item {item.ItemId} or insufficient quantity.";
+        }
+
+        // Adjust the original order's items
+        foreach (var item in itemsToSplit)
+        {
+            var originalItem = order.OrderItems.First(i => i.ItemId == item.ItemId);
+            originalItem.Amount -= item.Quantity;
+            if (originalItem.Amount == 0)
+                order.OrderItems.Remove(originalItem);
+        }
+
+        // Create a new shipment
+        var newShipment = new Shipment
+        {
+            SourceId = order.SourceId,
+            OrderDate = order.OrderDate,
+            RequestDate = order.RequestDate,
+            ShipmentDate = DateTime.UtcNow,
+            ShipmentType = "Split Shipment",
+            ShipmentStatus = "Pending",
+            Notes = "Created from split order",
+            TotalPackageCount = itemsToSplit.Count,
+            TotalPackageWeight = itemsToSplit.Sum(i =>
+                i.Quantity * (order.OrderItems.FirstOrDefault(o => o.ItemId == i.ItemId)?.Item.Weight ?? 0)),
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            OrderIdsList = new List<string> { orderId.ToString() }
+        };
+
+        // Save the new shipment to the database to generate the ShipmentId
+        _context.Shipments.Add(newShipment);
+        await _context.SaveChangesAsync(); // Save to generate ShipmentId
+
+        // Create and add shipment items
+        foreach (var item in itemsToSplit)
+        {
+            var shipmentItem = new ShipmentItem
+            {
+                ShipmentId = newShipment.ShipmentId,
+                ItemId = item.ItemId,
+                Amount = item.Quantity
+            };
+            _context.ShipmentItems.Add(shipmentItem);
+        }
+
+        // Save all changes to the database
+        await _context.SaveChangesAsync();
+
+        // Update the order with adjusted items and other required parameters
+        await _orderService.UpdateOrderAsync(
+            order.Id,
+            order.SourceId,
+            order.OrderDate,
+            order.RequestDate,
+            order.Reference,
+            order.ReferenceExtra,
+            order.OrderStatus,
+            order.Notes,
+            order.ShippingNotes,
+            order.PickingNotes,
+            order.WarehouseId,
+            order.ShipTo,
+            order.BillTo,
+            order.ShipmentId,
+            order.TotalAmount,
+            order.TotalDiscount,
+            order.TotalTax,
+            order.TotalSurcharge
+        );
+
+        return $"Successfully split order {orderId} into a new shipment with Shipment ID {newShipment.ShipmentId}.";
+    }
+
+
+
+    // Other methods remain unchanged
 }
+
+
 

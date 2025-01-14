@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 public class Order
 {
     public int Id { get; set; }
-    public int? SourceId { get; set; }
+    public int SourceId { get; set; }
     public DateTime OrderDate { get; set; }
     public DateTime RequestDate { get; set; }
     public string Reference { get; set; }
@@ -23,7 +23,7 @@ public class Order
     public double TotalTax { get; set; }
     public double TotalSurcharge { get; set; }
     [NotMapped]
-    public List<OrderItem> OrderItems {get; set;} = new List<OrderItem>();
+    public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

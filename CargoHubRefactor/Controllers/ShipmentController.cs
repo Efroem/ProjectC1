@@ -76,4 +76,20 @@ public class ShipmentController : ControllerBase
         }
         return Ok(result);
     }
+
+    [HttpPost("split-order")]
+    public async Task<IActionResult> SplitOrder([FromBody] SplitOrderRequest request)
+    {
+        if (request == null || request.ItemsToSplit == null || !request.ItemsToSplit.Any())
+            return BadRequest("Invalid split request. ItemsToSplit cannot be null or empty.");
+
+        var result = await _shipmentService.SplitOrderIntoShipmentsAsync(request.OrderId, request.ItemsToSplit);
+
+        if (result.StartsWith("Error"))
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+
 }
