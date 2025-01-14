@@ -1,14 +1,13 @@
 using CargoHubRefactor.DbSetup;
 using CargoHubRefactor.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Sqlite;
 using Services;
 
 namespace CargoHubRefactor
 {
     public class Program
     {
-        public static async Task Main(string[] args) // Make Main async
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -46,12 +45,32 @@ namespace CargoHubRefactor
             builder.Services.AddScoped<SetupItems>();
             builder.Services.AddScoped<Filters>();
 
-
-
-
             // Add health checks
-            builder.Services.AddHealthChecks();  // Registers health check services
+            builder.Services.AddHealthChecks();
 
+            // Add Swagger services
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "CargoHub API",
+                    Version = "v1",
+                    Description = "API documentation for CargoHubRefactor",
+                    Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                    {
+                        Name = "Your Name",
+                        Email = "your.email@example.com"
+                    }
+                });
+
+                var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                if (File.Exists(xmlPath))
+                {
+                    options.IncludeXmlComments(xmlPath);
+                }
+            });
 
             var app = builder.Build();
 
@@ -61,7 +80,14 @@ namespace CargoHubRefactor
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
+            else
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "CargoHub API v1");
+                });
+            }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -75,19 +101,15 @@ namespace CargoHubRefactor
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
-            app.MapHealthChecks("/api/health");  // This maps the /api/health endpoint to check app health
+            app.MapHealthChecks("/api/health");
 
-
-            // Execute SetupItems logic within a valid scope
             using (var scope = app.Services.CreateScope())
             {
                 var setupItems = scope.ServiceProvider.GetRequiredService<SetupItems>();
-
-                // Ensure GetItemCategoryRelations is awaited if it’s asynchronous
                 await setupItems.GetItemCategoryRelations();
             }
 
-            await app.RunAsync(); // Use RunAsync to work with async Main
+            await app.RunAsync();
         }
     }
 }
