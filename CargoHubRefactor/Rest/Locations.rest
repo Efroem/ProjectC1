@@ -72,4 +72,9 @@ Content-Type: application/json
 #Verwijdert location
 DELETE http://localhost:5000/api/v1/Locations/3
 Content-Type: application/json
+###
+
+DELETE http://localhost:5000/api/v1/Locations/1/test
+ApiToken: A1B2C3D4
+###
 

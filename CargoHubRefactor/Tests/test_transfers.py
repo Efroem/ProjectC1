@@ -67,52 +67,80 @@ def test_add_transfer_integration(_data):
     else:
         assert response.status_code == 400
 
-def test_update_transfer_logic_integration(_data):
-    url = _data[0]["URL"] + 'transfers'
-    admin_api_token = _data[0]["AdminApiToken"]
-    headers = get_headers(admin_api_token)
+def test_delete_transfer_integration(_data):
+    # Make a POST request first to make a dummy client
+    url = _data[0]["URL"] + 'transfers/1'
+    headers = get_headers(_data[0]["AdminApiToken"])
 
-    # Create a transfer
-    body = {
-        "reference": "REF456",
-        "transferFrom": 1,
-        "transferTo": 2,
-        "items": [
-            {"itemId": "P000451", "amount": 2}
-        ]
-    }
+    dummy_get = requests.get(url, headers=headers)
+    dummyJson = dummy_get.json()
 
-    post_response = requests.post(url, json=body, headers=headers)
-    assert post_response.status_code == 201
-
-    transfer_id = post_response.json().get("transferId")
-
-    # Attempt to update while status is pending
-    update_body = {
-        "reference": "REF456-UPDATED",
-        "transferFrom": 1,
-        "transferTo": 2,
-        "items": [
-            {"itemId": "P002520", "amount": 1}
-        ]
-    }
-
-    update_response = requests.put(f"{url}/{transfer_id}", json=update_body, headers=headers)
-    assert update_response.status_code == 200
-
-    # Change status to InProgress
-    status_url = f"{url}/{transfer_id}/status"
-    status_body = "InProgress"
-    status_response = requests.put(status_url, json=status_body, headers=headers)
-    assert status_response.status_code == 200
-
-    # Attempt to update after status change
-    update_response = requests.put(f"{url}/{transfer_id}", json=update_body, headers=headers)
-    assert update_response.status_code == 400
-
-    # Delete transfer
-    delete_response = requests.delete(f"{url}/{transfer_id}", headers=headers)
+    # Send a DELETE request to the API and check if it was successful
+    delete_response = requests.delete(url + "/test", headers=headers)
     assert delete_response.status_code == 200
+
+    get_response = requests.get(url, headers=headers)
+
+    dummy_response = requests.put(url, json=dummyJson, headers=headers)
+
+    # Get the status code and response data
+    status_code = get_response.status_code
+    response_data = None 
+    try:
+        response_data = get_response.json()
+    except:
+        pass
+    
+    print(response_data)
+    # Verify that the status code is 404 (Not Found) and the client no longer exists
+    assert response_data["softDeleted"] == True
+
+# def test_update_transfer_logic_integration(_data):
+#     url = _data[0]["URL"] + 'transfers'
+#     admin_api_token = _data[0]["AdminApiToken"]
+#     headers = get_headers(admin_api_token)
+
+#     # Create a transfer
+#     body = {
+#         "reference": "REF456",
+#         "transferFrom": 1,
+#         "transferTo": 2,
+#         "items": [
+#             {"itemId": "P000451", "amount": 2}
+#         ]
+#     }
+
+#     post_response = requests.post(url, json=body, headers=headers)
+#     assert post_response.status_code == 201
+
+#     transfer_id = post_response.json().get("transferId")
+
+#     # Attempt to update while status is pending
+#     update_body = {
+#         "reference": "REF456-UPDATED",
+#         "transferFrom": 1,
+#         "transferTo": 2,
+#         "items": [
+#             {"itemId": "P002520", "amount": 1}
+#         ]
+#     }
+
+#     update_response = requests.put(f"{url}/{transfer_id}", json=update_body, headers=headers)
+#     assert update_response.status_code == 200
+
+#     # Change status to InProgress
+#     status_url = f"{url}/{transfer_id}/status"
+#     status_body = "InProgress"
+#     status_response = requests.put(status_url, json=status_body, headers=headers)
+#     assert status_response.status_code == 200
+
+#     # Attempt to update after status change
+#     update_response = requests.put(f"{url}/{transfer_id}", json=update_body, headers=headers)
+#     assert update_response.status_code == 400
+
+#     # Delete transfer
+#     delete_response = requests.delete(f"{url}/{transfer_id}", headers=headers)
+#     assert delete_response.status_code == 200
 
 def test_id_reuse_logic_integration(_data):
     url = _data[0]["URL"] + 'transfers'

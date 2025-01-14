@@ -87,3 +87,9 @@ Content-Type: application/json
 ###
 DELETE http://localhost:5000/api/v1/transfers/119241
 ApiToken: A1B2C3D4
+###
+
+
+DELETE http://localhost:5000/api/v1/transfers/1/test
+ApiToken: A1B2C3D4
+###

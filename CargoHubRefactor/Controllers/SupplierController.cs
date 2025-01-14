@@ -80,6 +80,18 @@ namespace CargoHubRefactor.Controllers
             return Ok($"Supplier with ID: {id} successfully deleted");
         }
 
+        [HttpDelete("{id}/test")]
+        public async Task<IActionResult> SoftDeleteSupplier(int id)
+        {
+            var deleted = await _supplierService.SoftDeleteSupplierAsync(id);
+            if (!deleted)
+            {
+                return NotFound($"Supplier with ID: {id} not found.");
+
+            }
+            return Ok($"Supplier with ID: {id} successfully soft deleted");
+        }
+
         [HttpDelete("deleteAll")]
         public async Task<IActionResult> DeleteAllSuppliers()
         {
@@ -89,6 +101,8 @@ namespace CargoHubRefactor.Controllers
 
             return Ok("All Suppliers deleted succesfully");
         }
+
+
 
     }
 }

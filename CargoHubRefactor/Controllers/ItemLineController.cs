@@ -105,5 +105,16 @@ namespace CargoHubRefactor.Controllers{
             }
             return Ok("Successfully deleted Item Line");
         }
+
+        [HttpDelete("{lineId}/test")]
+        public async Task<ActionResult> SoftDeleteItemLine(int lineId)
+        {
+            var result = await _itemLineService.SoftDeleteItemLineAsync(lineId);
+            if (result == false)
+            {
+                return NotFound($"Item Line with ID: {lineId} not found.");
+            }
+            return Ok("Successfully soft deleted Item Line");
+        }
     }
 }

@@ -137,4 +137,16 @@ public class WarehouseService : IWarehouseService
         await _context.SaveChangesAsync();
         return "Warehouse successfully deleted.";
     }
+    public async Task<string> SoftDeleteWarehouseAsync(int id)
+    {
+        var warehouse = await _context.Warehouses.FindAsync(id);
+        if (warehouse == null)
+        {
+            return "Error: Warehouse not found.";
+        }
+
+        warehouse.SoftDeleted = true;
+        await _context.SaveChangesAsync();
+        return "Warehouse successfully soft deleted.";
+    }
 }

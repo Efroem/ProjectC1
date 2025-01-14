@@ -54,5 +54,7 @@ namespace Models
 
         [Required]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        public bool SoftDeleted { get; set; } = false;
     }
 }

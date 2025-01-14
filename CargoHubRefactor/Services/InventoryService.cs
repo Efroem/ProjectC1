@@ -196,6 +196,20 @@ public class InventoryService : IInventoryService
         await _context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<bool> SoftDeleteInventoryAsync(int id)
+    {
+        var inventory = await _context.Inventories.FirstOrDefaultAsync(c => c.InventoryId == id);
+        if (inventory == null)
+        {
+            return false;
+        }
+
+        inventory.SoftDeleted = true;
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
 }
 
 

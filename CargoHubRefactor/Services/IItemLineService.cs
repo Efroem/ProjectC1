@@ -10,4 +10,5 @@ public interface IItemLineService
     Task<(string message, ItemLine? returnedItemLine)> AddItemLineAsync(ItemLine ItemLine);
     Task<(string message, ItemLine? returnedItemLine)> UpdateItemLineAsync(int id, ItemLine ItemLine);
     Task<bool> DeleteItemLineAsync(int id);
+    Task<bool> SoftDeleteItemLineAsync(int id);
 }

@@ -271,5 +271,18 @@ public class TransferService : ITransferService
 
         return "Transfer successfully deleted.";
     }
+
+    public async Task<string> SoftDeleteTransferAsync(int transferId)
+    {
+        var transfer = await _context.Transfers.FindAsync(transferId);
+        if (transfer == null)
+        {
+            return "Error: Transfer not found.";
+        }
+
+        transfer.SoftDeleted = true;
+        await _context.SaveChangesAsync();
+        return "Transfer successfully soft deleted.";
+    }
 }
 

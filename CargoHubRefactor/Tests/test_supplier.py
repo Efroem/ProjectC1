@@ -137,49 +137,77 @@ def test_put_suppliers_integration(_data):
     assert status_code == 200 and response_data["supplierId"] == supplier_id and response_data["name"] == body["name"] and response_data["address"] == body["address"]
 
 
-# Test to delete suppliers
-def test_delete_suppliers_integration(_data):
-    # Make a POST request first to make a dummy supplier
-    url = _data[0]["URL"] + 'suppliers'
-    admin_api_token = _data[0]["AdminApiToken"]  # Extract token from the fixture
-    
-    headers = get_headers(admin_api_token)
-    
-    body = {
-        "supplierId": 99999,
-        "code": "SUP9999",
-        "name": "Lee, Parks and Johnson",
-        "address": "5989 Sullivan Drives",
-        "addressExtra": "Apt. 996",
-        "city": "Port Anitaburgh",
-        "zipCode": "91688",
-        "province": "Illinois",
-        "country": "Czech Republic",
-        "contactName": "Toni Barnett",
-        "phonenumber": "3635417282",
-        "reference": "LPaJ-SUP0001"
-    }
+def test_delete_supplier_integration(_data):
+    # Make a POST request first to make a dummy client
+    url = _data[0]["URL"] + 'suppliers/1'
+    headers = get_headers(_data[0]["AdminApiToken"])
 
-    # Send a POST request to the API and check if it was successful
-    post_response = requests.post(url, json=body, headers=headers)
-    assert post_response.status_code == 201
-    supplier_id = post_response.json().get("supplierId")
-    
-    url += f"/{supplier_id}"
+    dummy_get = requests.get(url, headers=headers)
+    dummyJson = dummy_get.json()
 
     # Send a DELETE request to the API and check if it was successful
-    delete_response = requests.delete(url, headers=headers)
+    delete_response = requests.delete(url + "/test", headers=headers)
     assert delete_response.status_code == 200
 
-    get2_response = requests.get(url, headers=headers)
+    get_response = requests.get(url, headers=headers)
+
+    dummy_response = requests.put(url, json=dummyJson, headers=headers)
 
     # Get the status code and response data
-    status_code = get2_response.status_code
+    status_code = get_response.status_code
     response_data = None 
     try:
-        response_data = get2_response.json()
+        response_data = get_response.json()
     except:
         pass
+    
+    print(response_data)
+    # Verify that the status code is 404 (Not Found) and the client no longer exists
+    assert status_code == 200 and response_data["softDeleted"] == True
 
-    # Verify that the status code is 404 (Not Found) as the supplier doesn't exist anymore
-    assert status_code == 404
+# # Test to delete suppliers
+# def test_delete_suppliers_integration(_data):
+#     # Make a POST request first to make a dummy supplier
+#     url = _data[0]["URL"] + 'suppliers'
+#     admin_api_token = _data[0]["AdminApiToken"]  # Extract token from the fixture
+    
+#     headers = get_headers(admin_api_token)
+    
+#     body = {
+#         "supplierId": 99999,
+#         "code": "SUP9999",
+#         "name": "Lee, Parks and Johnson",
+#         "address": "5989 Sullivan Drives",
+#         "addressExtra": "Apt. 996",
+#         "city": "Port Anitaburgh",
+#         "zipCode": "91688",
+#         "province": "Illinois",
+#         "country": "Czech Republic",
+#         "contactName": "Toni Barnett",
+#         "phonenumber": "3635417282",
+#         "reference": "LPaJ-SUP0001"
+#     }
+
+#     # Send a POST request to the API and check if it was successful
+#     post_response = requests.post(url, json=body, headers=headers)
+#     assert post_response.status_code == 201
+#     supplier_id = post_response.json().get("supplierId")
+    
+#     url += f"/{supplier_id}"
+
+#     # Send a DELETE request to the API and check if it was successful
+#     delete_response = requests.delete(url, headers=headers)
+#     assert delete_response.status_code == 200
+
+#     get2_response = requests.get(url, headers=headers)
+
+#     # Get the status code and response data
+#     status_code = get2_response.status_code
+#     response_data = None 
+#     try:
+#         response_data = get2_response.json()
+#     except:
+#         pass
+
+#     # Verify that the status code is 404 (Not Found) as the supplier doesn't exist anymore
+#     assert status_code == 404

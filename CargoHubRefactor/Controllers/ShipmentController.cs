@@ -91,4 +91,16 @@ public class ShipmentController : ControllerBase
         }
         return Ok(result);
     }
+
+    [HttpDelete("{id}/test")]
+    public async Task<ActionResult> SoftDeleteShipment(int id)
+    {
+        var result = await _shipmentService.DeleteShipmentAsync(id);
+        if (result.StartsWith("Error"))
+        {
+            return NotFound(result);
+        }
+        return Ok(result);
+    }
+    
 }

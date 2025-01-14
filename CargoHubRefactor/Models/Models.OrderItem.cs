@@ -9,6 +9,7 @@ public class OrderItem
     [ForeignKey("Item")] // Indicates this is a foreign key referencing Items
     public string ItemId { get; set; }
     public int Amount { get; set; }
+    public bool SoftDeleted { get; set; } = false;
 
     // Navigation Properties
     public Order? Order { get; set; }

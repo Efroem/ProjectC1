@@ -107,5 +107,16 @@ namespace CargoHubRefactor.Controllers{
             }
             return Ok("Successfully deleted inventory");
         }
+        
+        [HttpDelete("{inventoryId}/test")]
+        public async Task<ActionResult> SoftDeleteInventory(int inventoryId)
+        {
+            var result = await _InventoryService.SoftDeleteInventoryAsync(inventoryId);
+            if (result == false)
+            {
+                return NotFound("Error: Inventory not found");
+            }
+            return Ok("Successfully soft deleted inventory");
+        }
     }
 }

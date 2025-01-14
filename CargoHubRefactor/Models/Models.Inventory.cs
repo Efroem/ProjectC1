@@ -51,6 +51,7 @@ public class Inventory
     public int TotalOrdered { get; set; }
     public int TotalAllocated { get; set; }
     public int TotalAvailable { get; set; }
+    public bool SoftDeleted { get; set; } = false;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

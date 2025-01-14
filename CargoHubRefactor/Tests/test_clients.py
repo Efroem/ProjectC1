@@ -189,32 +189,19 @@ def test_put_clients_integration_EmployeeKey(_data):
 
 def test_delete_clients_integration(_data):
     # Make a POST request first to make a dummy client
-    url = _data[0]["URL"] + 'Clients'
+    url = _data[0]["URL"] + 'Clients/1'
     headers = get_headers(_data[0]["AdminApiToken"])
-    body = {
-        "name": "Jane Doe",
-        "address": "456 Secondary St",
-        "city": "New City",
-        "zipCode": "54321",
-        "province": "Berlin",
-        "country": "Germany",
-        "contactName": "Jane Doe",
-        "contactPhone": "+987654321",
-        "contactEmail": "jane.doe@example.com"
-    }
 
-    # Send a POST request to the API and check if it was successful
-    post_response = requests.post(url, headers=headers, json=body)
-    assert post_response.status_code == 200
-    client_id = post_response.json().get("clientId")
-    
-    url += f"/{client_id}"
+    dummy_get = requests.get(url, headers=headers)
+    dummyJson = dummy_get.json()
 
     # Send a DELETE request to the API and check if it was successful
-    delete_response = requests.delete(url, headers=headers)
+    delete_response = requests.delete(url + "/test", headers=headers)
     assert delete_response.status_code == 200
 
     get_response = requests.get(url, headers=headers)
+
+    dummy_response = requests.put(url, json=dummyJson, headers=headers)
 
     # Get the status code and response data
     status_code = get_response.status_code
@@ -223,6 +210,51 @@ def test_delete_clients_integration(_data):
         response_data = get_response.json()
     except:
         pass
-
+    
+    print(response_data)
     # Verify that the status code is 404 (Not Found) and the client no longer exists
-    assert status_code == 404 and response_data is None
+    assert status_code == 200 and response_data["softDeleted"] == True
+
+
+
+
+# def test_delete_clients_integration(_data):
+#     # Make a POST request first to make a dummy client
+#     url = _data[0]["URL"] + 'Clients'
+#     headers = get_headers(_data[0]["AdminApiToken"])
+#     body = {
+#         "name": "Jane Doe",
+#         "address": "456 Secondary St",
+#         "city": "New City",
+#         "zipCode": "54321",
+#         "province": "Berlin",
+#         "country": "Germany",
+#         "contactName": "Jane Doe",
+#         "contactPhone": "+987654321",
+#         "contactEmail": "jane.doe@example.com"
+#     }
+
+#     # Send a POST request to the API and check if it was successful
+#     post_response = requests.post(url, headers=headers, json=body)
+#     assert post_response.status_code == 200
+#     client_id = post_response.json().get("clientId")
+    
+#     url += f"/{client_id}"
+
+#     # Send a DELETE request to the API and check if it was successful
+#     delete_response = requests.delete(url, headers=headers)
+#     assert delete_response.status_code == 200
+
+#     get_response = requests.get(url, headers=headers)
+
+#     # Get the status code and response data
+#     status_code = get_response.status_code
+#     response_data = None 
+#     try:
+#         response_data = get_response.json()
+#     except:
+#         pass
+
+#     # Verify that the status code is 404 (Not Found) and the client no longer exists
+#     assert status_code == 404 and response_data is None
+

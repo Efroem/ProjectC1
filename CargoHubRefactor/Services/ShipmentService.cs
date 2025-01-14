@@ -173,5 +173,17 @@ public class ShipmentService : IShipmentService
         await _context.SaveChangesAsync();
         return "Shipment successfully deleted.";
     }
+    public async Task<string> SoftDeleteShipmentAsync(int id)
+    {
+        var shipment = await _context.Shipments.FindAsync(id);
+        if (shipment == null)
+        {
+            return "Error: Shipment not found.";
+        }
+
+        shipment.SoftDeleted = true;
+        await _context.SaveChangesAsync();
+        return "Shipment successfully soft deleted.";
+    }
 }
 

@@ -200,6 +200,20 @@ public class LocationService : ILocationService
         await _context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<bool> SoftDeleteLocationAsync(int id)
+    {
+        var location = await _context.Locations.FirstOrDefaultAsync(c => c.LocationId == id);
+        if (location == null)
+        {
+            return false;
+        }
+
+        location.SoftDeleted = true;
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
 
     public async Task<IEnumerable<Location>> GetLocationsByWarehouseAsync(int warehouseId)
     {

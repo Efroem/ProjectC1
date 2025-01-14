@@ -104,4 +104,18 @@ public class ItemTypeService : IItemTypeService
         await _context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<bool> SoftDeleteItemTypeAsync(int id)
+    {
+        var item_type = await _context.ItemTypes.FirstOrDefaultAsync(c => c.TypeId == id);
+        if (item_type == null)
+        {
+            return false;
+        }
+
+        item_type.SoftDeleted = true;
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
 }
