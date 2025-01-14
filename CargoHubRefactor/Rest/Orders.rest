@@ -102,12 +102,13 @@ Total Price for Order 25: 105.62
 
 ### Get total Weight for an order
 GET http://localhost:5000/api/v1/Orders/25/TotalWeight
-# ApiToken: E5F6G7
+ApiToken: E5F6G7
 
 ###
 
 ### Add a New Order
 POST http://localhost:5000/api/v1/Orders
+ApiToken: E5F6G7
 Content-Type: application/json
 
 {
