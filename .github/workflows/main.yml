@@ -153,7 +153,7 @@ jobs:
       run: |
         coverage=$(xmllint --xpath "string(//*[local-name()='coverage']/@line-rate)" coverage/coverage.cobertura.xml | awk '{printf("%.0f\n", $1 * 100)}')
         echo "Coverage: $coverage%"
-        if [ "$coverage" -lt 65 ]; then
+        if [ "$coverage" -lt 99 ]; then
           echo "Code coverage ($coverage%) is below the threshold of 80%."
           exit 1
         fi
