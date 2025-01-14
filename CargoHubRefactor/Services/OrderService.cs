@@ -181,6 +181,20 @@ public class OrderService : IOrderService
         await _context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<bool> SoftDeleteOrderAsync(int id)
+    {
+        var order = await _context.Orders.FirstOrDefaultAsync(c => c.Id == id);
+        if (order == null)
+        {
+            return false;
+        }
+
+        order.SoftDeleted = true;
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
 
     public async Task<Dictionary<string, List<Location>>> GetLocationsForOrderItemsAsync(int orderId)
     {

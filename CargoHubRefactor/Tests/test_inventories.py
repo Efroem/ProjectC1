@@ -118,44 +118,72 @@ def test_put_inventory_integration(_data):
     requests.put(url, json=dummy_json, headers=headers)
 
 def test_delete_inventory_integration(_data):
-    # Make a POST request first to create an inventory item
-    url = _data[0]["URL"] + 'Inventories'
+    # Make a POST request first to make a dummy client
+    url = _data[0]["URL"] + 'Inventories/1'
     headers = get_headers(_data[0]["AdminApiToken"])
-    body = {
-        "itemId": "P000001",
-        "description": "Dummy Test",
-        "itemReference": "REF-999999999",
-        "locations": [
-            1,
-            2,
-            3
-        ],
-        "totalOnHand": 100,
-        "totalExpected": 150,
-        "totalOrdered": 50,
-        "totalAllocated": 30,
-        "totalAvailable": 70
-    }
 
-    # Send a POST request to the API and check if it was successful
-    post_response = requests.post(url, json=body, headers=headers)
-    assert post_response.status_code == 200
-    inventoryId = post_response.json().get("inventoryId")
-    
-    url += f"/{inventoryId}"
+    dummy_get = requests.get(url, headers=headers)
+    dummyJson = dummy_get.json()
 
     # Send a DELETE request to the API and check if it was successful
-    delete_response = requests.delete(url, headers=headers)
+    delete_response = requests.delete(url + "/test", headers=headers)
     assert delete_response.status_code == 200
 
-    # Verify that the inventory is deleted by checking the response status
     get_response = requests.get(url, headers=headers)
+
+    dummy_response = requests.put(url, json=dummyJson, headers=headers)
+
+    # Get the status code and response data
     status_code = get_response.status_code
-    response_data = None
+    response_data = None 
     try:
-        response_data = get_response.json()
+        response_data = get_response.json().get("result")
     except:
         pass
+    
+    print(response_data)
+    # Verify that the status code is 404 (Not Found) and the client no longer exists
+    assert status_code == 200 and response_data["softDeleted"] == True
 
-    # Verify that the status code is 404 (Not Found) and the inventory is deleted
-    assert status_code == 404 and response_data is None
+# def test_delete_inventory_integration(_data):
+#     # Make a POST request first to create an inventory item
+#     url = _data[0]["URL"] + 'Inventories'
+#     headers = get_headers(_data[0]["AdminApiToken"])
+#     body = {
+#         "itemId": "P000001",
+#         "description": "Dummy Test",
+#         "itemReference": "REF-999999999",
+#         "locations": [
+#             1,
+#             2,
+#             3
+#         ],
+#         "totalOnHand": 100,
+#         "totalExpected": 150,
+#         "totalOrdered": 50,
+#         "totalAllocated": 30,
+#         "totalAvailable": 70
+#     }
+
+#     # Send a POST request to the API and check if it was successful
+#     post_response = requests.post(url, json=body, headers=headers)
+#     assert post_response.status_code == 200
+#     inventoryId = post_response.json().get("inventoryId")
+    
+#     url += f"/{inventoryId}"
+
+#     # Send a DELETE request to the API and check if it was successful
+#     delete_response = requests.delete(url, headers=headers)
+#     assert delete_response.status_code == 200
+
+#     # Verify that the inventory is deleted by checking the response status
+#     get_response = requests.get(url, headers=headers)
+#     status_code = get_response.status_code
+#     response_data = None
+#     try:
+#         response_data = get_response.json()
+#     except:
+#         pass
+
+#     # Verify that the status code is 404 (Not Found) and the inventory is deleted
+#     assert status_code == 404 and response_data is None

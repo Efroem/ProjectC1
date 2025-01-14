@@ -20,6 +20,7 @@ public class Shipment
     public string TransferMode { get; set; }
     public int TotalPackageCount { get; set; }
     public double TotalPackageWeight { get; set; }
+    public bool SoftDeleted { get; set; } = false;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

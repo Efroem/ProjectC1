@@ -53,5 +53,5 @@ Content-Type: application/json
 }
 ####
 
-DELETE http://localhost:5000/api/v1/Items/P000001
+DELETE http://localhost:5000/api/v1/Items/P011721
 ####

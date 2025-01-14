@@ -11,6 +11,7 @@ namespace Services
         Task<Supplier> CreateSupplierAsync(Supplier supplier);
         Task<bool> UpdateSupplierAsync(int id, Supplier supplier);
         Task<bool> DeleteSupplierAsync(int id);
+        Task<bool> SoftDeleteSupplierAsync(int id);
         Task<bool> DeleteAllSuppliersAsync();
         Task<int> GetLowestAvailableSupplierIdAsync();
 

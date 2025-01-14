@@ -12,6 +12,7 @@ public class Client
     public string ContactName { get; set; }
     public string ContactPhone { get; set; }
     public string ContactEmail { get; set; }
+    public bool SoftDeleted { get; set; } = false;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }

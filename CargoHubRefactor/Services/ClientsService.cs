@@ -104,4 +104,18 @@ public class ClientService : IClientService
 
         return true;
     }
+    
+    public async Task<bool> SoftDeleteClientAsync(int id)
+    {
+        var client = await _context.Clients.FirstOrDefaultAsync(c => c.ClientId == id);
+        if (client == null)
+        {
+            return false;
+        }
+
+        client.SoftDeleted = true;
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
 }

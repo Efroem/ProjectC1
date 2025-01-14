@@ -99,33 +99,61 @@ def test_put_item_lines_integration(_data):
     requests.put(url, json=dummyJson, headers=headers)
 
 def test_delete_item_lines_integration(_data):
-    url = _data[0]["URL"] + 'Item_Lines'
+    # Make a POST request first to make a dummy client
+    url = _data[0]["URL"] + 'Item_Lines/1'
     headers = get_headers(_data[0]["AdminApiToken"])
-    body = {
-        "name": "dummy",
-        "description": "dummy",
-        "itemGroup": 1
-    }
 
-    # Send a POST request to the API and check if it was successful
-    post_response = requests.post(url, json=body, headers=headers)
-    assert post_response.status_code == 200
-    lineId = post_response.json().get("lineId")
-    
-    url += f"/{lineId}"
+    dummy_get = requests.get(url, headers=headers)
+    dummyJson = dummy_get.json()
 
     # Send a DELETE request to the API and check if it was successful
-    delete_response = requests.delete(url, headers=headers)
+    delete_response = requests.delete(url + "/test", headers=headers)
     assert delete_response.status_code == 200
 
-    # Verify that the item line is deleted
-    get2_response = requests.get(url, headers=headers)
-    status_code = get2_response.status_code
-    response_data = None
+    get_response = requests.get(url, headers=headers)
+
+    dummy_response = requests.put(url, json=dummyJson, headers=headers)
+
+    # Get the status code and response data
+    status_code = get_response.status_code
+    response_data = None 
     try:
-        response_data = get2_response.json()
+        response_data = get_response.json()
     except:
         pass
+    
+    print(response_data)
+    # Verify that the status code is 404 (Not Found) and the client no longer exists
+    assert status_code == 200 and response_data["softDeleted"] == True
 
-    # Verify that the status code is 404 (Not Found) and the item line no longer exists
-    assert status_code == 404 and response_data is None
+# def test_delete_item_lines_integration(_data):
+#     url = _data[0]["URL"] + 'Item_Lines'
+#     headers = get_headers(_data[0]["AdminApiToken"])
+#     body = {
+#         "name": "dummy",
+#         "description": "dummy",
+#         "itemGroup": 1
+#     }
+
+#     # Send a POST request to the API and check if it was successful
+#     post_response = requests.post(url, json=body, headers=headers)
+#     assert post_response.status_code == 200
+#     lineId = post_response.json().get("lineId")
+    
+#     url += f"/{lineId}"
+
+#     # Send a DELETE request to the API and check if it was successful
+#     delete_response = requests.delete(url, headers=headers)
+#     assert delete_response.status_code == 200
+
+#     # Verify that the item line is deleted
+#     get2_response = requests.get(url, headers=headers)
+#     status_code = get2_response.status_code
+#     response_data = None
+#     try:
+#         response_data = get2_response.json()
+#     except:
+#         pass
+
+#     # Verify that the status code is 404 (Not Found) and the item line no longer exists
+#     assert status_code == 404 and response_data is None

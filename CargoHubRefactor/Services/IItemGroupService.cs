@@ -10,4 +10,5 @@ public interface IItemGroupService
     Task<(string message, ItemGroup? returnedItemGroup)> AddItemGroupAsync(ItemGroup itemGroup);
     Task<(string message, ItemGroup? returnedItemGroup)> UpdateItemGroupAsync(int id, ItemGroup itemGroup);
     Task<bool> DeleteItemGroupAsync(int id);
+    Task<bool> SoftDeleteItemGroupAsync(int id);
 }

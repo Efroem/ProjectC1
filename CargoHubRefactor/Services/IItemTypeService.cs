@@ -10,4 +10,5 @@ public interface IItemTypeService
     Task<(string message, ItemType? returnedItemType)> AddItemTypeAsync(ItemType ItemType);
     Task<(string message, ItemType? returnedItemType)> UpdateItemTypeAsync(int id, ItemType ItemType);
     Task<bool> DeleteItemTypeAsync(int id);
+    Task<bool> SoftDeleteItemTypeAsync(int id);
 }

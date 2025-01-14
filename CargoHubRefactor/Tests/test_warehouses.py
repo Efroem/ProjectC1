@@ -158,45 +158,73 @@ def test_put_warehouses_integration(_data):
     assert fetched_data["address"] == body["address"], f"Address mismatch: {fetched_data['address']} != {body['address']}"
 
 def test_delete_warehouses_integration(_data):
-    # Make a POST request first to create a dummy warehouse
-    url = _data[0]["URL"] + 'Warehouses'
-    admin_api_token = _data[0]["AdminApiToken"]  # Extract token from the fixture
-    headers = get_headers(admin_api_token)
-    
-    body = {
-        "code": "WH9999",
-        "name": "dummy",
-        "address": "dummy",
-        "zip": "12345",
-        "city": "dummy",
-        "province": "dummy",
-        "country": "dummy",
-        "contactName": "John Doe",
-        "contactPhone": "555-1234",
-        "contactEmail": "testmail@example.com",
-        "restrictedClassificationsList": ["4.1", "5.2"]
-    }
+    # Make a POST request first to make a dummy client
+    url = _data[0]["URL"] + 'Warehouses/1'
+    headers = get_headers(_data[0]["AdminApiToken"])
 
-    # Send a POST request to the API and check if it was successful
-    post_response = requests.post(url, json=body, headers=headers)
-    assert post_response.status_code == 200
-    warehouse_id = post_response.json().get("warehouseId")
-    
-    url += f"/{warehouse_id}"
+    dummy_get = requests.get(url, headers=headers)
+    dummyJson = dummy_get.json()
 
     # Send a DELETE request to the API and check if it was successful
-    delete_response = requests.delete(url, headers=headers)
+    delete_response = requests.delete(url + "/test", headers=headers)
     assert delete_response.status_code == 200
 
-    get2_response = requests.get(url, headers=headers)
+    get_response = requests.get(url, headers=headers)
+
+    dummy_response = requests.put(url, json=dummyJson, headers=headers)
 
     # Get the status code and response data
-    status_code = get2_response.status_code
+    status_code = get_response.status_code
     response_data = None 
     try:
-        response_data = get2_response.json()
+        response_data = get_response.json()
     except:
         pass
+    
+    print(response_data)
+    # Verify that the status code is 404 (Not Found) and the client no longer exists
+    assert status_code == 200 and response_data["softDeleted"] == True
 
-    # Verify that the warehouse does not exist anymore (404 response)
-    assert status_code == 404 and response_data == None
+# def test_delete_warehouses_integration(_data):
+#     # Make a POST request first to create a dummy warehouse
+#     url = _data[0]["URL"] + 'Warehouses'
+#     admin_api_token = _data[0]["AdminApiToken"]  # Extract token from the fixture
+#     headers = get_headers(admin_api_token)
+    
+#     body = {
+#         "code": "WH9999",
+#         "name": "dummy",
+#         "address": "dummy",
+#         "zip": "12345",
+#         "city": "dummy",
+#         "province": "dummy",
+#         "country": "dummy",
+#         "contactName": "John Doe",
+#         "contactPhone": "555-1234",
+#         "contactEmail": "testmail@example.com",
+#         "restrictedClassificationsList": ["4.1", "5.2"]
+#     }
+
+#     # Send a POST request to the API and check if it was successful
+#     post_response = requests.post(url, json=body, headers=headers)
+#     assert post_response.status_code == 200
+#     warehouse_id = post_response.json().get("warehouseId")
+    
+#     url += f"/{warehouse_id}"
+
+#     # Send a DELETE request to the API and check if it was successful
+#     delete_response = requests.delete(url, headers=headers)
+#     assert delete_response.status_code == 200
+
+#     get2_response = requests.get(url, headers=headers)
+
+#     # Get the status code and response data
+#     status_code = get2_response.status_code
+#     response_data = None 
+#     try:
+#         response_data = get2_response.json()
+#     except:
+#         pass
+
+#     # Verify that the warehouse does not exist anymore (404 response)
+#     assert status_code == 404 and response_data == None

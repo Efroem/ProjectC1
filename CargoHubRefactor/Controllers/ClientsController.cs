@@ -124,6 +124,17 @@ namespace CargoHubRefactor.Controllers {
 
             return Ok($"Client with ID: {id} successfully deleted.");
         }
+        [HttpDelete("{id}/test")]
+        public async Task<IActionResult> SoftDeleteClient(int id) 
+        {
+            var isDeleted = await _clientService.SoftDeleteClientAsync(id);
+            if (!isDeleted)
+            {
+                return NotFound($"Client with ID: {id} not found.");
+            }
+
+            return Ok($"Client with ID: {id} successfully soft deleted.");
+        }
 
         private bool IsClientInvalid(Client client)
         {
