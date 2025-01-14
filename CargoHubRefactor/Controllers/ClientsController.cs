@@ -58,6 +58,12 @@ namespace CargoHubRefactor.Controllers {
         [HttpPost]
         public async Task<ActionResult<Client>> AddClient([FromBody] Client client)
         {
+
+            if (!client.ContactEmail.Contains('@'))
+            {
+                return BadRequest("Please provide a valid email address.");
+            }
+
             if (IsClientInvalid(client))
             {
                 return BadRequest("Please provide values for all required fields.");
@@ -78,6 +84,11 @@ namespace CargoHubRefactor.Controllers {
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateClient(int id, [FromBody] Client client)
         {
+            if (string.IsNullOrEmpty(client.ContactEmail) || !client.ContactEmail.Contains('@'))
+            {
+                return BadRequest("Please provide a valid email address.");
+            }
+            
             if (IsClientInvalid(client))
             {
                 return BadRequest("Please provide values for all required fields.");
