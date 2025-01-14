@@ -34,18 +34,17 @@ public class ShipmentService : IShipmentService
             return ("Error: Invalid shipment data.", null);
         }
 
-        // Validation checks
         shipment.CreatedAt = DateTime.Now;
         shipment.UpdatedAt = DateTime.Now;
 
-        // Convert OrderIdsList to a comma-separated string before saving
+        // Convert OrderIdsList naar een string
         shipment.OrderId = string.Join(",", shipment.OrderIdsList);
 
         // Add shipment
         _context.Shipments.Add(shipment);
         await _context.SaveChangesAsync();
 
-        // Update ShipmentId in the Orders table for each OrderId and create ShipmentItems
+        //Update shipmentid in de orders database voor elke orderid en voeg shipmentitems toe
         foreach (var orderId in shipment.OrderIdsList)
         {
             if (int.TryParse(orderId, out int parsedOrderId)) // Convert string to int
@@ -53,14 +52,14 @@ public class ShipmentService : IShipmentService
                 var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == parsedOrderId);
                 if (order != null)
                 {
-                    order.ShipmentId = shipment.ShipmentId; // Update ShipmentId in the Orders table
+                    order.ShipmentId = shipment.ShipmentId; // update shipmentid in orders database
 
-                    // Fetch OrderItems for this OrderId
+                    //pak de orderitems van de order
                     var orderItems = await _context.OrderItems
                                                    .Where(oi => oi.OrderId == parsedOrderId)
                                                    .ToListAsync();
 
-                    // Create ShipmentItems
+                    //nieuwe shipmentitems toevoegen
                     foreach (var orderItem in orderItems)
                     {
                         var shipmentItem = new ShipmentItem
@@ -88,8 +87,8 @@ public class ShipmentService : IShipmentService
             return "Error: Shipment not found.";
         }
 
-        // Update shipment fields
-        existingShipment.OrderId = string.Join(",", shipment.OrderIdsList); // Update OrderIds as comma-separated string
+        //update shipment
+        existingShipment.OrderId = string.Join(",", shipment.OrderIdsList); // Update orderids as comma-separated string
         existingShipment.SourceId = shipment.SourceId;
         existingShipment.OrderDate = shipment.OrderDate;
         existingShipment.RequestDate = shipment.RequestDate;
@@ -106,14 +105,13 @@ public class ShipmentService : IShipmentService
         existingShipment.TotalPackageWeight = shipment.TotalPackageWeight;
         existingShipment.UpdatedAt = DateTime.Now;
 
-        // Ensure the shipment entity is updated
         _context.Shipments.Update(existingShipment);
 
-        // Remove existing ShipmentItems for this shipment
+        //verwijder de shipmentitems van de shipment
         var existingShipmentItems = _context.ShipmentItems.Where(si => si.ShipmentId == id);
         _context.ShipmentItems.RemoveRange(existingShipmentItems);
 
-        // Update ShipmentId in the Orders table for each OrderId and repopulate ShipmentItems
+        //Update shipmentid in de orders database voor elke orderid en voeg shipmentitems toe
         foreach (var orderId in shipment.OrderIdsList)
         {
             int parsedOrderId = int.Parse(orderId);
@@ -121,15 +119,15 @@ public class ShipmentService : IShipmentService
             var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == parsedOrderId);
             if (order != null)
             {
-                order.ShipmentId = existingShipment.ShipmentId; // Update ShipmentId in the Orders table
+                order.ShipmentId = existingShipment.ShipmentId; //update shipmentid in de orders database
                 _context.Orders.Update(order);
 
-                // Fetch OrderItems for this OrderId
+                //pak de orderitems van de order
                 var orderItems = await _context.OrderItems
                                                .Where(oi => oi.OrderId == parsedOrderId)
                                                .ToListAsync();
 
-                // Create new ShipmentItems
+                //nieuwe shipmentitems toevoegen
                 foreach (var orderItem in orderItems)
                 {
                     var shipmentItem = new ShipmentItem
@@ -150,7 +148,7 @@ public class ShipmentService : IShipmentService
 
     public async Task<string> UpdateShipmentStatusAsync(int shipmentId, string newStatus)
     {
-        // Fetch the shipment from the database
+        //shipment van de database doormiddel van de shipmentid
         var shipment = await _context.Shipments
                                       .FirstOrDefaultAsync(s => s.ShipmentId == shipmentId);
 
@@ -159,16 +157,16 @@ public class ShipmentService : IShipmentService
             return "Error: Shipment not found.";
         }
 
-        // Update shipment status to the new status
+        //update the shipment status in de shipment zelf
         shipment.ShipmentStatus = newStatus;
         shipment.UpdatedAt = DateTime.UtcNow;
 
         if (newStatus == "IN TRANSIT")
         {
-            // Fetch the ShipmentItems associated with this shipment
+            //pak je shipmentitems van de shipment
             var shipmentItems = await _context.ShipmentItems
                                               .Where(si => si.ShipmentId == shipmentId)
-                                              .Include(si => si.Item)  // Include the Item details
+                                              .Include(si => si.Item)  //item van de shipmentitems
                                               .ToListAsync();
 
             foreach (var shipmentItem in shipmentItems)
@@ -178,15 +176,16 @@ public class ShipmentService : IShipmentService
 
                 if (inventory != null)
                 {
-                    // Ensure sufficient inventory to reduce
+                    //zorg dat er genoeg inventory is om de shipment 
+                    //in transit te zetten dit is een dubbel check dit hoor gecheckt te worden wanneer je een order aanmaakt.
                     if (inventory.TotalAvailable >= shipmentItem.Amount)
                     {
                         // Reduce TotalAvailable and adjust TotalOnHand
-                        inventory.TotalAvailable -= shipmentItem.Amount; // Reduce available inventory
-                        inventory.TotalOnHand -= shipmentItem.Amount;     // Decrease total on hand as well
-                        inventory.UpdatedAt = DateTime.UtcNow;            // Update the timestamp of the inventory record
+                        inventory.TotalAvailable -= shipmentItem.Amount; //Reduce available inventory
+                        inventory.TotalOnHand -= shipmentItem.Amount;     //Decrease total on hand as well
+                        inventory.UpdatedAt = DateTime.UtcNow;            //Update de datum 
 
-                        // Save the updated inventory record
+                        //update in database
                         _context.Inventories.Update(inventory);
                     }
                     else
@@ -201,7 +200,7 @@ public class ShipmentService : IShipmentService
             }
         }
 
-        // Save the updated shipment and inventory changes
+        //save
         await _context.SaveChangesAsync();
 
         return $"Shipment {shipmentId} status successfully updated to '{newStatus}'.";
@@ -211,7 +210,7 @@ public class ShipmentService : IShipmentService
 
     public async Task<List<ShipmentItem>> GetShipmentItemsAsync(int shipmentId)
     {
-        // Fetch the items related to the shipment
+        //pak de items van de shipment
         var shipmentItems = await _context.ShipmentItems
                                            .Where(si => si.ShipmentId == shipmentId)
                                            .ToListAsync();
@@ -235,12 +234,12 @@ public class ShipmentService : IShipmentService
 
     public async Task<string> SplitOrderIntoShipmentsAsync(int orderId, List<SplitOrderItem> itemsToSplit)
     {
-        // Fetch the order using the order service
-        var order = await _orderService.GetOrderAsync(orderId); // Fetch the order using _orderService
+        //pak de order van de database
+        var order = await _orderService.GetOrderAsync(orderId); //gebruikt de method van de ordersevice
         if (order == null)
             return "Error: Order not found.";
 
-        // Validate items exist in the order and have sufficient quantity
+        //kijken of de items bestaan in de order en de amount genoeg is om op the kunnen splitsen
         var orderItemsDict = order.OrderItems.ToDictionary(i => i.ItemId, i => i.Amount);
         foreach (var item in itemsToSplit)
         {
@@ -248,16 +247,16 @@ public class ShipmentService : IShipmentService
                 return $"Error: Invalid item {item.ItemId} or insufficient quantity.";
         }
 
-        // Adjust the original order's items
+        //order items ammount aanpassen
         foreach (var item in itemsToSplit)
         {
             var originalItem = order.OrderItems.First(i => i.ItemId == item.ItemId);
             originalItem.Amount -= item.Quantity;
-            if (originalItem.Amount == 0)
+            if (originalItem.Amount == 0) //als de amount van een item 0 is na het splitsen dan wordt deze verwijderd
                 order.OrderItems.Remove(originalItem);
         }
 
-        // Create a new shipment
+        //nieuwe shipment
         var newShipment = new Shipment
         {
             SourceId = order.SourceId,
@@ -275,11 +274,11 @@ public class ShipmentService : IShipmentService
             OrderIdsList = new List<string> { orderId.ToString() }
         };
 
-        // Save the new shipment to the database to generate the ShipmentId
+        //shipment opslaan om een id te genereren
         _context.Shipments.Add(newShipment);
-        await _context.SaveChangesAsync(); // Save to generate ShipmentId
+        await _context.SaveChangesAsync();
 
-        // Create and add shipment items
+        //shipment items toevoegen
         foreach (var item in itemsToSplit)
         {
             var shipmentItem = new ShipmentItem
@@ -291,10 +290,10 @@ public class ShipmentService : IShipmentService
             _context.ShipmentItems.Add(shipmentItem);
         }
 
-        // Save all changes to the database
+        //save
         await _context.SaveChangesAsync();
 
-        // Update the order with adjusted items and other required parameters
+        //Update de order
         await _orderService.UpdateOrderAsync(
             order.Id,
             order.SourceId,
@@ -318,10 +317,6 @@ public class ShipmentService : IShipmentService
 
         return $"Successfully split order {orderId} into a new shipment with Shipment ID {newShipment.ShipmentId}.";
     }
-
-
-
-    // Other methods remain unchanged
 }
 
 
