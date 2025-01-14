@@ -72,8 +72,7 @@ namespace CargoHubRefactor.Services
 
         private void WriteReportToFile(string entity, DateTime fromDate, DateTime toDate, int? warehouseId, IEnumerable<object> reportData)
         {
-            // Construct the file name dynamically
-            string fileName = $"{entity}_Report_{fromDate:yyyyMMdd}_{toDate:yyyyMMdd}{(warehouseId.HasValue ? "_Id_" + warehouseId : "")}.csv";
+            string fileName = $"{entity}_Report_{fromDate:yyyyyMMdd}_{toDate:yyyyMMdd}_Id_{warehouseId}.txt";
             string filePath = Path.Combine(_reportDirectory, fileName);
 
             using (StreamWriter writer = new StreamWriter(filePath, false))
