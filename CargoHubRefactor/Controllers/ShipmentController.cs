@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+[ServiceFilter(typeof(Filters))]
 [Route("api/v1/shipments")]
 [ApiController]
 public class ShipmentController : ControllerBase
@@ -19,13 +19,30 @@ public class ShipmentController : ControllerBase
         return Ok(await _shipmentService.GetAllShipmentsAsync());
     }
 
+    [HttpGet("limit/{limit}")]
+    public async Task<ActionResult<IEnumerable<Client>>> GetAllShipments(int limit)
+    {
+        if (limit <= 0)
+        {
+            return BadRequest("Cannot show shipments with a limit below 1.");
+        }
+
+        var shipments = await _shipmentService.GetAllShipmentsAsync(limit);
+        if (shipments == null || !shipments.Any())
+        {
+            return NotFound("No shipments found.");
+        }
+
+        return Ok(shipments);
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<Shipment>> GetShipmentById(int id)
     {
         var shipment = await _shipmentService.GetShipmentByIdAsync(id);
         if (shipment == null)
         {
-            return NotFound($"Shipment with ID: {id} not found.");
+            return NotFound("Error: Shipment not found.");
         }
         return Ok(shipment);
     }
@@ -50,6 +67,18 @@ public class ShipmentController : ControllerBase
             return BadRequest(result);
         }
         return Ok(result);
+    }
+
+    [HttpGet("{id}/items")]
+    public async Task<ActionResult<List<ShipmentItem>>> GetShipmentItems(int id)
+    {
+        var shipmentItems = await _shipmentService.GetShipmentItemsAsync(id);
+
+        if (shipmentItems == null || shipmentItems.Count == 0)
+        {
+            return NotFound("No items found for the given shipment.");
+        }
+        return Ok(shipmentItems);
     }
 
     [HttpDelete("{id}")]

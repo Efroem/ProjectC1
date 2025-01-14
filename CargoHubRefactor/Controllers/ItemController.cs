@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 namespace CargoHubRefactor.Controllers
 {
+    [ServiceFilter(typeof(Filters))]
     [Route("api/v1/Items")]
     [ApiController]
     public class ItemController : ControllerBase
@@ -24,6 +25,40 @@ namespace CargoHubRefactor.Controllers
             }
 
             return Ok(item_s);
+        }
+
+        [HttpGet("limit/{limit}")]
+        public async Task<ActionResult<IEnumerable<Item>>> GetItems(int limit)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show items with a limit below 1.");
+            }
+
+            var items = await _itemService.GetItemsAsync(limit);
+            if (items == null || !items.Any())
+            {
+                return NotFound("No items found.");
+            }
+
+            return Ok(items);
+        }
+        [HttpGet("limit/{limit}/page/{page}")]
+        public async Task<ActionResult<IEnumerable<Inventory>>> GetItemsPaged(int limit, int page)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show Items with a limit below 1.");
+            }
+            if (page < 0) return BadRequest("Page number must be a positive integer");
+
+            var Items = await _itemService.GetItemsPagedAsync(limit, page);
+            if (Items == null || !Items.Any())
+            {
+                return NotFound("No Items found.");
+            }
+
+            return Ok(Items);
         }
 
         [HttpGet("{ItemId}")]

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 namespace CargoHubRefactor.Controllers
 {
+    [ServiceFilter(typeof(Filters))]
     [Route("api/v1/Locations")]
     public class LocationController : ControllerBase
     {
@@ -33,6 +34,22 @@ namespace CargoHubRefactor.Controllers
             {
                 return NotFound($"No locations were found");
             }
+            return Ok(locations);
+        }
+        [HttpGet("limit/{limit}")]
+        public async Task<ActionResult<IEnumerable<Client>>> GetLocations(int limit)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show locations with a limit below 1.");
+            }
+
+            var locations = await _locationService.GetLocationsAsync(limit);
+            if (locations == null || !locations.Any())
+            {
+                return NotFound("No clients found.");
+            }
+
             return Ok(locations);
         }
 
@@ -120,7 +137,7 @@ namespace CargoHubRefactor.Controllers
             {
                 return NotFound($"Location with ID: {id} not found");
             }
-            return Ok($"Location succesfully deleted");
+            return Ok($"Location with ID: {id} successfully deleted");
         }
     }
 }

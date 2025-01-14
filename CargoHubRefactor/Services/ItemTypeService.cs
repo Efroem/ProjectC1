@@ -17,6 +17,15 @@ public class ItemTypeService : IItemTypeService
         return await _context.ItemTypes.ToListAsync();
     }
 
+    public async Task<IEnumerable<ItemType>> GetItemTypesAsync(int limit)
+    {
+        return await _context.ItemTypes.Take(limit).ToListAsync();
+    }
+    public async Task<IEnumerable<ItemType>> GetItemTypesPagedAsync(int limit, int page)
+    {
+        return await _context.ItemTypes.Skip(limit * (page - 1)).Take(limit).ToListAsync();
+    }
+
     public async Task<ItemType?> GetItemTypeByIdAsync(int id)
     {
         return await _context.ItemTypes.FindAsync(id);

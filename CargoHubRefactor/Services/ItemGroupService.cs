@@ -17,9 +17,18 @@ public class ItemGroupService : IItemGroupService
         return await _context.ItemGroups.ToListAsync();
     }
 
+    public async Task<IEnumerable<ItemGroup>> GetItemGroupsAsync(int limit)
+    {
+        return await _context.ItemGroups.Take(limit).ToListAsync();
+    }
+
     public async Task<ItemGroup?> GetItemGroupByIdAsync(int id)
     {
         return await _context.ItemGroups.FindAsync(id);
+    }
+    public async Task<IEnumerable<ItemGroup>> GetItemGroupsPagedAsync(int limit, int page)
+    {
+        return await _context.ItemGroups.Skip(limit * (page - 1)).Take(limit).ToListAsync();
     }
 
     public async Task<(string message, ItemGroup? returnedItemGroup)> AddItemGroupAsync (ItemGroup itemGroup)

@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 namespace CargoHubRefactor.Controllers
-{
-
+{   
+    [ServiceFilter(typeof(Filters))]
     [Route("api/v1/warehouses")]
     [ApiController]
     public class WarehouseController : ControllerBase
@@ -38,7 +38,7 @@ namespace CargoHubRefactor.Controllers
             var result = await _warehouseService.AddWarehouseAsync(warehouseDto);
             if (result.message.StartsWith("Error"))
             {
-                return BadRequest(result);
+                return BadRequest(result.message);
             }
             return Ok(result.warehouse);
         }
@@ -49,11 +49,9 @@ namespace CargoHubRefactor.Controllers
             (string message, Warehouse ReturnedWarehouse) result = await _warehouseService.UpdateWarehouseAsync(id, warehouseDto);
             if (result.message.StartsWith("Error"))
             {
-                return BadRequest(result);
+                return BadRequest(result.message);
             }
-            if (result.ReturnedWarehouse != null) return Ok(result.ReturnedWarehouse);
-            return BadRequest("Invalid Warehouse added");
-
+            return Ok(result.ReturnedWarehouse);
         }
 
         [HttpDelete("{id}")]

@@ -1,9 +1,11 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
+
 
 public class Shipment
 {
     public int ShipmentId { get; set; }
-    public int OrderId { get; set; }
+    public string OrderId { get; set; } = string.Empty;
     public int SourceId { get; set; }
     public DateTime OrderDate { get; set; }
     public DateTime RequestDate { get; set; }
@@ -22,4 +24,11 @@ public class Shipment
     public DateTime UpdatedAt { get; set; }
 
     public Warehouse? SourceWarehouse { get; set; }
+
+    [NotMapped] // This ensures that this property is not mapped to the database
+    public List<string> OrderIdsList
+    {
+        get => OrderId.Split(',').ToList();
+        set => OrderId = string.Join(",", value);
+    }
 }

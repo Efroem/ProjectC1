@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 namespace CargoHubRefactor.Controllers{
+    [ServiceFilter(typeof(Filters))]
     [Route("api/v1/Item_Groups")]
     [ApiController]
     public class ItemGroupController : ControllerBase
@@ -23,6 +24,41 @@ namespace CargoHubRefactor.Controllers{
             }
 
             return Ok(item_groups);
+        }
+
+        [HttpGet("limit/{limit}")]
+        public async Task<ActionResult<IEnumerable<ItemGroup>>> GetItemGroups(int limit)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show items with a limit below 1.");
+            }
+
+            var itemgroups = await _itemGroupService.GetItemGroupsAsync(limit);
+            if (itemgroups == null || !itemgroups.Any())
+            {
+                return NotFound("No items found.");
+            }
+
+            return Ok(itemgroups);
+        }
+
+        [HttpGet("limit/{limit}/page/{page}")]
+        public async Task<ActionResult<IEnumerable<Inventory>>> GetItemGroupsPaged(int limit, int page)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show ItemGroups with a limit below 1.");
+            }
+            if (page < 0) return BadRequest("Page number must be a positive integer");
+
+            var ItemGroups = await _itemGroupService.GetItemGroupsPagedAsync(limit, page);
+            if (ItemGroups == null || !ItemGroups.Any())
+            {
+                return NotFound("No ItemGroups found.");
+            }
+
+            return Ok(ItemGroups);
         }
 
         [HttpGet("{groupId}")]

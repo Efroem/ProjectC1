@@ -461,6 +461,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
+UnitTests/coverage-report/
 
 # Translations
 *.mo
@@ -580,4 +581,8 @@ poetry.toml
 # LSP config files
 pyrightconfig.json
 
-# End of https://www.toptal.com/developers/gitignore/api/python
+# Database meuk
+*.db
+*.db-shm
+*.db-wal
+CargoHub.db-shm

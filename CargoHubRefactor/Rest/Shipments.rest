@@ -5,6 +5,10 @@ GET http://localhost:5000/api/v1/shipments
 Content-Type: application/json
 
 ###
+###
+GET http://localhost:5000/api/v1/shipments/limit/10
+ApiToken: E5F6G7
+###
 
 # Geeft een specifieke shipment op basis van ID 
 GET http://localhost:5000/api/v1/shipments/1 

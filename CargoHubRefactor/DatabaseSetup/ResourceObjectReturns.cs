@@ -1,47 +1,43 @@
 using System.Text.Json;
 using Models;
-namespace CargoHubRefactor.DbSetup {
+namespace CargoHubRefactor.DbSetup
+{
 
 
-    public class ResourceObjectReturns {
-        public ItemGroup ReturnItemGroupObject(Dictionary<string, System.Text.Json.JsonElement> itemGroupJson) {
+    public class ResourceObjectReturns
+    {
+        public ItemGroup ReturnItemGroupObject(Dictionary<string, System.Text.Json.JsonElement> itemGroupJson)
+        {
             ItemGroup returnItemGroupObject = new ItemGroup();
             string format = "yyyy-MM-dd HH:mm:ss";
-            try {
-                returnItemGroupObject = new ItemGroup {   
+            try
+            {
+                returnItemGroupObject = new ItemGroup
+                {
                     // GroupId = itemGroupJson["id"].GetInt32(),
-                    Name = itemGroupJson["name"].GetString() ?? string.Empty,
-                    
-                    Description = itemGroupJson["description"].GetString() ?? string.Empty,
+                    Name = itemGroupJson["name"].GetString(),
+
+                    Description = itemGroupJson["description"].GetString(),
 
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 };
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine($"GroupId: {itemGroupJson["id"].GetInt32()}\n {e}");
             }
-            try {
-                if (itemGroupJson["created_at"].ValueKind != JsonValueKind.Null)
-                {
-                    var createdAtString = itemGroupJson["created_at"].GetString();
-                    if (!string.IsNullOrEmpty(createdAtString))
-                    {
-                        returnItemGroupObject.CreatedAt = DateTime.ParseExact(createdAtString, format, System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                }
-                if (itemGroupJson["updated_at"].ValueKind != JsonValueKind.Null)
-                {
-                    var updatedAtString = itemGroupJson["updated_at"].GetString();
-                    if (!string.IsNullOrEmpty(updatedAtString))
-                    {
-                        returnItemGroupObject.UpdatedAt = DateTime.ParseExact(updatedAtString, format, System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                }
-            } catch (FormatException) {
+            try
+            {
+                returnItemGroupObject.CreatedAt = DateTime.ParseExact(itemGroupJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+                returnItemGroupObject.UpdatedAt = DateTime.ParseExact(itemGroupJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            catch (FormatException e)
+            {
                 // Do nothing
             }
 
-            if (string.IsNullOrEmpty(returnItemGroupObject.Name)) 
+            if (string.IsNullOrEmpty(returnItemGroupObject.Name))
             {
                 throw new ArgumentException("Name cannot be null or empty");
             }
@@ -49,53 +45,49 @@ namespace CargoHubRefactor.DbSetup {
             return returnItemGroupObject;
         }
 
-        public ItemLine? ReturnItemLineObject(Dictionary<string, System.Text.Json.JsonElement> itemLineJson, Dictionary<int, List<int>> itemGroupRelations) {
+        public ItemLine ReturnItemLineObject(Dictionary<string, System.Text.Json.JsonElement> itemLineJson, Dictionary<int, List<int>> itemGroupRelations)
+        {
             ItemLine returnItemLineObject = new ItemLine();
             int correspondingItemGroup = -1;
             Console.WriteLine($"ItemLine: {itemLineJson["id"].GetInt32()}\n corresponding Item Group: {correspondingItemGroup}");
             string format = "yyyy-MM-dd HH:mm:ss";
-            foreach (KeyValuePair<int, List<int>> itemGroup in itemGroupRelations) {
-                if(itemGroup.Value.Contains(itemLineJson["id"].GetInt32())) {
+            foreach (KeyValuePair<int, List<int>> itemGroup in itemGroupRelations)
+            {
+                if (itemGroup.Value.Contains(itemLineJson["id"].GetInt32()))
+                {
                     correspondingItemGroup = itemGroup.Key;
                     break;
                 }
             }
             if (correspondingItemGroup == -1) return null;
-                    Console.WriteLine($"ItemLine: {itemLineJson["id"].GetInt32()}\n corresponding Item Group: {correspondingItemGroup}");
-            try {
-                returnItemLineObject = new ItemLine {   
-                    Name = itemLineJson["name"].GetString() ?? string.Empty,
+            Console.WriteLine($"ItemLine: {itemLineJson["id"].GetInt32()}\n corresponding Item Group: {correspondingItemGroup}");
+            try
+            {
+                returnItemLineObject = new ItemLine
+                {
+                    Name = itemLineJson["name"].GetString(),
                     ItemGroup = correspondingItemGroup,
-                    Description = itemLineJson["description"].GetString() ?? string.Empty,
+                    Description = itemLineJson["description"].GetString(),
 
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 };
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine($"GroupId: {itemLineJson["id"].GetInt32()}\n {e}");
             }
-            try {
-                if (itemLineJson["created_at"].ValueKind != JsonValueKind.Null)
-                {
-                    var createdAtString = itemLineJson["created_at"].GetString();
-                    if (!string.IsNullOrEmpty(createdAtString))
-                    {
-                        returnItemLineObject.CreatedAt = DateTime.ParseExact(createdAtString, format, System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                }
-                if (itemLineJson["updated_at"].ValueKind != JsonValueKind.Null)
-                {
-                    var updatedAtString = itemLineJson["updated_at"].GetString();
-                    if (!string.IsNullOrEmpty(updatedAtString))
-                    {
-                        returnItemLineObject.UpdatedAt = DateTime.ParseExact(updatedAtString, format, System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                }
-            } catch (FormatException) {
+            try
+            {
+                returnItemLineObject.CreatedAt = DateTime.ParseExact(itemLineJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+                returnItemLineObject.UpdatedAt = DateTime.ParseExact(itemLineJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            catch (FormatException e)
+            {
                 // Do nothing
             }
 
-            if (string.IsNullOrEmpty(returnItemLineObject.Name)) 
+            if (string.IsNullOrEmpty(returnItemLineObject.Name))
             {
                 throw new ArgumentException("Name cannot be null or empty");
             }
@@ -103,51 +95,47 @@ namespace CargoHubRefactor.DbSetup {
             return returnItemLineObject;
         }
 
-        public ItemType? ReturnItemTypeObject(Dictionary<string, System.Text.Json.JsonElement> itemTypeJson, Dictionary<int, List<int>> itemLineRelations) {
+        public ItemType ReturnItemTypeObject(Dictionary<string, System.Text.Json.JsonElement> itemTypeJson, Dictionary<int, List<int>> itemLineRelations)
+        {
             ItemType returnItemTypeObject = new ItemType();
             int correspondingItemLine = -1;
             string format = "yyyy-MM-dd HH:mm:ss";
-            foreach (KeyValuePair<int, List<int>> itemLine in itemLineRelations) {
-                if(itemLine.Value.Contains(itemTypeJson["id"].GetInt32())) {
+            foreach (KeyValuePair<int, List<int>> itemLine in itemLineRelations)
+            {
+                if (itemLine.Value.Contains(itemTypeJson["id"].GetInt32()))
+                {
                     correspondingItemLine = itemLine.Key;
                     break;
                 }
             }
             if (correspondingItemLine == -1) return null;
-            try {
-                returnItemTypeObject = new ItemType {   
-                    Name = itemTypeJson["name"].GetString() ?? string.Empty,
+            try
+            {
+                returnItemTypeObject = new ItemType
+                {
+                    Name = itemTypeJson["name"].GetString(),
                     ItemLine = correspondingItemLine,
-                    Description = itemTypeJson["description"].GetString() ?? string.Empty,
+                    Description = itemTypeJson["description"].GetString(),
 
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 };
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine($"GroupId: {itemTypeJson["id"].GetInt32()}\n {e}");
             }
-            try {
-                if (itemTypeJson["created_at"].ValueKind != JsonValueKind.Null)
-                {
-                    var createdAtString = itemTypeJson["created_at"].GetString();
-                    if (!string.IsNullOrEmpty(createdAtString))
-                    {
-                        returnItemTypeObject.CreatedAt = DateTime.ParseExact(createdAtString, format, System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                }
-                if (itemTypeJson["updated_at"].ValueKind != JsonValueKind.Null)
-                {
-                    var updatedAtString = itemTypeJson["updated_at"].GetString();
-                    if (!string.IsNullOrEmpty(updatedAtString))
-                    {
-                        returnItemTypeObject.UpdatedAt = DateTime.ParseExact(updatedAtString, format, System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                }
-            } catch (FormatException) {
+            try
+            {
+                returnItemTypeObject.CreatedAt = DateTime.ParseExact(itemTypeJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+                returnItemTypeObject.UpdatedAt = DateTime.ParseExact(itemTypeJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            catch (FormatException e)
+            {
                 // Do nothing
             }
 
-            if (string.IsNullOrEmpty(returnItemTypeObject.Name)) 
+            if (string.IsNullOrEmpty(returnItemTypeObject.Name))
             {
                 throw new ArgumentException("Name cannot be null or empty");
             }
@@ -166,16 +154,16 @@ namespace CargoHubRefactor.DbSetup {
                 {
                     // Mapping the JSON fields to Supplier properties
                     SupplierId = supplierJson["id"].GetInt32(),
-                    Code = supplierJson["code"].GetString() ?? string.Empty,
-                    Name = supplierJson["name"].GetString() ?? string.Empty,
-                    Address = supplierJson["address"].GetString() ?? string.Empty,
-                    AddressExtra = supplierJson.ContainsKey("address_extra") && supplierJson["address_extra"].ValueKind != JsonValueKind.Null ? supplierJson["address_extra"].GetString() : string.Empty,
-                    City = supplierJson["city"].GetString() ?? string.Empty,
-                    ZipCode = supplierJson["zip_code"].GetString() ?? string.Empty,
+                    Code = supplierJson["code"].GetString(),
+                    Name = supplierJson["name"].GetString(),
+                    Address = supplierJson["address"].GetString(),
+                    AddressExtra = supplierJson["address_extra"].GetString(),
+                    City = supplierJson["city"].GetString(),
+                    ZipCode = supplierJson["zip_code"].GetString(),
                     Province = supplierJson["province"].GetString(),
-                    Country = supplierJson["country"].GetString() ?? string.Empty,
-                    ContactName = supplierJson["contact_name"].GetString() ?? string.Empty,
-                    PhoneNumber = supplierJson["phonenumber"].GetString() ?? string.Empty,
+                    Country = supplierJson["country"].GetString(),
+                    ContactName = supplierJson["contact_name"].GetString(),
+                    PhoneNumber = supplierJson["phonenumber"].GetString(),
                     Reference = supplierJson["reference"].GetString(),
                     CreatedAt = DateTime.UtcNow, // Default values; will be overridden below
                     UpdatedAt = DateTime.UtcNow, // Default values; will be overridden below
@@ -189,16 +177,13 @@ namespace CargoHubRefactor.DbSetup {
             // Parse created_at and updated_at with the specific format
             try
             {
-                if (supplierJson["created_at"].ValueKind != JsonValueKind.Null)
-                {
-                    returnSupplierObject.CreatedAt = DateTime.ParseExact(
-                        supplierJson["created_at"].GetString() ?? string.Empty,
-                        format,
-                        System.Globalization.CultureInfo.InvariantCulture
-                    );
-                }
+                returnSupplierObject.CreatedAt = DateTime.ParseExact(
+                    supplierJson["created_at"].GetString(),
+                    format,
+                    System.Globalization.CultureInfo.InvariantCulture
+                );
                 returnSupplierObject.UpdatedAt = DateTime.ParseExact(
-                    supplierJson["updated_at"].GetString() ?? string.Empty,
+                    supplierJson["updated_at"].GetString(),
                     format,
                     System.Globalization.CultureInfo.InvariantCulture
                 );
@@ -222,22 +207,22 @@ namespace CargoHubRefactor.DbSetup {
                 {
                     // Mapping the JSON fields to Warehouse properties
                     WarehouseId = warehouseJson["id"].GetInt32(),
-                    Code = warehouseJson["code"].GetString() ?? string.Empty,
-                    Name = warehouseJson["name"].GetString() ?? string.Empty,
-                    Address = warehouseJson["address"].GetString() ?? string.Empty,
-                    Zip = warehouseJson["zip"].GetString() ?? string.Empty, // Mapping the "zip" field from the JSON to "ZipCode" in Warehouse
-                    City = warehouseJson["city"].GetString() ?? string.Empty,
-                    Province = warehouseJson["province"].GetString() ?? string.Empty,
-                    Country = warehouseJson["country"].GetString() ?? string.Empty,
-                    
+                    Code = warehouseJson["code"].GetString(),
+                    Name = warehouseJson["name"].GetString(),
+                    Address = warehouseJson["address"].GetString(),
+                    Zip = warehouseJson["zip"].GetString(), // Mapping the "zip" field from the JSON to "ZipCode" in Warehouse
+                    City = warehouseJson["city"].GetString(),
+                    Province = warehouseJson["province"].GetString(),
+                    Country = warehouseJson["country"].GetString(),
+
                     // Contact is a nested object, so we handle it separately
-                    ContactName = warehouseJson.ContainsKey("contact") && warehouseJson["contact"].TryGetProperty("name", out var contactName) ? contactName.GetString() ?? string.Empty : string.Empty,
-                    ContactPhone = warehouseJson.ContainsKey("contact") && warehouseJson["contact"].TryGetProperty("phone", out var contactPhone) ? contactPhone.GetString() ?? string.Empty : string.Empty,
-                    ContactEmail = warehouseJson.ContainsKey("contact") && warehouseJson["contact"].TryGetProperty("email", out var contactEmail) ? contactEmail.GetString() ?? string.Empty : string.Empty,
+                    ContactName = warehouseJson["contact"].GetProperty("name").GetString(),
+                    ContactPhone = warehouseJson["contact"].GetProperty("phone").GetString(),
+                    ContactEmail = warehouseJson["contact"].GetProperty("email").GetString(),
 
                     // Date fields
-                    CreatedAt = DateTime.ParseExact(warehouseJson["created_at"].GetString() ?? string.Empty, format, null),
-                    UpdatedAt = DateTime.ParseExact(warehouseJson["updated_at"].GetString() ?? string.Empty, format, null),
+                    CreatedAt = DateTime.ParseExact(warehouseJson["created_at"].GetString(), format, null),
+                    UpdatedAt = DateTime.ParseExact(warehouseJson["updated_at"].GetString(), format, null),
                 };
             }
             catch (Exception e)
@@ -248,12 +233,12 @@ namespace CargoHubRefactor.DbSetup {
             try
             {
                 returnWarehouseObject.CreatedAt = DateTime.ParseExact(
-                    warehouseJson["created_at"].GetString() ?? string.Empty,
+                    warehouseJson["created_at"].GetString(),
                     format,
                     System.Globalization.CultureInfo.InvariantCulture
                 );
                 returnWarehouseObject.UpdatedAt = DateTime.ParseExact(
-                    warehouseJson["updated_at"].GetString() ?? string.Empty,
+                    warehouseJson["updated_at"].GetString(),
                     format,
                     System.Globalization.CultureInfo.InvariantCulture
                 );
@@ -262,7 +247,7 @@ namespace CargoHubRefactor.DbSetup {
             {
                 Console.WriteLine($"Date parsing error for Supplier ID: {returnWarehouseObject.WarehouseId}\n {e}");
             }
-            
+
 
             return returnWarehouseObject;
         }
@@ -278,19 +263,19 @@ namespace CargoHubRefactor.DbSetup {
                 {
                     // Mapping the JSON fields to Client properties
                     ClientId = clientJson["id"].GetInt32(),
-                    Name = clientJson["name"].GetString() ?? string.Empty,
-                    Address = clientJson["address"].GetString() ?? string.Empty,
-                    ZipCode = clientJson["zip_code"].GetString() ?? string.Empty, // Mapping the "zip_code" field from the JSON to "ZipCode" in Client
-                    City = clientJson["city"].GetString() ?? string.Empty,
+                    Name = clientJson["name"].GetString(),
+                    Address = clientJson["address"].GetString(),
+                    ZipCode = clientJson["zip_code"].GetString(), // Mapping the "zip_code" field from the JSON to "ZipCode" in Client
+                    City = clientJson["city"].GetString(),
                     Province = clientJson.ContainsKey("province") && !clientJson["province"].ValueKind.Equals(JsonValueKind.Null)
-                        ? clientJson["province"].GetString() ?? "Unknown"
+                        ? clientJson["province"].GetString()
                         : "Unknown", // Default value if province is null or missing
-                    Country = clientJson.ContainsKey("country") && clientJson["country"].ValueKind != JsonValueKind.Null ? clientJson["country"].GetString() ?? string.Empty : string.Empty,
-                    
+                    Country = clientJson["country"].GetString(),
+
                     // Contact information mapping
-                    ContactName = clientJson.ContainsKey("contact_name") && clientJson["contact_name"].ValueKind != JsonValueKind.Null ? clientJson["contact_name"].GetString() ?? string.Empty : string.Empty,
-                    ContactPhone = clientJson.ContainsKey("contact_phone") && clientJson["contact_phone"].ValueKind != JsonValueKind.Null ? clientJson["contact_phone"].GetString() ?? string.Empty : string.Empty,
-                    ContactEmail = clientJson.ContainsKey("contact_email") && clientJson["contact_email"].ValueKind != JsonValueKind.Null ? clientJson["contact_email"].GetString() ?? string.Empty : string.Empty,
+                    ContactName = clientJson["contact_name"].GetString(),
+                    ContactPhone = clientJson["contact_phone"].GetString(),
+                    ContactEmail = clientJson["contact_email"].GetString(),
 
                     // Date fields
                     CreatedAt = DateTime.UtcNow,
@@ -305,12 +290,12 @@ namespace CargoHubRefactor.DbSetup {
             try
             {
                 returnClientObject.CreatedAt = DateTime.ParseExact(
-                    clientJson["created_at"].GetString() ?? string.Empty,
+                    clientJson["created_at"].GetString(),
                     format,
                     System.Globalization.CultureInfo.InvariantCulture
                 );
                 returnClientObject.UpdatedAt = DateTime.ParseExact(
-                    clientJson["updated_at"].GetString() ?? string.Empty,
+                    clientJson["updated_at"].GetString(),
                     format,
                     System.Globalization.CultureInfo.InvariantCulture
                 );
@@ -330,27 +315,41 @@ namespace CargoHubRefactor.DbSetup {
             Item returnItemObject = new Item();
             string format = "yyyy-MM-dd HH:mm:ss"; // Define the expected date-time format
 
+            Random random = new Random();
+
+            double minValue = 4.0;
+            double maxValue = 6.0;
+
+            // Generate random value in the range [4, 6]
+            double randomValue = minValue + (random.NextDouble() * (maxValue - minValue));
+
+            // Round to 2 decimal places
+            randomValue = Math.Round(randomValue, 2);
+
+            Console.WriteLine(randomValue);
+
             try
             {
                 returnItemObject = new Item
                 {
                     // Mapping the JSON fields to Item properties
-                    Uid = itemJson["uid"].GetString() ?? string.Empty,
-                    Code = itemJson["code"].GetString() ?? string.Empty,
-                    Description = itemJson["description"].GetString() ?? string.Empty,
-                    ShortDescription = itemJson.ContainsKey("short_description") && itemJson["short_description"].ValueKind != JsonValueKind.Null ? itemJson["short_description"].GetString() ?? string.Empty : string.Empty,
-                    UpcCode = itemJson.ContainsKey("upc_code") && itemJson["upc_code"].ValueKind != JsonValueKind.Null ? itemJson["upc_code"].GetString() ?? string.Empty : string.Empty,
-                    ModelNumber = itemJson.ContainsKey("model_number") && itemJson["model_number"].ValueKind != JsonValueKind.Null ? itemJson["model_number"].GetString() ?? string.Empty : string.Empty,
-                    CommodityCode = itemJson.ContainsKey("commodity_code") && itemJson["commodity_code"].ValueKind != JsonValueKind.Null ? itemJson["commodity_code"].GetString() ?? string.Empty : string.Empty,
-                    ItemLine = itemJson.ContainsKey("item_line") && itemJson["item_line"].ValueKind != JsonValueKind.Null ? itemJson["item_line"].GetInt32() : 0,
-                    ItemGroup = itemJson.ContainsKey("item_group") && itemJson["item_group"].ValueKind != JsonValueKind.Null ? itemJson["item_group"].GetInt32() : 0,
-                    ItemType = itemJson.ContainsKey("item_type") && itemJson["item_type"].ValueKind != JsonValueKind.Null ? itemJson["item_type"].GetInt32() : 0,
-                    UnitPurchaseQuantity = itemJson.ContainsKey("unit_purchase_quantity") && itemJson["unit_purchase_quantity"].ValueKind != JsonValueKind.Null ? itemJson["unit_purchase_quantity"].GetInt32() : 0,
-                    UnitOrderQuantity = itemJson.ContainsKey("unit_order_quantity") && itemJson["unit_order_quantity"].ValueKind != JsonValueKind.Null ? itemJson["unit_order_quantity"].GetInt32() : 0,
+                    Uid = itemJson["uid"].GetString(),
+                    Code = itemJson["code"].GetString(),
+                    Description = itemJson["description"].GetString(),
+                    ShortDescription = itemJson["short_description"].GetString(),
+                    UpcCode = itemJson["upc_code"].GetString(),
+                    ModelNumber = itemJson["model_number"].GetString(),
+                    CommodityCode = itemJson["commodity_code"].GetString(),
+                    ItemLine = itemJson["item_line"].GetInt32(),
+                    ItemGroup = itemJson["item_group"].GetInt32(),
+                    ItemType = itemJson["item_type"].GetInt32(),
+                    Price = randomValue,
+                    UnitPurchaseQuantity = itemJson["unit_purchase_quantity"].GetInt32(),
+                    UnitOrderQuantity = itemJson["unit_order_quantity"].GetInt32(),
                     PackOrderQuantity = itemJson["pack_order_quantity"].GetInt32(),
-                    SupplierId = itemJson.ContainsKey("supplier_id") && itemJson["supplier_id"].ValueKind != JsonValueKind.Null ? itemJson["supplier_id"].GetInt32() : 0,
-                    SupplierCode = itemJson.ContainsKey("supplier_code") && itemJson["supplier_code"].ValueKind != JsonValueKind.Null ? itemJson["supplier_code"].GetString() ?? string.Empty : string.Empty,
-                    SupplierPartNumber = itemJson.ContainsKey("supplier_part_number") && itemJson["supplier_part_number"].ValueKind != JsonValueKind.Null ? itemJson["supplier_part_number"].GetString() ?? string.Empty : string.Empty,
+                    SupplierId = itemJson["supplier_id"].GetInt32(),
+                    SupplierCode = itemJson["supplier_code"].GetString(),
+                    SupplierPartNumber = itemJson["supplier_part_number"].GetString(),
                     CreatedAt = DateTime.UtcNow, // Default value; will be overridden below
                     UpdatedAt = DateTime.UtcNow, // Default value; will be overridden below
                 };
@@ -361,10 +360,12 @@ namespace CargoHubRefactor.DbSetup {
             }
 
             // Parse created_at and updated_at with the specific format
-            try {
-                returnItemObject.CreatedAt = DateTime.ParseExact(itemJson["created_at"].GetString() ?? string.Empty, format, System.Globalization.CultureInfo.InvariantCulture);
-                returnItemObject.UpdatedAt = DateTime.ParseExact(itemJson["updated_at"].GetString() ?? string.Empty, format, System.Globalization.CultureInfo.InvariantCulture);
-            } catch (FormatException e)
+            try
+            {
+                returnItemObject.CreatedAt = DateTime.ParseExact(itemJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+                returnItemObject.UpdatedAt = DateTime.ParseExact(itemJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            catch (FormatException e)
             {
                 Console.WriteLine($"Date parsing error for Item UID: {returnItemObject.Uid}\n {e}");
             }
@@ -378,51 +379,44 @@ namespace CargoHubRefactor.DbSetup {
             return returnItemObject;
         }
 
-        public Transfer? ReturnTransferObject(Dictionary<string, System.Text.Json.JsonElement> transferJson)
+        public Transfer ReturnTransferObject(Dictionary<string, JsonElement> transferJson)
         {
-            Transfer returnTransferObject = new Transfer();
-            string format = "yyyy-MM-ddTHH:mm:ssZ"; // Define the expected date-time format for the JSON (ISO 8601)
-
             try
             {
-                // Check if TransferFrom and TransferTo are null or missing, and return null if so
-                if (!transferJson.ContainsKey("transfer_from") || !transferJson.ContainsKey("transfer_to") ||
-                    transferJson["transfer_from"].ValueKind.Equals(JsonValueKind.Null) ||
-                    transferJson["transfer_to"].ValueKind.Equals(JsonValueKind.Null))
+                return new Transfer
                 {
-                    return null; // Return null if either transfer_from or transfer_to is missing or null
-                }
-
-                returnTransferObject = new Transfer
-                {
-                    // Mapping the JSON fields to Transfer properties
                     TransferId = transferJson["id"].GetInt32(),
-                    Reference = transferJson["reference"].GetString() ?? string.Empty,
-                    TransferFrom = transferJson["transfer_from"].GetInt32(),
-                    TransferTo = transferJson["transfer_to"].GetInt32(),
-                    TransferStatus = transferJson["transfer_status"].GetString() ?? string.Empty,
-                    
-                    // Date fields
-                    CreatedAt = DateTime.UtcNow, // Default value; will be overridden below
-                    UpdatedAt = DateTime.UtcNow // Default value; will be overridden below
+                    Reference = transferJson["reference"].GetString(),
+                    TransferFrom = transferJson["transfer_from"].ValueKind == JsonValueKind.Null ? null : (int?)transferJson["transfer_from"].GetInt32(),
+                    TransferTo = transferJson["transfer_to"].ValueKind == JsonValueKind.Null ? null : (int?)transferJson["transfer_to"].GetInt32(),
+                    TransferStatus = transferJson["transfer_status"].GetString(),
+                    CreatedAt = DateTime.Parse(transferJson["created_at"].GetString()),
+                    UpdatedAt = DateTime.Parse(transferJson["updated_at"].GetString())
                 };
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                // If an error occurs while processing the transfer object, log it
-                Console.WriteLine($"Error processing Transfer ID: {transferJson["id"].GetInt32()}\n {e}");
+                File.AppendAllText("transfer_log.txt", $"{DateTime.Now}: Error converting transfer JSON: {ex.Message}\nStack Trace: {ex.StackTrace}\nTransfer JSON: {JsonSerializer.Serialize(transferJson)}{Environment.NewLine}");
+                return null;
             }
+        }
 
-            try {
-                returnTransferObject.CreatedAt = DateTime.ParseExact(transferJson["created_at"].GetString() ?? string.Empty, format, System.Globalization.CultureInfo.InvariantCulture);
-                returnTransferObject.UpdatedAt = DateTime.ParseExact(transferJson["updated_at"].GetString() ?? string.Empty, format, System.Globalization.CultureInfo.InvariantCulture);
-            } catch (FormatException e)
+        public TransferItem ReturnTransferItemObject(JsonElement itemJson, int transferId)
+        {
+            try
             {
-                Console.WriteLine($"Date parsing error for Transfer ID: {returnTransferObject.TransferId}\n {e}");
+                return new TransferItem
+                {
+                    TransferId = transferId,
+                    ItemId = itemJson.GetProperty("item_id").GetString(),
+                    Amount = itemJson.GetProperty("amount").GetInt32()
+                };
             }
-            
-
-            return returnTransferObject;
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error converting transfer item JSON: {ex.Message}\nItem JSON: {itemJson}");
+                return null;
+            }
         }
 
         public (Order orderObj, List<OrderItem> orderItems) ReturnOrderObject(Dictionary<string, System.Text.Json.JsonElement> orderJson)
@@ -430,6 +424,8 @@ namespace CargoHubRefactor.DbSetup {
             (Order orderObj, List<OrderItem> orderItems) order;
             Order returnOrderObject = new Order();
             List<OrderItem> orderItems = new List<OrderItem>();
+            string format = "yyyy-MM-ddTHH:mm:ssZ"; // Define the expected date-time format for the JSON (ISO 8601)
+
             try
             {
                 returnOrderObject = new Order
@@ -437,12 +433,12 @@ namespace CargoHubRefactor.DbSetup {
                     // Mapping the JSON fields to Order properties
                     Id = orderJson["id"].GetInt32(),
                     SourceId = orderJson["source_id"].ValueKind == JsonValueKind.Null ? 0 : orderJson["source_id"].GetInt32(),
-                    Reference = orderJson["reference"].GetString() ?? string.Empty,
-                    ReferenceExtra = orderJson["reference_extra"].GetString() ?? string.Empty,
-                    OrderStatus = orderJson["order_status"].GetString() ?? string.Empty,
-                    Notes = orderJson["notes"].GetString() ?? string.Empty,
-                    ShippingNotes = orderJson["shipping_notes"].GetString() ?? string.Empty,
-                    PickingNotes = orderJson["picking_notes"].GetString() ?? string.Empty,
+                    Reference = orderJson["reference"].GetString(),
+                    ReferenceExtra = orderJson["reference_extra"].GetString(),
+                    OrderStatus = orderJson["order_status"].GetString(),
+                    Notes = orderJson["notes"].GetString(),
+                    ShippingNotes = orderJson["shipping_notes"].GetString(),
+                    PickingNotes = orderJson["picking_notes"].GetString(),
                     WarehouseId = orderJson["warehouse_id"].GetInt32(),
                     ShipTo = orderJson["ship_to"].ValueKind == JsonValueKind.Null ? 0 : orderJson["ship_to"].GetInt32(), // Handle null case
                     BillTo = orderJson["bill_to"].ValueKind == JsonValueKind.Null ? 0 : orderJson["bill_to"].GetInt32(), // Handle null case
@@ -454,16 +450,22 @@ namespace CargoHubRefactor.DbSetup {
 
                     // Date fields
                     CreatedAt = DateTime.UtcNow, // Default value; will be overridden below
-                    UpdatedAt = DateTime.UtcNow // Default value; will be overridden below
+                    UpdatedAt = DateTime.UtcNow, // Default value; will be overridden below
+                    OrderDate = DateTime.UtcNow, // Default value; will be overridden below
+                    RequestDate = DateTime.UtcNow // Default value; will be overridden below
                 };
-                            // Parse created_at and updated_at with the specific format
-                // try {
-                //     returnOrderObject.CreatedAt = DateTime.ParseExact(orderJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
-                //     returnOrderObject.UpdatedAt = DateTime.ParseExact(orderJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
-                // } catch (FormatException e)
-                // {
-                //     Console.WriteLine($"Date parsing error for Order UID: {returnOrderObject.Id}\n {e}");
-                // }
+                // Parse created_at and updated_at with the specific format
+                try
+                {
+                    returnOrderObject.CreatedAt = DateTime.ParseExact(orderJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+                    returnOrderObject.UpdatedAt = DateTime.ParseExact(orderJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+                    returnOrderObject.OrderDate = DateTime.ParseExact(orderJson["order_date"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+                    returnOrderObject.RequestDate = DateTime.ParseExact(orderJson["request_date"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+                }
+                catch (FormatException e)
+                {
+                    Console.WriteLine($"Date parsing error for Order UID: {returnOrderObject.Id}\n {e}");
+                }
                 // Parse the 'items' array and map it to the OrderItems list
                 if (orderJson.ContainsKey("items") && orderJson["items"].ValueKind == JsonValueKind.Array)
                 {
@@ -473,7 +475,7 @@ namespace CargoHubRefactor.DbSetup {
                         var orderItem = new OrderItem
                         {
                             // Access item_id and amount properties
-                            ItemId = itemJson.TryGetProperty("item_id", out var itemId) ? itemId.GetString() ?? string.Empty : string.Empty,
+                            ItemId = itemJson.TryGetProperty("item_id", out var itemId) ? itemId.GetString() : null,
                             Amount = itemJson.TryGetProperty("amount", out var amount) ? amount.GetInt32() : 0
                         };
 
@@ -504,12 +506,12 @@ namespace CargoHubRefactor.DbSetup {
                 {
                     // Mapping the JSON fields to Inventory properties
                     InventoryId = inventoryJson["id"].GetInt32(),
-                    ItemId = inventoryJson["item_id"].GetString() ?? string.Empty,
+                    ItemId = inventoryJson["item_id"].GetString(),
                     Description = inventoryJson.ContainsKey("description") && !inventoryJson["description"].ValueKind.Equals(JsonValueKind.Null)
-                        ? inventoryJson["description"].GetString() ?? string.Empty
+                        ? inventoryJson["description"].GetString()
                         : "No description available",  // Default value if description is missing or null
-                    ItemReference = inventoryJson["item_reference"].GetString() ?? string.Empty,
-                    
+                    ItemReference = inventoryJson["item_reference"].GetString(),
+
                     // Handling Locations as JSON array and converting it to List<int>
                     LocationsList = inventoryJson["locations"].EnumerateArray()
                         .Select(location => location.GetInt32())
@@ -532,11 +534,13 @@ namespace CargoHubRefactor.DbSetup {
             {
                 Console.WriteLine($"Error processing Inventory ID: {inventoryJson["id"].GetInt32()}\n {e}");
             }
-                    // Parse created_at and updated_at with the specific format
-            try {
-                returnInventoryObject.CreatedAt = DateTime.ParseExact(inventoryJson["created_at"].GetString() ?? string.Empty, format, System.Globalization.CultureInfo.InvariantCulture);
-                returnInventoryObject.UpdatedAt = DateTime.ParseExact(inventoryJson["updated_at"].GetString() ?? string.Empty, format, System.Globalization.CultureInfo.InvariantCulture);
-            } catch (FormatException e)
+            // Parse created_at and updated_at with the specific format
+            try
+            {
+                returnInventoryObject.CreatedAt = DateTime.ParseExact(inventoryJson["created_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+                returnInventoryObject.UpdatedAt = DateTime.ParseExact(inventoryJson["updated_at"].GetString(), format, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            catch (FormatException e)
             {
                 Console.WriteLine($"Date parsing error for Inventory ID: {returnInventoryObject.InventoryId}\n {e}");
             }
@@ -558,19 +562,19 @@ namespace CargoHubRefactor.DbSetup {
                 returnShipmentObject = new Shipment
                 {
                     ShipmentId = shipmentJson["id"].GetInt32(),
-                    OrderId = shipmentJson["order_id"].GetInt32(),
+                    OrderId = shipmentJson["order_id"].GetInt32().ToString(),
                     SourceId = shipmentJson["source_id"].GetInt32(),
-                    OrderDate = DateTime.Parse(shipmentJson["order_date"].GetString() ?? string.Empty),
-                    RequestDate = DateTime.Parse(shipmentJson["request_date"].GetString() ?? string.Empty),
-                    ShipmentDate = shipmentJson["shipment_date"].ValueKind != JsonValueKind.Null ? DateTime.Parse(shipmentJson["shipment_date"].GetString() ?? string.Empty) : DateTime.MinValue,
-                    ShipmentType = shipmentJson["shipment_type"].GetString() ?? string.Empty,
-                    ShipmentStatus = shipmentJson["shipment_status"].GetString() ?? string.Empty,
-                    Notes = shipmentJson["notes"].GetString() ?? string.Empty,
-                    CarrierCode = shipmentJson["carrier_code"].GetString() ?? string.Empty,
-                    CarrierDescription = shipmentJson["carrier_description"].GetString() ?? string.Empty,
-                    ServiceCode = shipmentJson["service_code"].GetString() ?? string.Empty,
-                    PaymentType = shipmentJson["payment_type"].GetString() ?? string.Empty,
-                    TransferMode = shipmentJson["transfer_mode"].GetString() ?? string.Empty,
+                    OrderDate = DateTime.Parse(shipmentJson["order_date"].GetString()),
+                    RequestDate = DateTime.Parse(shipmentJson["request_date"].GetString()),
+                    ShipmentDate = DateTime.Parse(shipmentJson["shipment_date"].GetString()),
+                    ShipmentType = shipmentJson["shipment_type"].GetString(),
+                    ShipmentStatus = shipmentJson["shipment_status"].GetString(),
+                    Notes = shipmentJson["notes"].GetString(),
+                    CarrierCode = shipmentJson["carrier_code"].GetString(),
+                    CarrierDescription = shipmentJson["carrier_description"].GetString(),
+                    ServiceCode = shipmentJson["service_code"].GetString(),
+                    PaymentType = shipmentJson["payment_type"].GetString(),
+                    TransferMode = shipmentJson["transfer_mode"].GetString(),
                     TotalPackageCount = shipmentJson["total_package_count"].GetInt32(),
                     TotalPackageWeight = shipmentJson["total_package_weight"].GetDouble(),
 
@@ -588,12 +592,12 @@ namespace CargoHubRefactor.DbSetup {
             {
                 // Parsing "created_at" and "updated_at" date fields
                 returnShipmentObject.CreatedAt = DateTime.ParseExact(
-                    shipmentJson["created_at"].GetString() ?? string.Empty,
+                    shipmentJson["created_at"].GetString(),
                     dateTimeFormat,
                     System.Globalization.CultureInfo.InvariantCulture
                 );
                 returnShipmentObject.UpdatedAt = DateTime.ParseExact(
-                    shipmentJson["updated_at"].GetString() ?? string.Empty,
+                    shipmentJson["updated_at"].GetString(),
                     dateTimeFormat,
                     System.Globalization.CultureInfo.InvariantCulture
                 );
@@ -613,7 +617,7 @@ namespace CargoHubRefactor.DbSetup {
                         ShipmentItem shipmentItem = new ShipmentItem
                         {
                             ShipmentId = returnShipmentObject.ShipmentId,
-                            ItemId = itemElement.GetProperty("item_id").GetString() ?? string.Empty,
+                            ItemId = itemElement.GetProperty("item_id").GetString(),
                             Amount = itemElement.GetProperty("amount").GetInt32(),
                         };
                         shipmentItems.Add(shipmentItem);
@@ -622,7 +626,7 @@ namespace CargoHubRefactor.DbSetup {
                     // Assuming a property or method exists to associate items with Shipment
                     shipment.shipmentItems = shipmentItems;
                 }
-                
+
             }
             catch (Exception e)
             {
@@ -644,9 +648,9 @@ namespace CargoHubRefactor.DbSetup {
                 {
                     LocationId = locationJson["id"].GetInt32(),
                     WarehouseId = locationJson["warehouse_id"].GetInt32(),
-                    ItemAmountsString = locationJson.ContainsKey("item_amounts_string") && locationJson["item_amounts_string"].ValueKind != JsonValueKind.Null ? locationJson["item_amounts_string"].GetString() : string.Empty,
-                    Code = locationJson["code"].GetString() ?? string.Empty,
-                    Name = locationJson["name"].GetString() ?? string.Empty,
+                    ItemAmountsString = "",
+                    Code = locationJson["code"].GetString(),
+                    Name = locationJson["name"].GetString(),
 
                     // Default values in case parsing fails
                     CreatedAt = DateTime.UtcNow,
@@ -662,12 +666,12 @@ namespace CargoHubRefactor.DbSetup {
             {
                 // Parsing "created_at" and "updated_at" date fields
                 returnLocationObject.CreatedAt = DateTime.ParseExact(
-                    locationJson["created_at"].GetString() ?? string.Empty,
+                    locationJson["created_at"].GetString(),
                     format,
                     System.Globalization.CultureInfo.InvariantCulture
                 );
                 returnLocationObject.UpdatedAt = DateTime.ParseExact(
-                    locationJson["updated_at"].GetString() ?? string.Empty,
+                    locationJson["updated_at"].GetString(),
                     format,
                     System.Globalization.CultureInfo.InvariantCulture
                 );

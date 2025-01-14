@@ -7,7 +7,7 @@ import requests
 import sys
 import os
 import json
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) 
 
 from api.models import clients

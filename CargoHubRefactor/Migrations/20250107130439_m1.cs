@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CargoHubRefactor.Migrations
 {
     /// <inheritdoc />
-    public partial class NewInitialCreate : Migration
+    public partial class m1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -195,7 +195,7 @@ namespace CargoHubRefactor.Migrations
                 {
                     ShipmentId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    OrderId = table.Column<int>(type: "INTEGER", nullable: false),
+                    OrderId = table.Column<string>(type: "TEXT", nullable: false),
                     SourceId = table.Column<int>(type: "INTEGER", nullable: false),
                     OrderDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     RequestDate = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -225,36 +225,6 @@ namespace CargoHubRefactor.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Transfers",
-                columns: table => new
-                {
-                    TransferId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Reference = table.Column<string>(type: "TEXT", nullable: false),
-                    TransferFrom = table.Column<int>(type: "INTEGER", nullable: false),
-                    TransferTo = table.Column<int>(type: "INTEGER", nullable: false),
-                    TransferStatus = table.Column<string>(type: "TEXT", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Transfers", x => x.TransferId);
-                    table.ForeignKey(
-                        name: "FK_Transfers_Warehouses_TransferFrom",
-                        column: x => x.TransferFrom,
-                        principalTable: "Warehouses",
-                        principalColumn: "WarehouseId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Transfers_Warehouses_TransferTo",
-                        column: x => x.TransferTo,
-                        principalTable: "Warehouses",
-                        principalColumn: "WarehouseId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ItemTypes",
                 columns: table => new
                 {
@@ -274,6 +244,36 @@ namespace CargoHubRefactor.Migrations
                         column: x => x.ItemLine,
                         principalTable: "ItemLines",
                         principalColumn: "LineId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Transfers",
+                columns: table => new
+                {
+                    TransferId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Reference = table.Column<string>(type: "TEXT", nullable: true),
+                    TransferFrom = table.Column<int>(type: "INTEGER", nullable: true),
+                    TransferTo = table.Column<int>(type: "INTEGER", nullable: true),
+                    TransferStatus = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transfers", x => x.TransferId);
+                    table.ForeignKey(
+                        name: "FK_Transfers_Locations_TransferFrom",
+                        column: x => x.TransferFrom,
+                        principalTable: "Locations",
+                        principalColumn: "LocationId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Transfers_Locations_TransferTo",
+                        column: x => x.TransferTo,
+                        principalTable: "Locations",
+                        principalColumn: "LocationId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -301,6 +301,8 @@ namespace CargoHubRefactor.Migrations
                     Height = table.Column<double>(type: "REAL", nullable: false),
                     Width = table.Column<double>(type: "REAL", nullable: false),
                     Depth = table.Column<double>(type: "REAL", nullable: false),
+                    Weight = table.Column<double>(type: "REAL", nullable: false),
+                    Price = table.Column<double>(type: "REAL", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
@@ -423,7 +425,7 @@ namespace CargoHubRefactor.Migrations
                     TransferItemId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     TransferId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ItemId = table.Column<string>(type: "TEXT", nullable: false),
+                    ItemId = table.Column<string>(type: "TEXT", nullable: true),
                     Amount = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -544,9 +546,6 @@ namespace CargoHubRefactor.Migrations
                 name: "Inventories");
 
             migrationBuilder.DropTable(
-                name: "Locations");
-
-            migrationBuilder.DropTable(
                 name: "OrderItems");
 
             migrationBuilder.DropTable(
@@ -574,10 +573,13 @@ namespace CargoHubRefactor.Migrations
                 name: "Suppliers");
 
             migrationBuilder.DropTable(
-                name: "Warehouses");
+                name: "Locations");
 
             migrationBuilder.DropTable(
                 name: "ItemLines");
+
+            migrationBuilder.DropTable(
+                name: "Warehouses");
 
             migrationBuilder.DropTable(
                 name: "ItemGroups");
