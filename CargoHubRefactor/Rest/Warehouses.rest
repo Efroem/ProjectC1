@@ -34,6 +34,9 @@ POST http://localhost:5000/api/v1/warehouses
 Content-Type: application/json
 ApiToken: A1B2C3D4
 
+####
+GET http://localhost:5000/api/v1/warehouses/1
+ApiToken: K11L12M13
 {
   "code": "WH124",
   "name": "Secondary Warehouse",
@@ -71,6 +74,7 @@ Content-Type: application/json
 PUT http://localhost:5000/api/v1/warehouses/1
 ApiToken: A1B2C3D4
 Content-Type: application/json
+ApiToken: E5F6G7
 
 {
   "code": "WH123",

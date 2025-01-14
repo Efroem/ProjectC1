@@ -18,6 +18,11 @@ public class ShipmentService : IShipmentService
         return await _context.Shipments.Include(s => s.SourceWarehouse).ToListAsync();
     }
 
+    public async Task<List<Shipment>> GetAllShipmentsAsync(int limit)
+    {
+        return await _context.Shipments.Include(s => s.SourceWarehouse).Take(limit).ToListAsync();
+    }
+
     public async Task<Shipment> GetShipmentByIdAsync(int id)
     {
         return await _context.Shipments

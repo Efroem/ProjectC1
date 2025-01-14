@@ -31,13 +31,13 @@ namespace CargoHubRefactor.Controllers{
         {
             if (limit <= 0)
             {
-                return BadRequest("Cannot show clients with a limit below 1.");
+                return BadRequest("Cannot show itemlines with a limit below 1.");
             }
 
             var itemlines = await _itemLineService.GetItemLinesAsync(limit);
             if (itemlines == null || !itemlines.Any())
             {
-                return NotFound("No clients found.");
+                return NotFound("No itemlines found.");
             }
 
             return Ok(itemlines);

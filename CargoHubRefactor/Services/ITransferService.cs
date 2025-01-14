@@ -8,5 +8,7 @@ public interface ITransferService
     Task<(string message, Transfer? transfer)> UpdateTransferAsync(int transferId, Transfer updatedTransfer); // New method
     Task<string> DeleteTransferAsync(int transferId);
     Task<List<Transfer>> GetAllTransfersAsync();
+    Task<List<Transfer>> GetAllTransfersAsync(int limit);
+
     Task<Transfer?> GetTransferByIdAsync(int transferId);
 }
