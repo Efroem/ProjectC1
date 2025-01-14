@@ -43,6 +43,24 @@ namespace CargoHubRefactor.Controllers{
             return Ok(itemlines);
         }
 
+        [HttpGet("limit/{limit}/page/{page}")]
+        public async Task<ActionResult<IEnumerable<Inventory>>> GetItemLinesPaged(int limit, int page)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show ItemLines with a limit below 1.");
+            }
+            if (page < 0) return BadRequest("Page number must be a positive integer");
+
+            var ItemLines = await _itemLineService.GetItemLinesPagedAsync(limit, page);
+            if (ItemLines == null || !ItemLines.Any())
+            {
+                return NotFound("No ItemLines found.");
+            }
+
+            return Ok(ItemLines);
+        }
+
         [HttpGet("{lineId}")]
         public async Task<ActionResult> GetItemLineById(int lineId)
         {

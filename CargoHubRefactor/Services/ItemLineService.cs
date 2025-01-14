@@ -21,6 +21,10 @@ public class ItemLineService : IItemLineService
     {
         return await _context.ItemLines.Take(limit).ToListAsync();
     }
+    public async Task<IEnumerable<ItemLine>> GetItemLinesPagedAsync(int limit, int page)
+    {
+        return await _context.ItemLines.Skip(limit * (page - 1)).Take(limit).ToListAsync();
+    }
 
     public async Task<ItemLine?> GetItemLineByIdAsync(int id)
     {
