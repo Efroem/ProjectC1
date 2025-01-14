@@ -130,6 +130,14 @@ public class TransferService : ITransferService
             .ToListAsync();
     }
 
+    public async Task<List<Transfer>> GetAllTransfersAsync(int limit)
+    {
+        return await _context.Transfers
+            .Include(t => t.Items)
+            .ThenInclude(ti => ti.Item).Take(limit)
+            .ToListAsync();
+    }
+
     public async Task<Transfer?> GetTransferByIdAsync(int transferId)
     {
         return await _context.Transfers

@@ -3,7 +3,7 @@ GET http://localhost:5000/api/v1/Orders/3052
 ApiToken: E5F6G7
 ###
 GET http://localhost:5000/api/v1/Orders/limit/10
-ApiToken: H8I9J10
+ApiToken: E5F6G7
 ### Expected Response:
 HTTP/1.1 200 OK
 Content-Type: application/json

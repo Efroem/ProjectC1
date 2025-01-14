@@ -1,97 +1,94 @@
 # ======================== SHIPMENTS =====================================
 
-# Geeft alle shipments
-GET http://localhost:5000/api/v1/shipments
+# Geeft alle shipments 
+GET http://localhost:5000/api/v1/shipments 
+Content-Type: application/json
+
+###
+###
+GET http://localhost:5000/api/v1/shipments/limit/10
+ApiToken: E5F6G7
+###
+
+# Geeft een specifieke shipment op basis van ID 
+GET http://localhost:5000/api/v1/shipments/1 
 Content-Type: application/json
 
 ###
 
-# Geeft een specifieke shipment op basis van ID
-GET http://localhost:5000/api/v1/shipments/1
-Content-Type: application/json
-
-###
-
-# Voegt een nieuwe shipment toe
-POST http://localhost:5000/api/v1/shipments
+# Voegt een nieuwe shipment toe 
+POST http://localhost:5000/api/v1/shipments 
 Content-Type: application/json
 
 {
-  "orderId": "5,6,3",
-  "sourceId": 1,
-  "orderDate": "2024-12-13T00:00:00",
-  "requestDate": "2024-12-15T00:00:00",
-  "shipmentDate": "2024-12-20T00:00:00",
-  "shipmentType": "Standard",
-  "shipmentStatus": "Pending",
-  "notes": "First shipment",
-  "carrierCode": "CARRIER001",
-  "carrierDescription": "Test Carrier",
-  "serviceCode": "EXPRESS",
-  "paymentType": "Prepaid",
-  "transferMode": "Air",
-  "totalPackageCount": 5,
-  "totalPackageWeight": 100.5
+"orderId": 12345, "sourceId": 1, 
+"orderDate": "2024-12-13T00:00:00", 
+"requestDate": "2024-12-15T00:00:00", 
+"shipmentDate": "2024-12-20T00:00:00", 
+"shipmentType": "Standard", 
+"shipmentStatus": "Pending", 
+"notes": "First shipment", 
+"carrierCode": "CARRIER001", 
+"carrierDescription": "Test Carrier", 
+"serviceCode": "EXPRESS", 
+"paymentType": "Prepaid", 
+"transferMode": "Air", 
+"totalPackageCount": 5, 
+"totalPackageWeight": 100.5
 }
 
 ###
 
-# Voegt een andere shipment toe
-POST http://localhost:5000/api/v1/shipments
+# Voegt een andere shipment toe 
+POST http://localhost:5000/api/v1/shipments 
 Content-Type: application/json
 
 {
-  "orderId": "1,2",
-  "sourceId": 2,
-  "orderDate": "2024-12-10T00:00:00",
-  "requestDate": "2024-12-12T00:00:00",
-  "shipmentDate": "2024-12-18T00:00:00",
-  "shipmentType": "Express",
-  "shipmentStatus": "Dispatched",
-  "notes": "Second shipment",
-  "carrierCode": "CARRIER002",
-  "carrierDescription": "Fast Carrier",
-  "serviceCode": "OVERNIGHT",
-  "paymentType": "Collect",
-  "transferMode": "Sea",
-  "totalPackageCount": 10,
-  "totalPackageWeight": 250.0
+"orderId": 67890, 
+"sourceId": 2, 
+"orderDate": "2024-12-10T00:00:00", 
+"requestDate": "2024-12-12T00:00:00", 
+"shipmentDate": "2024-12-18T00:00:00", 
+"shipmentType": "Express", 
+"shipmentStatus": "Dispatched", 
+"notes": "Second shipment", 
+"carrierCode": "CARRIER002", 
+"carrierDescription": "Fast Carrier", 
+"serviceCode": "OVERNIGHT", 
+"paymentType": "Collect", 
+"transferMode": "Sea", 
+"totalPackageCount": 10, 
+"totalPackageWeight": 250.0
 }
 
 ###
 
-# Update een bestaande shipment
-PUT http://localhost:5000/api/v1/shipments/10107
+# Update een bestaande shipment 
+PUT http://localhost:5000/api/v1/shipments/1 
 Content-Type: application/json
 
 {
-  "orderId": "1",
-  "sourceId": 1,
-  "orderDate": "2024-12-13T00:00:00",
-  "requestDate": "2024-12-16T00:00:00",
-  "shipmentDate": "2024-12-21T00:00:00",
-  "shipmentType": "Priority",
-  "shipmentStatus": "Shipped",
-  "notes": "Updated shipment",
-  "carrierCode": "CARRIER99",
-  "carrierDescription": "Updated Carrier",
-  "serviceCode": "STANDARD",
-  "paymentType": "Prepaid",
-  "transferMode": "Truck",
-  "totalPackageCount": 8,
-  "totalPackageWeight": 200.0
+"orderId": 12345, 
+"sourceId": 1, 
+"orderDate": "2024-12-13T00:00:00", 
+"requestDate": "2024-12-16T00:00:00", 
+"shipmentDate": "2024-12-21T00:00:00", 
+"shipmentType": "Priority", 
+"shipmentStatus": "Shipped", 
+"notes": "Updated shipment", 
+"carrierCode": "CARRIER001", 
+"carrierDescription": "Updated Carrier", 
+"serviceCode": "STANDARD", 
+"paymentType": "Prepaid", 
+"transferMode": "Truck", 
+"totalPackageCount": 8, 
+"totalPackageWeight": 200.0
 }
 
 ###
 
-#get items in een shipment
-GET http://localhost:5000/api/v1/shipments/10107/items
-Content-Type: application/json
-
-###
-
-# Verwijdert een shipment
-DELETE http://localhost:5000/api/v1/shipments/10104
+# Verwijdert een shipment 
+DELETE http://localhost:5000/api/v1/shipments/2 
 Content-Type: application/json
 
 ###

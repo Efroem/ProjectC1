@@ -5,7 +5,6 @@ public interface IInventoryService
 {
     Task<List<Inventory>> GetInventoriesAsync();
     Task<IEnumerable<Inventory>> GetInventoriesAsync(int limit);
-    Task<IEnumerable<Inventory>> GetInventoriesPagedAsync(int limit, int page);
     Task<Inventory?> GetInventoryByIdAsync(int id);
     Task<(string message, Inventory? returnedInventory)> AddInventoryAsync(Inventory Inventory);
     Task<(string message, Inventory? returnedInventory)> UpdateInventoryAsync(int id, Inventory Inventory);
