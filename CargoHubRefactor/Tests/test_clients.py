@@ -105,6 +105,26 @@ def test_post_clients_integration_AdminKey(_data):
     assert status_code == 200 and response_data["name"] == body["name"] and response_data["address"] == body["address"]
 
     requests.delete(f"{url}/{client_id}", headers=headers)
+    
+def test_post_clients_invalid_email(_data):
+    url = _data[0]["URL"] + 'Clients'
+    headers = get_headers(_data[0]["AdminApiToken"])
+    
+    body = {
+        "name": "Test-Test",
+        "address": "12345 Test Suite 420",
+        "city": "South Anthonymouth",
+        "zipCode": "12345",
+        "province": "Test-Province",
+        "country": "United States",
+        "contactName": "Testy Testra",
+        "contactPhone": "431-688-3019",
+        "contactEmail": "testtestexample.net"  
+    }
+
+    post_response = requests.post(url, headers=headers, json=body)
+    
+    assert post_response.status_code == 400
 
 def test_post_clients_integration_EmployeeKey(_data):
     url = _data[0]["URL"] + 'Clients'
