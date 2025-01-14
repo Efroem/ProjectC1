@@ -6,8 +6,8 @@ public class Location
 {
     public int LocationId { get; set; }
     public int WarehouseId { get; set; }
-    public string Code { get; set; }
-    public string Name { get; set; }
+    public string Code { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
     [NotMapped]
     private Dictionary<string, int>? _itemAmounts;
     [NotMapped]
@@ -49,11 +49,11 @@ public class Location
     }
     public double MaxWeight { get; set; } = 0;
     public double MaxHeight { get; set; } = 0;
-    public double MaxWidth {get; set; } = 0;
+    public double MaxWidth { get; set; } = 0;
     public double MaxDepth { get; set; } = 0;
     public Boolean IsDock { get; set; } = false;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
-    public Warehouse Warehouse { get; set; }
+    public Warehouse? Warehouse { get; set; }
 }

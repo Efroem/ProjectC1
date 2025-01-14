@@ -8,18 +8,18 @@ public class Inventory
     public int InventoryId { get; set; }
 
     [ForeignKey("Item")] // Indicates this is a foreign key referencing Items
-    public string ItemId { get; set; }
+    public string ItemId { get; set; } = string.Empty;
 
-    public string Description { get; set; }
-    public string ItemReference { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public string ItemReference { get; set; } = string.Empty;
     [NotMapped]
     [JsonPropertyName("locations")]
-    public List<int>? LocationsList {get; set; }
+    public List<int>? LocationsList { get; set; }
 
     [JsonPropertyName("locationsString")] // not directly used name
     public string? Locations
-    { 
-        get => JsonSerializer.Serialize(LocationsList); 
+    {
+        get => JsonSerializer.Serialize(LocationsList);
         set
         {
             try

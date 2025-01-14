@@ -9,42 +9,42 @@ namespace Models
 
         [Required]
         [MaxLength(50)]
-        public string Code { get; set; }
+        public string Code { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(100)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(200)]
-        public string Address { get; set; }
+        public string Address { get; set; } = string.Empty;
 
         [MaxLength(100)]
         public string? AddressExtra { get; set; }
 
         [Required]
         [MaxLength(50)]
-        public string City { get; set; }
+        public string City { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(10)]
-        public string ZipCode { get; set; }
+        public string ZipCode { get; set; } = string.Empty;
 
         [MaxLength(50)]
         public string? Province { get; set; }
 
         [Required]
         [MaxLength(50)]
-        public string Country { get; set; }
+        public string Country { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(100)]
-        public string ContactName { get; set; }
+        public string ContactName { get; set; } = string.Empty;
 
         [Required]
         [Phone]
         [MaxLength(15)]
-        public string PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = string.Empty;
 
         [MaxLength(50)]
         public string? Reference { get; set; }

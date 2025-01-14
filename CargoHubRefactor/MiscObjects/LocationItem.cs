@@ -1,6 +1,6 @@
 public class LocationItem
 {
-    public string ItemId { get; set; }
+    public required string ItemId { get; set; }
     public int Amount { get; set; }
     public string Classification { get; set; } = "None";
 

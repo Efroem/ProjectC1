@@ -7,7 +7,7 @@ public class OrderItem
     public int OrderId { get; set; } = -1;
 
     [ForeignKey("Item")] // Indicates this is a foreign key referencing Items
-    public string ItemId { get; set; }
+    public string ItemId { get; set; } = string.Empty;
     public int Amount { get; set; }
 
     // Navigation Properties
