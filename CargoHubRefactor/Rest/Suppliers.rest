@@ -6,8 +6,8 @@ Accept: application/json
 GET http://localhost:5000/api/v1/suppliers/3
 Accept: application/json
 ###
-GET http://localhost:5000/api/v1/suppliers/limit/10
-ApiToken: E5F6G7
+GET http://localhost:5000/api/v1/suppliers/limit/11
+ApiToken: A1B2C3D4
 ###
 
 ### Create a new supplier

@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 namespace CargoHubRefactor.Controllers
-{   
+{
     [ServiceFilter(typeof(Filters))]
     [Route("api/v1/warehouses")]
     [ApiController]
@@ -15,10 +16,29 @@ namespace CargoHubRefactor.Controllers
             _warehouseService = warehouseService;
         }
 
+        // Endpoint zonder limiet (alle warehouses ophalen)
         [HttpGet]
         public async Task<ActionResult<List<Warehouse>>> GetAllWarehouses()
         {
             return Ok(await _warehouseService.GetAllWarehousesAsync());
+        }
+
+        // Endpoint met limiet (alle warehouses ophalen, maar beperkt tot het opgegeven aantal)
+        [HttpGet("limit/{limit}")]
+        public async Task<ActionResult<List<Warehouse>>> GetAllWarehouses(int limit)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show Warehouses with a limit below 1.");
+            }
+
+            var warehouses = await _warehouseService.GetAllWarehousesAsync(limit);
+            if (warehouses == null || warehouses.Count == 0)
+            {
+                return NotFound("No warehouses found.");
+            }
+
+            return Ok(warehouses);
         }
 
         [HttpGet("{id}")]

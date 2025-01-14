@@ -25,6 +25,23 @@ namespace CargoHubRefactor.Controllers
             return Ok(suppliers);
         }
 
+        [HttpGet("limit/{limit}")]
+        public async Task<ActionResult<IEnumerable<Client>>> GetAllSuppliers(int limit)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show Suppliers with a limit below 1.");
+            }
+
+            var suppliers = await _supplierService.GetAllSuppliersAsync(limit);
+            if (suppliers == null || !suppliers.Any())
+            {
+                return NotFound("No suppliers found.");
+            }
+
+            return Ok(suppliers);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Supplier>> GetSupplierById(int id)
         {

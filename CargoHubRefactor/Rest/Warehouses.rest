@@ -5,7 +5,11 @@ ApiToken: A1B2C3D4
 ### Get warehouse by ID (success)
 GET http://localhost:5000/api/v1/warehouses/1
 ApiToken: A1B2C3D4
-
+###
+GET http://localhost:5000/api/v1/warehouses/limit/10
+Content-Type: application/json
+ApiToken: A1B2C3D4
+###
 ### Get warehouse by ID (not found)
 GET http://localhost:5000/api/v1/warehouses/999
 ApiToken: A1B2C3D4
