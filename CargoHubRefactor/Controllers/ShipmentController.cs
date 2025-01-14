@@ -52,6 +52,24 @@ public class ShipmentController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPut("{id}/status")]
+    public async Task<ActionResult> UpdateShipmentStatus(int id, [FromBody] ShipmentStatusUpdateRequest request)
+    {
+        if (request == null || string.IsNullOrEmpty(request.Status))
+        {
+            return BadRequest("Invalid request. Status is required.");
+        }
+
+        var result = await _shipmentService.UpdateShipmentStatusAsync(id, request.Status);
+
+        if (result.StartsWith("Error"))
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+
     [HttpGet("{id}/items")]
     public async Task<ActionResult<List<ShipmentItem>>> GetShipmentItems(int id)
     {

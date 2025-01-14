@@ -147,6 +147,62 @@ public class ShipmentService : IShipmentService
 
         return "Shipment successfully updated.";
     }
+
+    public async Task<string> UpdateShipmentStatusAsync(int shipmentId, string newStatus)
+    {
+        // Fetch the shipment from the database
+        var shipment = await _context.Shipments
+                                      .FirstOrDefaultAsync(s => s.ShipmentId == shipmentId);
+
+        if (shipment == null)
+        {
+            return "Error: Shipment not found.";
+        }
+
+        // Update shipment status
+        shipment.ShipmentStatus = newStatus;
+        shipment.UpdatedAt = DateTime.UtcNow;
+
+        if (newStatus == "IN TRANSIT")
+        {
+            // Fetch the ShipmentItems associated with this shipment
+            var shipmentItems = await _context.ShipmentItems
+                                              .Where(si => si.ShipmentId == shipmentId)
+                                              .Include(si => si.Item)  // Include the Item details
+                                              .ToListAsync();
+
+            foreach (var shipmentItem in shipmentItems)
+            {
+                var inventory = await _context.Inventories
+                                               .FirstOrDefaultAsync(i => i.ItemId == shipmentItem.ItemId);
+
+                if (inventory != null)
+                {
+                    if (inventory.TotalAvailable >= shipmentItem.Amount)
+                    {
+                        inventory.TotalAvailable -= shipmentItem.Amount; // Reduce the TotalAvailable
+                        inventory.UpdatedAt = DateTime.UtcNow;
+                        _context.Inventories.Update(inventory); // Update the inventory record
+                    }
+                    else
+                    {
+                        return $"Error: Insufficient inventory for item {shipmentItem.ItemId}.";
+                    }
+                }
+                else
+                {
+                    return $"Error: Inventory not found for item {shipmentItem.ItemId}.";
+                }
+            }
+        }
+
+        // Save the updated shipment and inventory changes
+        await _context.SaveChangesAsync();
+
+        return $"Shipment {shipmentId} status successfully updated to '{newStatus}'.";
+    }
+
+
     public async Task<List<ShipmentItem>> GetShipmentItemsAsync(int shipmentId)
     {
         // Fetch the items related to the shipment

@@ -10,5 +10,7 @@ public interface IShipmentService
     Task<string> DeleteShipmentAsync(int id);
     Task<List<ShipmentItem>> GetShipmentItemsAsync(int shipmentId);
     Task<string> SplitOrderIntoShipmentsAsync(int orderId, List<SplitOrderItem> itemsToSplit);
+    Task<string> UpdateShipmentStatusAsync(int shipmentId, string newStatus);
+
 
 }
