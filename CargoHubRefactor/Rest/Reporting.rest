@@ -6,6 +6,7 @@ ApiToken: A1B2C3D4
 GET http://localhost:5000/api/v1/reporting?entity=warehouses&fromDate=1999-12-01&toDate=2024-12-31
 ApiToken: A1B2C3D4
 
+
 ### Report warehouses bij Id=50
 GET http://localhost:5000/api/v1/reporting?entity=warehouses&fromDate=1999-12-01&toDate=2024-12-31&warehouseId=50
 ApiToken: A1B2C3D4
