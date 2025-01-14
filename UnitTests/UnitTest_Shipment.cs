@@ -30,7 +30,8 @@ public class UnitTest_Shipment
 
         _dbContext = new CargoHubDbContext(options);
         SeedDatabase(_dbContext);
-        _shipmentService = new ShipmentService(_dbContext);
+        var orderService = new OrderService(_dbContext); // Assuming OrderService implements IOrderService
+        _shipmentService = new ShipmentService(_dbContext, orderService);
     }
 
     private void SeedDatabase(CargoHubDbContext context)
@@ -175,4 +176,5 @@ public class UnitTest_Shipment
         Assert.AreEqual(result.StartsWith("Shipment successfully deleted."), shouldDelete);
     }
 }
+
 
