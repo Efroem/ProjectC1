@@ -136,7 +136,10 @@ jobs:
     # Install ReportGenerator (optional, for readable reports)
     - name: Install ReportGenerator
       run: dotnet tool install -g dotnet-reportgenerator-globaltool
-
+    
+    - name: Install xmllint
+      run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+    
     # Generate coverage report (optional)
     - name: Generate coverage report
       run: |
