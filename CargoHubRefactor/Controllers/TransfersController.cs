@@ -22,6 +22,23 @@ namespace CargoHubRefactor.Controllers
             return Ok(await _transferService.GetAllTransfersAsync());
         }
 
+        [HttpGet("limit/{limit}")]
+        public async Task<ActionResult<IEnumerable<Client>>> GetAllTransfers(int limit)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show tranfers with a limit below 1.");
+            }
+
+            var transfers = await _transferService.GetAllTransfersAsync(limit);
+            if (transfers == null || !transfers.Any())
+            {
+                return NotFound("No transfers found.");
+            }
+
+            return Ok(transfers);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Transfer>> GetTransferById(int id)
         {
@@ -45,6 +62,15 @@ namespace CargoHubRefactor.Controllers
             if (message.StartsWith("Error")) return BadRequest(message);
             return Ok(message);
         }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateTransfer(int id, [FromBody] Transfer transfer)
+        {
+            var (message, updatedTransfer) = await _transferService.UpdateTransferAsync(id, transfer);
+            if (updatedTransfer == null) return BadRequest(message);
+            return Ok(updatedTransfer);
+        }
+
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteTransfer(int id)
