@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Xml;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace CargoHubRefactor.Services
@@ -21,12 +22,6 @@ namespace CargoHubRefactor.Services
 
         public IEnumerable<object> GenerateReport(string entity, DateTime fromDate, DateTime toDate, int? warehouseId)
         {
-            // Validate date range
-            if (fromDate > toDate)
-            {
-                throw new ArgumentException("The fromDate cannot be later than toDate.");
-            }
-
             IEnumerable<object> reportData;
 
             switch (entity.ToLower())
@@ -34,7 +29,7 @@ namespace CargoHubRefactor.Services
                 case "clients":
                     reportData = _context.Clients
                         .Where(c => c.CreatedAt >= fromDate && c.CreatedAt <= toDate)
-                        .OrderBy(c => c.CreatedAt)
+                        .OrderBy(C => C.CreatedAt)
                         .Select(c => new { c.ClientId, c.Name, c.CreatedAt })
                         .ToList();
                     break;
@@ -42,15 +37,15 @@ namespace CargoHubRefactor.Services
                 case "suppliers":
                     reportData = _context.Suppliers
                         .Where(s => s.CreatedAt >= fromDate && s.CreatedAt <= toDate)
-                        .OrderBy(s => s.CreatedAt)
+                        .OrderBy(C => C.CreatedAt)
                         .Select(s => new { s.SupplierId, s.Name, s.CreatedAt })
                         .ToList();
                     break;
 
                 case "warehouses":
                     reportData = _context.Warehouses
-                        .Where(w => w.CreatedAt >= fromDate && w.CreatedAt <= toDate && (warehouseId == null || w.WarehouseId == warehouseId))
-                        .OrderBy(w => w.CreatedAt)
+                        .Where(w => w.CreatedAt >= fromDate && w.CreatedAt <= toDate && (warehouseId == null ? true : w.WarehouseId == warehouseId))
+                        .OrderBy(C => C.CreatedAt)
                         .Select(w => new { w.WarehouseId, w.Name, w.CreatedAt })
                         .ToList();
                     break;
@@ -59,17 +54,18 @@ namespace CargoHubRefactor.Services
                     throw new ArgumentException("Invalid entity type for reporting.");
             }
 
-            if (reportData == null || !reportData.Any())
+            if (reportData == null || reportData.Count() == 0)
             {
                 return reportData;
             }
 
-            // Write the report to a file
+            // schrijft naar een bestand toe
             WriteReportToFile(entity, fromDate, toDate, warehouseId, reportData);
 
             return reportData;
         }
 
+        // de method. Is te vinden bij de volgende path: GitHub\Processing-and-Tools-Team-2\CargoHubRefactor\bin\Debug\Reports
         private void WriteReportToFile(string entity, DateTime fromDate, DateTime toDate, int? warehouseId, IEnumerable<object> reportData)
         {
             string fileName = $"{entity}_Report_{fromDate:yyyyyMMdd}_{toDate:yyyyMMdd}_Id_{warehouseId}.txt";
@@ -85,43 +81,15 @@ namespace CargoHubRefactor.Services
                 }
                 writer.WriteLine("--------------------------------------------------");
 
-                // Handle entity-specific headers and data
-                switch (entity.ToLower())
+                foreach (var record in reportData)
                 {
-                    case "clients":
-                        writer.WriteLine("ClientId,Name,CreatedAt");
-                        foreach (var record in reportData)
-                        {
-                            var client = (dynamic)record;
-                            writer.WriteLine($"{client.ClientId},{client.Name},{client.CreatedAt:yyyy-MM-dd}");
-                        }
-                        break;
-
-                    case "suppliers":
-                        writer.WriteLine("SupplierId,Name,CreatedAt");
-                        foreach (var record in reportData)
-                        {
-                            var supplier = (dynamic)record;
-                            writer.WriteLine($"{supplier.SupplierId},{supplier.Name},{supplier.CreatedAt:yyyy-MM-dd}");
-                        }
-                        break;
-
-                    case "warehouses":
-                        writer.WriteLine("WarehouseId,Name,CreatedAt");
-                        foreach (var record in reportData)
-                        {
-                            var warehouse = (dynamic)record;
-                            writer.WriteLine($"{warehouse.WarehouseId},{warehouse.Name},{warehouse.CreatedAt:yyyy-MM-dd}");
-                        }
-                        break;
-
-                    default:
-                        throw new ArgumentException($"Unsupported entity: {entity}");
+                    writer.WriteLine(JsonSerializer.Serialize(record, new JsonSerializerOptions { WriteIndented = true }));
                 }
 
                 writer.WriteLine("--------------------------------------------------");
                 writer.WriteLine($"Generated on: {DateTime.Now}");
             }
         }
+
     }
 }

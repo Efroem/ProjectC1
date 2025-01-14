@@ -38,7 +38,7 @@ namespace CargoHubRefactor.Controllers
             var result = await _warehouseService.AddWarehouseAsync(warehouseDto);
             if (result.message.StartsWith("Error"))
             {
-                return BadRequest(result.message);
+                return BadRequest(result);
             }
             return Ok(result.warehouse);
         }
@@ -49,9 +49,11 @@ namespace CargoHubRefactor.Controllers
             (string message, Warehouse ReturnedWarehouse) result = await _warehouseService.UpdateWarehouseAsync(id, warehouseDto);
             if (result.message.StartsWith("Error"))
             {
-                return BadRequest(result.message);
+                return BadRequest(result);
             }
-            return Ok(result.ReturnedWarehouse);
+            if (result.ReturnedWarehouse != null) return Ok(result.ReturnedWarehouse);
+            return BadRequest("Invalid Warehouse added");
+
         }
 
         [HttpDelete("{id}")]

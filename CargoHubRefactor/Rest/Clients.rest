@@ -73,7 +73,7 @@ ApiToken: A1B2C3D4
 ##update client
 PUT http://localhost:5000/api/v1/Clients/1
 Content-Type: application/json
-ApiToken: E5F6G7
+ApiToken: A1B2C3D4
 
 {
     "name": "Jane Doe",

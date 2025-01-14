@@ -1,21 +1,9 @@
 
 GET http://localhost:5000/api/v1/Inventories
-ApiToken: H8I9J10
 ####
 
 GET http://localhost:5000/api/v1/Inventories/1
-ApiToken: H8I9J10
 ####
-
-GET http://localhost:5000/api/v1/Inventories/limit/10
-ApiToken: H8I9J10
-####
-
-
-GET http://localhost:5000/api/v1/Inventories/limit/10/page/2
-ApiToken: H8I9J10
-####
-
 
 POST http://localhost:5000/api/v1/Inventories
 Content-Type: application/json

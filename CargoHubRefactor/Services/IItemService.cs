@@ -5,7 +5,6 @@ public interface IItemService
 {
     Task<IEnumerable<Item>> GetItemsAsync();
     Task<IEnumerable<Item>> GetItemsAsync(int limit);
-    Task<IEnumerable<Item>> GetItemsPagedAsync(int limit, int page);
     Task<Item?> GetItemByIdAsync(string uid);
     Task<int?> GetItemAmountAtLocationByIdAsync(string uid, int locationId);
     Task<(string message, Item? returnedItem)> AddItemAsync(Item item);

@@ -39,22 +39,6 @@ namespace CargoHubRefactor.Controllers
             }
             return Ok(orders);
         }
-        [HttpGet("limit/{limit}")]
-        public async Task<ActionResult<IEnumerable<Client>>> GetOrders(int limit)
-        {
-            if (limit <= 0)
-            {
-                return BadRequest("Cannot show orders with a limit below 1.");
-            }
-
-            var orders = await _orderService.GetOrdersAsync(limit);
-            if (orders == null || !orders.Any())
-            {
-                return NotFound("No orders found.");
-            }
-
-            return Ok(orders);
-        }
 
         [HttpGet("{id}/TotalPrice")]
         public async Task<IActionResult> GetOrderPriceTotal(int id) 

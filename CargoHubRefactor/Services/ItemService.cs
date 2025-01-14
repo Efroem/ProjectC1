@@ -23,10 +23,6 @@ public class ItemService : IItemService
     {
         return await _context.Items.Take(limit).ToListAsync();
     }
-    public async Task<IEnumerable<Item>> GetItemsPagedAsync(int limit, int page)
-    {
-        return await _context.Items.Skip(limit * (page - 1)).Take(limit).ToListAsync();
-    }
 
     public async Task<Item?> GetItemByIdAsync(string uid)
     {
