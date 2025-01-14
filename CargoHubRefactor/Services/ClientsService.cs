@@ -64,8 +64,8 @@ public class ClientService : IClientService
         return client;
     }
 
-    public async Task<Client> UpdateClientAsync(int id, string name, string address, string city, string zipCode, 
-                                                string province, string country, string contactName, 
+    public async Task<Client> UpdateClientAsync(int id, string name, string address, string city, string zipCode,
+                                                string province, string country, string contactName,
                                                 string contactPhone, string contactEmail)
     {
         var client = await _context.Clients.FirstOrDefaultAsync(c => c.ClientId == id);
@@ -104,4 +104,10 @@ public class ClientService : IClientService
 
         return true;
     }
+
+    public async Task<IEnumerable<Client>> GetClientsPagedAsync(int limit, int page)
+    {
+        return await _context.Clients.Skip(limit * (page - 1)).Take(limit).ToListAsync();
+    }
+    
 }

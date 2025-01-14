@@ -56,6 +56,24 @@ namespace CargoHubRefactor.Controllers
             return Ok(orders);
         }
 
+        [HttpGet("limit/{limit}/page/{page}")]
+        public async Task<ActionResult<IEnumerable<Inventory>>> GetOrdersPaged(int limit, int page)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show orders with a limit below 1.");
+            }
+            if (page < 0) return BadRequest("Page number must be a positive integer");
+
+            var orders = await _orderService.GetOrdersPagedAsync(limit, page);
+            if (orders == null || !orders.Any())
+            {
+                return NotFound("No orders found.");
+            }
+
+            return Ok(orders);
+        }
+
         [HttpGet("{id}/TotalPrice")]
         public async Task<IActionResult> GetOrderPriceTotal(int id) 
         {

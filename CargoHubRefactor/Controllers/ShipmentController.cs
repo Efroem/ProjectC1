@@ -36,6 +36,25 @@ public class ShipmentController : ControllerBase
         return Ok(shipments);
     }
 
+    [HttpGet("limit/{limit}/page/{page}")]
+        public async Task<ActionResult<IEnumerable<Inventory>>> GetShipmentsPaged(int limit, int page)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show shipments with a limit below 1.");
+            }
+            if (page < 0) return BadRequest("Page number must be a positive integer");
+
+            var shipments = await _shipmentService.GetShipmentsPagedAsync(limit, page);
+            if (shipments == null || !shipments.Any())
+            {
+                return NotFound("No shipments found.");
+            }
+
+            return Ok(shipments);
+        }
+
+
     [HttpGet("{id}")]
     public async Task<ActionResult<Shipment>> GetShipmentById(int id)
     {

@@ -25,11 +25,6 @@ public class InventoryService : IInventoryService
         return await _context.Inventories.Take(limit).ToListAsync();
     }
 
-    public async Task<IEnumerable<Inventory>> GetInventoriesPagedAsync(int limit, int page)
-    {
-        return await _context.Inventories.Skip(limit * (page - 1)).Take(limit).ToListAsync();
-    }
-
     public async Task<Inventory?> GetInventoryByIdAsync(int id)
     {
         return await _context.Inventories.FindAsync(id);
@@ -195,6 +190,11 @@ public class InventoryService : IInventoryService
         _context.Inventories.Remove(inventory);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<IEnumerable<Inventory>> GetInventoriesPagedAsync(int limit, int page)
+    {
+        return await _context.Inventories.Skip(limit * (page - 1)).Take(limit).ToListAsync();
     }
 }
 

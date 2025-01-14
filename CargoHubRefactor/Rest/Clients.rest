@@ -4,6 +4,10 @@ Content-Type: application/json
 ApiToken: your_api_token_here
 ###
 
+###
+GET http://localhost:5000/api/v1/Clients/limit/10/page/2
+ApiToken: H8I9J10
+###
 ##geeft bepaald aantal clients
 GET http://localhost:5000/api/v1/Clients/limit/10
 Content-Type: application/json

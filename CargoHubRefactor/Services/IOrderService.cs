@@ -7,7 +7,7 @@ public interface IOrderService
     Task<Order?> GetOrderAsync(int orderId);
     Task<IEnumerable<Order>> GetOrdersAsync();
     Task<IEnumerable<Order>> GetOrdersAsync(int limit);
-
+    Task<IEnumerable<Order>> GetOrdersPagedAsync(int limit, int page);
     Task<double> GetOrderPriceTotalAsync(int id);
     Task<double> GetOrderWeightTotalAsync(int id);
     
