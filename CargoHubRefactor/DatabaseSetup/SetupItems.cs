@@ -9,7 +9,8 @@ using Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Testing.Platform.Extensions.Messages;
-namespace CargoHubRefactor.DbSetup {
+namespace CargoHubRefactor.DbSetup
+{
     public class SetupItems
     {
         private readonly CargoHubDbContext _context;
@@ -42,18 +43,18 @@ namespace CargoHubRefactor.DbSetup {
             string locationDataString = File.ReadAllText($"{dataFilePath}locations.json");
 
             // Deserialize the JSON string into a List of Dictionaries with JsonElement values
-            List<Dictionary<string, JsonElement>> itemData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(itemDataString);
-            List<Dictionary<string, JsonElement>> itemGroupData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(itemGroupDataString);
-            List<Dictionary<string, JsonElement>> itemLineData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(itemLineDataString);
-            List<Dictionary<string, JsonElement>> itemTypeData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(itemTypeDataString);
-            List<Dictionary<string, JsonElement>> supplierData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(supplierDataString);
-            List<Dictionary<string, JsonElement>> warehouseData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(warehouseDataString);
-            List<Dictionary<string, JsonElement>> clientData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(clientDataString);
-            List<Dictionary<string, JsonElement>> transferData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(transferDataString);
-            List<Dictionary<string, JsonElement>> orderData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(orderDataString);
-            List<Dictionary<string, JsonElement>> inventoryData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(inventoryDataString);
-            List<Dictionary<string, JsonElement>> shipmentData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(shipmentDataString);
-            List<Dictionary<string, JsonElement>> locationData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(locationDataString);
+            List<Dictionary<string, JsonElement>> itemData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(itemDataString) ?? new List<Dictionary<string, JsonElement>>();
+            List<Dictionary<string, JsonElement>> itemGroupData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(itemGroupDataString) ?? new List<Dictionary<string, JsonElement>>();
+            List<Dictionary<string, JsonElement>> itemLineData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(itemLineDataString) ?? new List<Dictionary<string, JsonElement>>();
+            List<Dictionary<string, JsonElement>> itemTypeData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(itemTypeDataString) ?? new List<Dictionary<string, JsonElement>>();
+            List<Dictionary<string, JsonElement>> supplierData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(supplierDataString) ?? new List<Dictionary<string, JsonElement>>();
+            List<Dictionary<string, JsonElement>> warehouseData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(warehouseDataString) ?? new List<Dictionary<string, JsonElement>>();
+            List<Dictionary<string, JsonElement>> clientData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(clientDataString) ?? new List<Dictionary<string, JsonElement>>();
+            List<Dictionary<string, JsonElement>> transferData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(transferDataString) ?? new List<Dictionary<string, JsonElement>>();
+            List<Dictionary<string, JsonElement>> orderData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(orderDataString) ?? new List<Dictionary<string, JsonElement>>();
+            List<Dictionary<string, JsonElement>> inventoryData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(inventoryDataString) ?? new List<Dictionary<string, JsonElement>>();
+            List<Dictionary<string, JsonElement>> shipmentData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(shipmentDataString) ?? new List<Dictionary<string, JsonElement>>();
+            List<Dictionary<string, JsonElement>> locationData = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(locationDataString) ?? new List<Dictionary<string, JsonElement>>();
             foreach (var item in itemData)
             {
                 try
@@ -107,7 +108,7 @@ namespace CargoHubRefactor.DbSetup {
                     Console.WriteLine(itemGroup.Name != null ? itemGroup.Name : "null");
                     // Console.WriteLine(_context.ItemGroups.FirstOrDefault(x => x.GroupId == itemGroup.GroupId));
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Console.WriteLine(ex);
                 }
@@ -129,7 +130,7 @@ namespace CargoHubRefactor.DbSetup {
                     await _context.ItemLines.AddAsync(itemLine);
                     // Console.WriteLine(_context.ItemGroups.FirstOrDefault(x => x.GroupId == itemGroup.GroupId));
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Console.WriteLine(ex);
                 }
@@ -155,7 +156,7 @@ namespace CargoHubRefactor.DbSetup {
 
                     // Console.WriteLine(_context.ItemGroups.FirstOrDefault(x => x.GroupId == itemGroup.GroupId));
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Console.WriteLine(ex);
                 }
@@ -178,7 +179,7 @@ namespace CargoHubRefactor.DbSetup {
                     await _context.Suppliers.AddAsync(supplier);
                     Console.WriteLine(supplier.Name != null ? supplier.Name : "null");
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Console.WriteLine(ex);
                 }
@@ -203,7 +204,7 @@ namespace CargoHubRefactor.DbSetup {
                     Warehouses.Add(warehouse);
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Console.WriteLine(ex);
                 }
@@ -290,25 +291,28 @@ namespace CargoHubRefactor.DbSetup {
                 try
                 {
                     await _context.Inventories.AddAsync(inventory);
-                    int amountPerLocation = inventory.TotalOnHand / inventory.LocationsList.Count;
-                    int remainder = inventory.TotalOnHand % inventory.LocationsList.Count;
-
-                    for (int i = 0; i < inventory.LocationsList.Count; i++)
+                    int amountPerLocation = inventory.LocationsList != null ? inventory.TotalOnHand / inventory.LocationsList.Count : 0;
+                    int remainder = inventory.LocationsList != null ? inventory.TotalOnHand % inventory.LocationsList.Count : 0;
+                    if (inventory.LocationsList != null)
                     {
-                        int locationId = inventory.LocationsList[i];
-                        if (!ItemAmountLocations.ContainsKey(locationId))
-                        {
-                            ItemAmountLocations[locationId] = new Dictionary<string, int>();
-                        }
+                        for (int i = 0; i < inventory.LocationsList.Count; i++)
+                            for (int j = 0; j < inventory.LocationsList.Count; j++)
+                            {
+                                int locationId = inventory.LocationsList[j];
+                                if (!ItemAmountLocations.ContainsKey(locationId))
+                                {
+                                    ItemAmountLocations[locationId] = new Dictionary<string, int>();
+                                }
 
-                        if (ItemAmountLocations[locationId].ContainsKey(inventory.ItemId))
-                        {
-                            ItemAmountLocations[locationId][inventory.ItemId] += amountPerLocation + (remainder > 0 ? remainder : 0);
-                        }
-                        else
-                        {
-                            ItemAmountLocations[locationId].Add(inventory.ItemId, amountPerLocation + (remainder > 0 ? remainder : 0));
-                        }
+                                if (ItemAmountLocations[locationId].ContainsKey(inventory.ItemId))
+                                {
+                                    ItemAmountLocations[locationId][inventory.ItemId] += amountPerLocation + (remainder > 0 ? remainder : 0);
+                                }
+                                else
+                                {
+                                    ItemAmountLocations[locationId].Add(inventory.ItemId, amountPerLocation + (remainder > 0 ? remainder : 0));
+                                }
+                            }
                     }
                 }
                 catch (Exception ex)
@@ -533,7 +537,7 @@ namespace CargoHubRefactor.DbSetup {
                         {
                             try
                             {
-                                string itemId = itemJson.GetProperty("item_id").GetString();
+                                string itemId = itemJson.GetProperty("item_id").GetString() ?? string.Empty;
                                 if (!_context.Items.Any(i => i.Uid == itemId))
                                 {
                                     continue;
@@ -546,14 +550,14 @@ namespace CargoHubRefactor.DbSetup {
 
                                 await _context.TransferItems.AddAsync(transferItem);
                             }
-                            catch (Exception itemEx)
+                            catch (Exception)
                             {
 
                             }
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                 }
             }
@@ -565,7 +569,7 @@ namespace CargoHubRefactor.DbSetup {
                 await _context.TransferItems.AddRangeAsync(transferItemsToAdd);
                 await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
             return;
@@ -586,7 +590,7 @@ namespace CargoHubRefactor.DbSetup {
 
             foreach (var property in properties)
             {
-                object value = property.GetValue(obj);
+                object value = property.GetValue(obj) ?? "null";
                 Console.WriteLine($"{property.Name}: {value}");
             }
         }
