@@ -82,6 +82,7 @@ Content-Type: application/json
   "totalPackageWeight": 200.0
 }
 ###
+//update status van shipment en update automatisch the inventory voor de items in de shipment
 PUT http://localhost:5000/api/v1/shipments/10107/status
 Content-Type: application/json
 
