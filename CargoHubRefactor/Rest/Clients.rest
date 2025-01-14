@@ -1,7 +1,7 @@
 ##geeft alle clients
 GET http://localhost:5000/api/v1/Clients
 Content-Type: application/json
-ApiToken: your_api_token_here
+ApiToken: A1B2C3D4
 ###
 
 ##geeft bepaald aantal clients
