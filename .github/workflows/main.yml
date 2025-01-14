@@ -125,7 +125,7 @@ jobs:
 
     # Build the project
     - name: Build
-      run: dotnet build --no-restore --configuration Release
+      run: dotnet build --no-restore --configuration Release UnitTests/UnitTests.csproj
 
     # Run tests with Coverlet
     - name: Run tests and collect coverage
