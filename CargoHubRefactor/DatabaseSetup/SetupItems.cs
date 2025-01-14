@@ -304,13 +304,16 @@ namespace CargoHubRefactor.DbSetup
                                     ItemAmountLocations[locationId] = new Dictionary<string, int>();
                                 }
 
-                                if (ItemAmountLocations[locationId].ContainsKey(inventory.ItemId))
+                                if (inventory.ItemId != null && ItemAmountLocations[locationId].ContainsKey(inventory.ItemId))
                                 {
                                     ItemAmountLocations[locationId][inventory.ItemId] += amountPerLocation + (remainder > 0 ? remainder : 0);
                                 }
                                 else
                                 {
-                                    ItemAmountLocations[locationId].Add(inventory.ItemId, amountPerLocation + (remainder > 0 ? remainder : 0));
+                                    if (inventory.ItemId != null)
+                                    {
+                                        ItemAmountLocations[locationId].Add(inventory.ItemId, amountPerLocation + (remainder > 0 ? remainder : 0));
+                                    }
                                 }
                             }
                     }
