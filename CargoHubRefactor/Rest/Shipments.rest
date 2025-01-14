@@ -41,7 +41,7 @@ POST http://localhost:5000/api/v1/shipments
 Content-Type: application/json
 
 {
-  "orderId": "1,2",
+  "orderId": "1",
   "sourceId": 2,
   "orderDate": "2024-12-10T00:00:00",
   "requestDate": "2024-12-12T00:00:00",
@@ -92,7 +92,7 @@ Content-Type: application/json
 ###
 
 #get items in een shipment
-GET http://localhost:5000/api/v1/shipments/10105/items
+GET http://localhost:5000/api/v1/shipments/10107/items
 Content-Type: application/json
 
 ###

@@ -159,7 +159,7 @@ public class ShipmentService : IShipmentService
             return "Error: Shipment not found.";
         }
 
-        // Update shipment status
+        // Update shipment status to the new status
         shipment.ShipmentStatus = newStatus;
         shipment.UpdatedAt = DateTime.UtcNow;
 
@@ -178,11 +178,16 @@ public class ShipmentService : IShipmentService
 
                 if (inventory != null)
                 {
+                    // Ensure sufficient inventory to reduce
                     if (inventory.TotalAvailable >= shipmentItem.Amount)
                     {
-                        inventory.TotalAvailable -= shipmentItem.Amount; // Reduce the TotalAvailable
-                        inventory.UpdatedAt = DateTime.UtcNow;
-                        _context.Inventories.Update(inventory); // Update the inventory record
+                        // Reduce TotalAvailable and adjust TotalOnHand
+                        inventory.TotalAvailable -= shipmentItem.Amount; // Reduce available inventory
+                        inventory.TotalOnHand -= shipmentItem.Amount;     // Decrease total on hand as well
+                        inventory.UpdatedAt = DateTime.UtcNow;            // Update the timestamp of the inventory record
+
+                        // Save the updated inventory record
+                        _context.Inventories.Update(inventory);
                     }
                     else
                     {
@@ -201,6 +206,7 @@ public class ShipmentService : IShipmentService
 
         return $"Shipment {shipmentId} status successfully updated to '{newStatus}'.";
     }
+
 
 
     public async Task<List<ShipmentItem>> GetShipmentItemsAsync(int shipmentId)
