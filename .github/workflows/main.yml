@@ -120,7 +120,7 @@ jobs:
 
     # Restore dependencies
     - name: Restore dependencies
-      run: dotnet restore ../CargoHubRefactor.sln
+      run: dotnet restore ./CargoHubRefactor.sln
   
 
     # Build the project
