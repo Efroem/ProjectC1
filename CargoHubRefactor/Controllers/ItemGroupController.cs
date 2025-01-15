@@ -105,5 +105,16 @@ namespace CargoHubRefactor.Controllers{
             }
             return Ok("Successfully deleted Item Group");
         }
+        
+        [HttpDelete("{groupId}/test")]
+        public async Task<ActionResult> SoftDeleteItemGroup(int groupId)
+        {
+            var result = await _itemGroupService.SoftDeleteItemGroupAsync(groupId);
+            if (result == false)
+            {
+                return NotFound($"Item Group with ID: {groupId} not found.");
+            }
+            return Ok("Successfully soft deleted Item Group");
+        }
     }
 }

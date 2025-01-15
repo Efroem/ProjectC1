@@ -29,6 +29,7 @@ public class Item
     public double Depth { get; set; } = 0;
     public double Weight { get; set; } = 0;
     public double Price { get; set; } = 0;
+    public bool SoftDeleted { get; set; } = false;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

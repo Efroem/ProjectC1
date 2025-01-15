@@ -8,4 +8,5 @@ public interface IWarehouseService
     Task<(string message, Warehouse? warehouse)> AddWarehouseAsync(WarehouseDto warehouseDto);
     Task<(string message, Warehouse ReturnedWarehouse)> UpdateWarehouseAsync(int id, WarehouseDto warehouseDto);
     Task<string> DeleteWarehouseAsync(int id);
+    Task<string> SoftDeleteWarehouseAsync(int id);
 }

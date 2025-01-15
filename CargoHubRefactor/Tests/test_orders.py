@@ -146,51 +146,79 @@ def test_put_orders_integration(_data):
     assert status_code == 200 and response_data["id"] == original_body["id"] and response_data["notes"] == body["notes"]
 
 def test_delete_orders_integration(_data):
-    url = _data[0]["URL"] + 'orders'
+    # Make a POST request first to make a dummy client
+    url = _data[0]["URL"] + 'Orders/1'
     headers = get_headers(_data[0]["AdminApiToken"])
 
-    body = {
-        "sourceId": 111,
-        "orderDate": "2024-12-10T10:00:00Z",
-        "requestDate": "2024-12-12T10:00:00Z",
-        "reference": "ORD12347",
-        "referenceExtra": "EXTRA1eaheaare25",
-        "orderStatus": "Pending",
-        "notes": "Handle witSGsgh care",
-        "shippingNotes": "No speciSGsgdSDgal instructions",
-        "pickingNotes": "Pick adgSGSDgSEll items",
-        "warehouseId": 4,
-        "shipTo": 60,
-        "billTo": 100,
-        "shipmentId": 91,
-        "totalAmount": 2500.00,
-        "totalDiscount": 200.00,
-        "totalTax": 150.00,
-        "totalSurcharge": 30.00,
-        "orderItems": [
-            {
-                "itemId": "P000001",
-                "amount": 5
-            }
-        ]
-    }
+    dummy_get = requests.get(url, headers=headers)
+    dummyJson = dummy_get.json()
 
-    # Send a POST request to create a new order
-    post_response = requests.post(url, json=body, headers=headers)
-    assert post_response.status_code == 200
-    order_id = post_response.json().get("id")
+    # Send a DELETE request to the API and check if it was successful
+    delete_response = requests.delete(url + "/test", headers=headers)
+    assert delete_response.status_code == 200
 
-    # Verify the order exists
-    get1_response = requests.get(f"{url}/{order_id}", headers=headers)
+    get_response = requests.get(url, headers=headers)
 
-    if get1_response.status_code == 200:
-        # Send a DELETE request to remove the order
-        delete_response = requests.delete(f"{url}/{order_id}", headers=headers)
+    dummy_response = requests.put(url, json=dummyJson, headers=headers)
 
-        # Verify that the DELETE request was successful
-        assert delete_response.status_code == 200
-    else:
-        print("Resource with ID not found.")
+    # Get the status code and response data
+    status_code = get_response.status_code
+    response_data = None 
+    try:
+        response_data = get_response.json()
+    except:
+        pass
+    
+    print(response_data)
+    # Verify that the status code is 404 (Not Found) and the client no longer exists
+    assert status_code == 200 and response_data["softDeleted"] == True
+
+# def test_delete_orders_integration(_data):
+#     url = _data[0]["URL"] + 'orders'
+#     headers = get_headers(_data[0]["AdminApiToken"])
+
+#     body = {
+#         "sourceId": 111,
+#         "orderDate": "2024-12-10T10:00:00Z",
+#         "requestDate": "2024-12-12T10:00:00Z",
+#         "reference": "ORD12347",
+#         "referenceExtra": "EXTRA1eaheaare25",
+#         "orderStatus": "Pending",
+#         "notes": "Handle witSGsgh care",
+#         "shippingNotes": "No speciSGsgdSDgal instructions",
+#         "pickingNotes": "Pick adgSGSDgSEll items",
+#         "warehouseId": 4,
+#         "shipTo": 60,
+#         "billTo": 100,
+#         "shipmentId": 91,
+#         "totalAmount": 2500.00,
+#         "totalDiscount": 200.00,
+#         "totalTax": 150.00,
+#         "totalSurcharge": 30.00,
+#         "orderItems": [
+#             {
+#                 "itemId": "P000001",
+#                 "amount": 5
+#             }
+#         ]
+#     }
+
+#     # Send a POST request to create a new order
+#     post_response = requests.post(url, json=body, headers=headers)
+#     assert post_response.status_code == 200
+#     order_id = post_response.json().get("id")
+
+#     # Verify the order exists
+#     get1_response = requests.get(f"{url}/{order_id}", headers=headers)
+
+#     if get1_response.status_code == 200:
+#         # Send a DELETE request to remove the order
+#         delete_response = requests.delete(f"{url}/{order_id}", headers=headers)
+
+#         # Verify that the DELETE request was successful
+#         assert delete_response.status_code == 200
+#     else:
+#         print("Resource with ID not found.")
 
 def test_post_order_missing_fields_integration(_data):
     url = _data[0]["URL"] + 'orders'

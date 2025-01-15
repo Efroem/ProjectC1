@@ -95,7 +95,7 @@ namespace CargoHubRefactor.Controllers{
             return Ok(result.returnedItemType);
         }
 
-        [HttpDelete("{typeId}")]
+        [HttpDelete("{typeId}/test")]
         public async Task<ActionResult> DeleteItemType(int typeId)
         {
             var result = await _itemTypeService.DeleteItemTypeAsync(typeId);
@@ -103,7 +103,7 @@ namespace CargoHubRefactor.Controllers{
             {
                 return NotFound($"Item Type with ID: {typeId} not found.");
             }
-            return Ok("Item Type succesfully deleted");
+            return Ok("Item Type succesfully soft deleted");
         }
     }
 }

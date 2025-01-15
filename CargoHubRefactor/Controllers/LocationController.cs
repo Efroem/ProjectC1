@@ -139,5 +139,17 @@ namespace CargoHubRefactor.Controllers
             }
             return Ok($"Location with ID: {id} successfully deleted");
         }
+        
+        [HttpDelete("{id}/test")]
+        public async Task<IActionResult> SoftDeleteLocation(int id)
+        {
+            var result = await _locationService.SoftDeleteLocationAsync(id);
+            if (!result)
+            {
+                return NotFound($"Location with ID: {id} not found");
+            }
+            return Ok($"Location with ID: {id} successfully soft deleted");
+        }
+        
     }
 }

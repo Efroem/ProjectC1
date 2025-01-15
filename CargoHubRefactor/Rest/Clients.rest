@@ -89,7 +89,7 @@ ApiToken: E5F6G7
 ###
 
 ##verwijdert client
-DELETE http://localhost:5000/api/v1/Clients/9821
+DELETE http://localhost:5000/api/v1/Clients/1/test
 Content-Type: application/json
 ApiToken: A1B2C3D4
 ###

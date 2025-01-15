@@ -266,6 +266,18 @@ namespace CargoHubRefactor.Controllers
             return Ok($"Order with ID: {id} successfully deleted");
         }
 
+        [HttpDelete("{id}/test")]
+        public async Task<IActionResult> SoftDeleteOrder(int id)
+        {
+            var success = await _orderService.SoftDeleteOrderAsync(id);
+            if (!success)
+            {
+                return NotFound($"Order with ID: {id} was not found");
+            }
+
+            return Ok($"Order with ID: {id} successfully soft deleted");
+        }
+
         [HttpGet("{orderId}/locations")]
         public async Task<ActionResult<Dictionary<string, List<Location>>>> GetOrderItemLocations(int orderId)
         {

@@ -64,5 +64,16 @@ namespace CargoHubRefactor.Controllers
             }
             return Ok(result);
         }
+
+        [HttpDelete("{id}/test")]
+        public async Task<ActionResult> SoftDeleteWarehouse(int id)
+        {
+            var result = await _warehouseService.SoftDeleteWarehouseAsync(id);
+            if (result.StartsWith("Error"))
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
+        }
     }
 }

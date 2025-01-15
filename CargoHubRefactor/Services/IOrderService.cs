@@ -52,5 +52,6 @@ public interface IOrderService
         double totalSurcharge);
 
     Task<bool> DeleteOrderAsync(int orderId);
+    Task<bool> SoftDeleteOrderAsync(int orderId);
     Task<Dictionary<string, List<Location>>> GetLocationsForOrderItemsAsync(int orderId);
 }

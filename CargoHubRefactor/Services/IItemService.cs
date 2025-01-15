@@ -11,4 +11,5 @@ public interface IItemService
     Task<(string message, Item? returnedItem)> AddItemAsync(Item item);
     Task<(string message, Item? returnedItem)> UpdateItemAsync(string id, Item item);
     Task<bool> DeleteItemAsync(string uid);
+    Task<bool> SoftDeleteItemAsync(string uid);
 }

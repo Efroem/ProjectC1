@@ -74,11 +74,14 @@ def test_post_items_integration(_data):
     status_code = get_response.status_code
     response_data = get_response.json()
 
+    # Cleanup by deleting the created item
+    dummyresponse = requests.delete(f"{url}/{uid}", headers=headers)
+    assert dummyresponse.status_code == 200
+
     # Verify that the status code is 200 (OK)
     assert status_code == 200 and response_data["code"] == body["code"] and response_data["description"] == body["description"]
 
-    # Cleanup by deleting the created item
-    requests.delete(f"{url}/{uid}", headers=headers)
+
 
 def test_put_items_integration(_data):
     url = _data[0]["URL"] + 'Items/P000001'
@@ -123,45 +126,73 @@ def test_put_items_integration(_data):
     requests.put(url, json=dummyJson, headers=headers)
 
 def test_delete_items_integration(_data):
-    url = _data[0]["URL"] + 'Items'
+    # Make a POST request first to make a dummy client
+    url = _data[0]["URL"] + 'Items/P000001'
     headers = get_headers(_data[0]["AdminApiToken"])
-    body = {
-        "code": "xbox200000",
-        "description": "Dummy",
-        "shortDescription": "must",
-        "upcCode": "999999999999999",
-        "modelNumber": "12_QRSTUV",
-        "commodityCode": "oTo300",
-        "itemLine": 1,
-        "itemGroup": 1,
-        "itemType": 1,
-        "unitPurchaseQuantity": 45,
-        "unitOrderQuantity": 13,
-        "packOrderQuantity": 11,
-        "supplierId": 1,
-        "supplierCode": "SUP423",
-        "supplierPartNumber": "E-86805-uTM"
-    }
 
-    # Send a POST request to the API and check if it was successful
-    post_response = requests.post(url, json=body, headers=headers)
-    assert post_response.status_code == 200
-    uid = post_response.json().get("uid")
-    
-    url += f"/{uid}"
+    dummy_get = requests.get(url, headers=headers)
+    dummyJson = dummy_get.json()
 
     # Send a DELETE request to the API and check if it was successful
-    delete_response = requests.delete(url, headers=headers)
+    delete_response = requests.delete(url + "/test", headers=headers)
     assert delete_response.status_code == 200
 
-    # Verify that the item is deleted
-    get2_response = requests.get(url, headers=headers)
-    status_code = get2_response.status_code
-    response_data = None
+    get_response = requests.get(url, headers=headers)
+
+    dummy_response = requests.put(url, json=dummyJson, headers=headers)
+
+    # Get the status code and response data
+    status_code = get_response.status_code
+    response_data = None 
     try:
-        response_data = get2_response.json()
+        response_data = get_response.json()
     except:
         pass
+    
+    print(response_data)
+    # Verify that the status code is 404 (Not Found) and the client no longer exists
+    assert status_code == 200 and response_data["softDeleted"] == True
 
-    # Verify that the status code is 404 (Not Found) and the item no longer exists
-    assert status_code == 404 and response_data is None
+# def test_delete_items_integration(_data):
+#     url = _data[0]["URL"] + 'Items'
+#     headers = get_headers(_data[0]["AdminApiToken"])
+#     body = {
+#         "code": "xbox200000",
+#         "description": "Dummy",
+#         "shortDescription": "must",
+#         "upcCode": "999999999999999",
+#         "modelNumber": "12_QRSTUV",
+#         "commodityCode": "oTo300",
+#         "itemLine": 1,
+#         "itemGroup": 1,
+#         "itemType": 1,
+#         "unitPurchaseQuantity": 45,
+#         "unitOrderQuantity": 13,
+#         "packOrderQuantity": 11,
+#         "supplierId": 1,
+#         "supplierCode": "SUP423",
+#         "supplierPartNumber": "E-86805-uTM"
+#     }
+
+#     # Send a POST request to the API and check if it was successful
+#     post_response = requests.post(url, json=body, headers=headers)
+#     assert post_response.status_code == 200
+#     uid = post_response.json().get("uid")
+    
+#     url += f"/{uid}"
+
+#     # Send a DELETE request to the API and check if it was successful
+#     delete_response = requests.delete(url, headers=headers)
+#     assert delete_response.status_code == 200
+
+#     # Verify that the item is deleted
+#     get2_response = requests.get(url, headers=headers)
+#     status_code = get2_response.status_code
+#     response_data = None
+#     try:
+#         response_data = get2_response.json()
+#     except:
+#         pass
+
+#     # Verify that the status code is 404 (Not Found) and the item no longer exists
+#     assert status_code == 404 and response_data is None

@@ -101,4 +101,18 @@ public class ItemGroupService : IItemGroupService
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<bool> SoftDeleteItemGroupAsync(int id)
+    {
+        var item_group = await _context.ItemGroups.FirstOrDefaultAsync(c => c.GroupId == id);
+        if (item_group == null)
+        {
+            return false;
+        }
+
+        item_group.SoftDeleted = true;
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
 }

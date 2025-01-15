@@ -23,7 +23,8 @@ public class Order
     public double TotalTax { get; set; }
     public double TotalSurcharge { get; set; }
     [NotMapped]
-    public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+    public List<OrderItem> OrderItems {get; set;} = new List<OrderItem>();
+    public bool SoftDeleted { get; set; } = false;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

@@ -57,6 +57,9 @@ namespace CargoHubRefactor.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
@@ -93,6 +96,9 @@ namespace CargoHubRefactor.Migrations
                     b.Property<string>("Locations")
                         .HasColumnType("TEXT")
                         .HasAnnotation("Relational:JsonPropertyName", "locationsString");
+
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("TotalAllocated")
                         .HasColumnType("INTEGER");
@@ -173,6 +179,9 @@ namespace CargoHubRefactor.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("SupplierCode")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -233,6 +242,9 @@ namespace CargoHubRefactor.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
@@ -260,6 +272,9 @@ namespace CargoHubRefactor.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
@@ -290,6 +305,9 @@ namespace CargoHubRefactor.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
@@ -335,6 +353,9 @@ namespace CargoHubRefactor.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
@@ -405,6 +426,9 @@ namespace CargoHubRefactor.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
@@ -466,6 +490,9 @@ namespace CargoHubRefactor.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int?>("SourceId")
                         .HasColumnType("INTEGER");
 
@@ -508,6 +535,9 @@ namespace CargoHubRefactor.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("OrderId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("SoftDeleted")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -569,6 +599,9 @@ namespace CargoHubRefactor.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("SourceId")
                         .HasColumnType("INTEGER");
 
@@ -608,6 +641,9 @@ namespace CargoHubRefactor.Migrations
                     b.Property<int>("ShipmentId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("ShipmentItemId");
 
                     b.HasIndex("ItemId");
@@ -628,6 +664,9 @@ namespace CargoHubRefactor.Migrations
 
                     b.Property<string>("Reference")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int?>("TransferFrom")
                         .HasColumnType("INTEGER");
@@ -661,6 +700,9 @@ namespace CargoHubRefactor.Migrations
 
                     b.Property<string>("ItemId")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("TransferId")
                         .HasColumnType("INTEGER");
@@ -721,6 +763,9 @@ namespace CargoHubRefactor.Migrations
 
                     b.Property<string>("RestrictedClassifications")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("SoftDeleted")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");

@@ -104,4 +104,18 @@ public class ItemLineService : IItemLineService
         await _context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<bool> SoftDeleteItemLineAsync(int id)
+    {
+        var itemLine = await _context.ItemLines.FirstOrDefaultAsync(c => c.LineId == id);
+        if (itemLine == null)
+        {
+            return false;
+        }
+
+        itemLine.SoftDeleted = true;
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
 }

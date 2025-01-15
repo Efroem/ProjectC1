@@ -79,5 +79,13 @@ namespace CargoHubRefactor.Controllers
             if (message.StartsWith("Error")) return NotFound(message);
             return Ok(message);
         }
+
+        [HttpDelete("{id}/test")]
+        public async Task<ActionResult> SoftDeleteTransfer(int id)
+        {
+            var message = await _transferService.SoftDeleteTransferAsync(id);
+            if (message.StartsWith("Error")) return NotFound(message);
+            return Ok(message);
+        }
     }
 }

@@ -69,6 +69,20 @@ namespace Services
             return true;
         }
 
+        public async Task<bool> SoftDeleteSupplierAsync(int id)
+        {
+            var supplier = await _context.Suppliers.FirstOrDefaultAsync(c => c.SupplierId == id);
+            if (supplier == null)
+            {
+                return false;
+            }
+
+            supplier.SoftDeleted = true;
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
         public async Task<bool> DeleteAllSuppliersAsync()
         {
             var suppliers = _context.Suppliers.ToList();

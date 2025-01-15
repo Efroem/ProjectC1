@@ -8,4 +8,5 @@ public interface IClientService
     Task<Client> UpdateClientAsync(int id, string name, string address, string city, string zipCode, string province, 
                                    string country, string contactName, string contactPhone, string contactEmail);
     Task<bool> DeleteClientAsync(int id);
+    Task<bool> SoftDeleteClientAsync(int id);
 }
