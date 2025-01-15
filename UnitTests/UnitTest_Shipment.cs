@@ -130,7 +130,7 @@ public class UnitTest_Shipment
         {
             ShipmentId = 1,
             SourceId = 1,
-            OrderId = 6,
+            OrderId = "1,2,3,4",
             OrderDate = DateTime.UtcNow,
             RequestDate = DateTime.UtcNow,
             ShipmentDate = DateTime.UtcNow,
