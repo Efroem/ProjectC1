@@ -233,6 +233,11 @@ public class TransferService : ITransferService
             .ToListAsync();
     }
 
+    public async Task<List<Transfer>> GetAllTransfersPagedAsync(int limit, int page)
+    {
+        return await _context.Transfers.Skip(limit * (page - 1)).Take(limit).ToListAsync();
+    }
+
     public async Task<Transfer?> GetTransferByIdAsync(int transferId)
     {
         return await _context.Transfers

@@ -21,6 +21,40 @@ namespace CargoHubRefactor.Controllers
             return Ok(await _warehouseService.GetAllWarehousesAsync());
         }
 
+        [HttpGet("limit/{limit}")]
+        public async Task<ActionResult<IEnumerable<Warehouse>>> GetAllWarehouses(int limit)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show warehouses with a limit below 1.");
+            }
+
+            var warehouses = await _warehouseService.GetAllWarehousesAsync(limit);
+            if (warehouses == null || !warehouses.Any())
+            {
+                return NotFound("No transfers found.");
+            }
+
+            return Ok(warehouses);
+        }
+
+        [HttpGet("limit/{limit}/page/{page}")]
+        public async Task<ActionResult<IEnumerable<Warehouse>>> GetAllTWarehousesPaged(int limit, int page)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show warehouses with a limit below 1.");
+            }
+
+            var warehouses = await _warehouseService.GetAllWarehousesPagedAsync(limit, page);
+            if (warehouses == null || !warehouses.Any())
+            {
+                return NotFound("No warehouses found.");
+            }
+
+            return Ok(warehouses);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Warehouse>> GetWarehouseById(int id)
         {

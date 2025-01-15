@@ -10,6 +10,8 @@ public interface ITransferService
     Task<string> SoftDeleteTransferAsync(int transferId);
     Task<List<Transfer>> GetAllTransfersAsync();
     Task<List<Transfer>> GetAllTransfersAsync(int limit);
+    Task<List<Transfer>> GetAllTransfersPagedAsync(int limit, int page);
+
 
     Task<Transfer?> GetTransferByIdAsync(int transferId);
 }

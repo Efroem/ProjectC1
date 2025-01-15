@@ -23,7 +23,7 @@ namespace CargoHubRefactor.Controllers
         }
 
         [HttpGet("limit/{limit}")]
-        public async Task<ActionResult<IEnumerable<Client>>> GetAllTransfers(int limit)
+        public async Task<ActionResult<IEnumerable<Transfer>>> GetAllTransfers(int limit)
         {
             if (limit <= 0)
             {
@@ -31,6 +31,23 @@ namespace CargoHubRefactor.Controllers
             }
 
             var transfers = await _transferService.GetAllTransfersAsync(limit);
+            if (transfers == null || !transfers.Any())
+            {
+                return NotFound("No transfers found.");
+            }
+
+            return Ok(transfers);
+        }
+
+        [HttpGet("limit/{limit}/page/{page}")]
+        public async Task<ActionResult<IEnumerable<Transfer>>> GetAllTransfersPaged(int limit, int page)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show tranfers with a limit below 1.");
+            }
+
+            var transfers = await _transferService.GetAllTransfersPagedAsync(limit, page);
             if (transfers == null || !transfers.Any())
             {
                 return NotFound("No transfers found.");

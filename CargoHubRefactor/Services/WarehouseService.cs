@@ -31,6 +31,17 @@ public class WarehouseService : IWarehouseService
         return await _context.Warehouses.ToListAsync();
     }
 
+    public async Task<List<Warehouse>> GetAllWarehousesAsync(int limit)
+    {
+        return await _context.Warehouses.Take(limit).ToListAsync();
+    }
+
+    public async Task<List<Warehouse>> GetAllWarehousesPagedAsync(int limit, int page)
+    {
+        return await _context.Warehouses.Skip(limit * (page - 1)).Take(limit).ToListAsync();
+    }
+
+
     public async Task<Warehouse> GetWarehouseByIdAsync(int id)
     {
         return await _context.Warehouses.FindAsync(id);
