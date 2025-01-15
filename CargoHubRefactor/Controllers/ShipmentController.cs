@@ -1,3 +1,4 @@
+//SHIPMENTS CONTROLLER
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -69,6 +70,24 @@ public class ShipmentController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPut("{id}/status")]
+    public async Task<ActionResult> UpdateShipmentStatus(int id, [FromBody] ShipmentStatusUpdateRequest request)
+    {
+        if (request == null || string.IsNullOrEmpty(request.Status))
+        {
+            return BadRequest("Invalid request. Status is required.");
+        }
+
+        var result = await _shipmentService.UpdateShipmentStatusAsync(id, request.Status);
+
+        if (result.StartsWith("Error"))
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+
     [HttpGet("{id}/items")]
     public async Task<ActionResult<List<ShipmentItem>>> GetShipmentItems(int id)
     {
@@ -78,8 +97,10 @@ public class ShipmentController : ControllerBase
         {
             return NotFound("No items found for the given shipment.");
         }
+
         return Ok(shipmentItems);
     }
+
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteShipment(int id)
@@ -102,5 +123,20 @@ public class ShipmentController : ControllerBase
         }
         return Ok(result);
     }
-    
+
+    [HttpPost("split-order")]
+    public async Task<IActionResult> SplitOrder([FromBody] SplitOrderRequest request)
+    {
+        if (request == null || request.ItemsToSplit == null || !request.ItemsToSplit.Any())
+            return BadRequest("Invalid split request. ItemsToSplit cannot be null or empty.");
+
+        var result = await _shipmentService.SplitOrderIntoShipmentsAsync(request.OrderId, request.ItemsToSplit);
+
+        if (result.StartsWith("Error"))
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+
 }
