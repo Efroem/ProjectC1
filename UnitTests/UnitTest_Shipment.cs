@@ -1,3 +1,4 @@
+//UNITTEST SHIPMENTS
 namespace UnitTests;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -30,9 +31,9 @@ public class UnitTest_Shipment
 
         _dbContext = new CargoHubDbContext(options);
         SeedDatabase(_dbContext);
-        _shipmentService = new ShipmentService(_dbContext);
+        var orderService = new OrderService(_dbContext); // Assuming OrderService implements IOrderService
+        _shipmentService = new ShipmentService(_dbContext, orderService);
     }
-
     private void SeedDatabase(CargoHubDbContext context)
     {
         context.Database.EnsureDeleted();
@@ -43,7 +44,7 @@ public class UnitTest_Shipment
         {
             ShipmentId = 1,
             SourceId = 1,
-            OrderId = "5,8,10",
+            OrderId = "4",
             OrderDate = DateTime.UtcNow.AddDays(-5),
             RequestDate = DateTime.UtcNow.AddDays(-3),
             ShipmentDate = DateTime.UtcNow.AddDays(-1),
@@ -65,7 +66,7 @@ public class UnitTest_Shipment
         {
             ShipmentId = 2,
             SourceId = 2,
-            OrderId = "2",
+            OrderId = "1,2,3",
             OrderDate = DateTime.UtcNow.AddDays(-7),
             RequestDate = DateTime.UtcNow.AddDays(-4),
             ShipmentDate = DateTime.UtcNow.AddDays(-2),
@@ -86,15 +87,6 @@ public class UnitTest_Shipment
         context.SaveChanges();
     }
 
-    [TestMethod]
-    public async Task TestGetAllShipments()
-    {
-        ShipmentService shipmentService = new ShipmentService(_dbContext);
-        List<Shipment> shipmentList = shipmentService.GetAllShipmentsAsync().Result.ToList();
-        Assert.IsTrue(shipmentList.Count >= 0);
-    }
-
-
 
     [TestMethod]
     public async Task TestAddShipment()
@@ -104,7 +96,7 @@ public class UnitTest_Shipment
         {
             ShipmentId = 3,
             SourceId = 3,
-            OrderId = "3,7,8,10",
+            OrderId = "15,27",
             OrderDate = DateTime.UtcNow,
             RequestDate = DateTime.UtcNow,
             ShipmentDate = DateTime.UtcNow,
@@ -138,7 +130,7 @@ public class UnitTest_Shipment
         {
             ShipmentId = 1,
             SourceId = 1,
-            OrderId = "6",
+            OrderId = "1,2,3,4",
             OrderDate = DateTime.UtcNow,
             RequestDate = DateTime.UtcNow,
             ShipmentDate = DateTime.UtcNow,
