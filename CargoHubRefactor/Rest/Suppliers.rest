@@ -9,6 +9,10 @@ Accept: application/json
 GET http://localhost:5000/api/v1/suppliers/limit/11
 ApiToken: A1B2C3D4
 ###
+###
+GET http://localhost:5000/api/v1/suppliers/limit/10/page/2
+ApiToken: H8I9J10
+###
 
 ### Create a new supplier
 POST http://localhost:5000/api/v1/suppliers

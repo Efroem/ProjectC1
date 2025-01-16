@@ -6,7 +6,7 @@ public interface IClientService
     Task<IEnumerable<Client>> GetClientsAsync(); // Get all clients without any limit
     Task<IEnumerable<Client>> GetClientsAsync(int limit); // Get clients with a limit
     
-    Task<IEnumerable<Client>> GetClientsPagedAsync(int limit, int page); // Get clients with pagination (limit & page)
+    Task<IEnumerable<Client>> GetClientsPagedAsync(int limit, int page);
 
     Task<Client> GetClientAsync(int id); // Get a single client by ID
     
