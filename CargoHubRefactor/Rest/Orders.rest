@@ -139,6 +139,7 @@ Content-Type: application/json
 ### Update an Existing Order
 PUT http://localhost:5000/api/v1/Orders/1
 Content-Type: application/json
+ApiToken: E5F6G7
 
 {
   "SourceId": 123,
