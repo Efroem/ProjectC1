@@ -17,6 +17,10 @@ public class ClientService : IClientService
     {
         return await _context.Clients.Take(limit).ToListAsync();
     }
+    public async Task<IEnumerable<Client>> GetClientsPagedAsync(int limit, int page)
+    {
+        return await _context.Clients.Skip(limit * (page - 1)).Take(limit).ToListAsync();
+    }
 
     public async Task<IEnumerable<Client>> GetClientsAsync()
     {

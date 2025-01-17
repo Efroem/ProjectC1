@@ -106,7 +106,7 @@ def test_post_invalid_classifications_integration(_data):
     assert post_response.status_code == 400
 
     # Verify the response contains the expected plain text message
-    expected_message = "Error: Invalid classification 'InvalidClass'."
+    expected_message = "Invalid classification 'InvalidClass'."
     assert post_response.text == expected_message, f"Expected: {expected_message}, Got: {post_response.text}"
 
 def test_put_warehouses_integration(_data):

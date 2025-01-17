@@ -50,7 +50,7 @@ public class WarehouseService : IWarehouseService
     public async Task<(string message, Warehouse? warehouse)> AddWarehouseAsync(WarehouseDto warehouseDto)
     {
         if (string.IsNullOrWhiteSpace(warehouseDto.Code))
-            return ("Error: 'Code' field must be filled in.", null);
+            return ("'Code' field must be filled in.", null);
 
         if (warehouseDto.RestrictedClassificationsList != null)
         {
@@ -58,7 +58,7 @@ public class WarehouseService : IWarehouseService
             {
                 if (!DangerousGoodsClassifications.Contains(classification))
                 {
-                    return ($"Error: Invalid classification '{classification}'.", null);
+                    return ($"Invalid classification '{classification}'.", null);
                 }
             }
         }
@@ -97,7 +97,7 @@ public class WarehouseService : IWarehouseService
         var warehouse = await _context.Warehouses.FindAsync(id);
         if (warehouse == null)
         {
-            return ("Error: Warehouse not found.", null);
+            return ("Warehouse not found.", null);
         }
 
         // Validate Restricted Classifications
@@ -107,7 +107,7 @@ public class WarehouseService : IWarehouseService
             {
                 if (!DangerousGoodsClassifications.Contains(classification))
                 {
-                    return ($"Error: Invalid classification '{classification}'.", null);
+                    return ($"Invalid classification '{classification}'.", null);
                 }
             }
         }
@@ -141,7 +141,7 @@ public class WarehouseService : IWarehouseService
         var warehouse = await _context.Warehouses.FindAsync(id);
         if (warehouse == null)
         {
-            return "Error: Warehouse not found.";
+            return "Warehouse not found.";
         }
 
         _context.Warehouses.Remove(warehouse);
@@ -153,7 +153,7 @@ public class WarehouseService : IWarehouseService
         var warehouse = await _context.Warehouses.FindAsync(id);
         if (warehouse == null)
         {
-            return "Error: Warehouse not found.";
+            return "Warehouse not found.";
         }
 
         warehouse.SoftDeleted = true;

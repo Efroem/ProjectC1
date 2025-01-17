@@ -36,9 +36,9 @@ public class ItemGroupService : IItemGroupService
         int nextId;
 
         if (string.IsNullOrWhiteSpace(itemGroup.Name))
-            return ("Error: 'Name' field must be filled in.", null);
+            return ("'Name' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(itemGroup.Description))
-            return ("Error: 'Description' field must be filled in.", null);
+            return ("'Description' field must be filled in.", null);
 
         if (_context.ItemGroups.Any())
         {
@@ -70,14 +70,14 @@ public class ItemGroupService : IItemGroupService
         var item_group = await _context.ItemGroups.FindAsync(groupId);
         if (item_group == null)
         {
-            return ("Error: Item Group not found.", null);
+            return ("Item Group not found.", null);
         }
 
         // Validate that all fields are filled in
         if (string.IsNullOrWhiteSpace(itemGroup.Name))
-            return ("Error: 'Name' field must be filled in.", null);
+            return ("'Name' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(itemGroup.Description))
-            return ("Error: 'Description' field must be filled in.", null);
+            return ("'Description' field must be filled in.", null);
 
    
         item_group.Name = itemGroup.Name;
@@ -86,7 +86,7 @@ public class ItemGroupService : IItemGroupService
         item_group.UpdatedAt = DateTime.Now; // Set UpdatedAt to current time
 
         await _context.SaveChangesAsync();
-        return ("ItemGroup successfully updated.", item_group);
+        return ("Item Group successfully updated.", item_group);
     }
 
     public async Task<bool> DeleteItemGroupAsync(int groupId)

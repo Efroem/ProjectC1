@@ -31,6 +31,24 @@ namespace CargoHubRefactor.Controllers {
             return Ok(clients);
         }
 
+        [HttpGet("limit/{limit}/page/{page}")]
+        public async Task<ActionResult<IEnumerable<Client>>> GetClientsPaged(int limit, int page)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show clients with a limit below 1.");
+            }
+            if (page < 0) return BadRequest("Page number must be a positive integer");
+
+            var clients = await _clientService.GetClientsPagedAsync(limit, page);
+            if (clients == null || !clients.Any())
+            {
+                return NotFound("No clients found.");
+            }
+
+            return Ok(clients);
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Client>>> GetClients()
         {

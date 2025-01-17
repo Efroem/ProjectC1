@@ -37,17 +37,17 @@ namespace CargoHubRefactor.Controllers
             return Ok(locations);
         }
         [HttpGet("limit/{limit}")]
-        public async Task<ActionResult<IEnumerable<Client>>> GetLocations(int limit)
+        public async Task<ActionResult<IEnumerable<Location>>> GetLocations(int limit)
         {
             if (limit <= 0)
             {
-                return BadRequest("Cannot show locations with a limit below 1.");
+                return BadRequest("Cannot show Locations with a limit below 1.");
             }
 
             var locations = await _locationService.GetLocationsAsync(limit);
             if (locations == null || !locations.Any())
             {
-                return NotFound("No clients found.");
+                return NotFound("No Locations found.");
             }
 
             return Ok(locations);

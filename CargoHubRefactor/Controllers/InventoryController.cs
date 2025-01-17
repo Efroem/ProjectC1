@@ -69,7 +69,7 @@ namespace CargoHubRefactor.Controllers{
             var inventory = _InventoryService.GetInventoryByIdAsync(inventoryId);
             if (inventory.Result == null)
             {
-                return NotFound($"Item Group with ID {inventoryId} not found.");
+                return NotFound($"Inventory with ID {inventoryId} not found.");
             }
 
             return Ok(inventory);
@@ -79,7 +79,7 @@ namespace CargoHubRefactor.Controllers{
         public async Task<ActionResult> AddInventory([FromBody] Inventory Inventory)
         {
             var result = await _InventoryService.AddInventoryAsync(Inventory);
-            if (result.message.StartsWith("Error"))
+            if (result.returnedInventory == null)
             {
                 return BadRequest(result.message);
             }
@@ -90,7 +90,7 @@ namespace CargoHubRefactor.Controllers{
         public async Task<ActionResult> UpdateInventory(int inventoryId, [FromBody] Inventory Inventory)
         {
             var result = await _InventoryService.UpdateInventoryAsync(inventoryId, Inventory);
-            if (result.message.StartsWith("Error"))
+            if (result.returnedInventory == null)
             {
                 return BadRequest(result.message);
             }
@@ -103,7 +103,7 @@ namespace CargoHubRefactor.Controllers{
             var result = await _InventoryService.DeleteInventoryAsync(inventoryId);
             if (result == false)
             {
-                return NotFound("Error: Inventory not found");
+                return NotFound("Inventory not found");
             }
             return Ok("Successfully deleted inventory");
         }

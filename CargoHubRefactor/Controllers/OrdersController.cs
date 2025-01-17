@@ -36,22 +36,22 @@ namespace CargoHubRefactor.Controllers
             var orders = await _orderService.GetOrdersAsync();
             if (orders == null || !orders.Any())
             {
-                return NotFound("No orders were found");
+                return NotFound("No Orders were found");
             }
             return Ok(orders);
         }
         [HttpGet("limit/{limit}")]
-        public async Task<ActionResult<IEnumerable<Client>>> GetOrders(int limit)
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrders(int limit)
         {
             if (limit <= 0)
             {
-                return BadRequest("Cannot show orders with a limit below 1.");
+                return BadRequest("Cannot show Orders with a limit below 1.");
             }
 
             var orders = await _orderService.GetOrdersAsync(limit);
             if (orders == null || !orders.Any())
             {
-                return NotFound("No orders found.");
+                return NotFound("No Orders found.");
             }
 
             return Ok(orders);
@@ -63,7 +63,7 @@ namespace CargoHubRefactor.Controllers
             var totalPrice = await _orderService.GetOrderPriceTotalAsync(id);
             if (totalPrice <= 0)
             {
-                return BadRequest("Error: Order does not exist or Order contains invalid prices");
+                return BadRequest("Order does not exist or Order contains invalid prices");
             }
             return Ok($"Total Price for Order {id}: €\n{totalPrice:F2}");
         }
@@ -74,7 +74,7 @@ namespace CargoHubRefactor.Controllers
             var totalWeight = await _orderService.GetOrderWeightTotalAsync(id);
             if (totalWeight <= 0)
             {
-                return BadRequest("Error: Order does not exist or Order contains invalid weights");
+                return BadRequest("Order does not exist or Order contains invalid weights");
             }
             return Ok($"Total Weight for Order {id}:  \n{totalWeight:F2} KG");
         }
@@ -99,47 +99,47 @@ namespace CargoHubRefactor.Controllers
 
             if (order.SourceId <= 0)
             {
-                return BadRequest("SourceId must be a valid positive integer");
+                return BadRequest("'SourceId' must be a valid positive integer");
             }
 
             if (order.WarehouseId <= 0)
             {
-                return BadRequest("WarehouseId must be a valid positive integer");
+                return BadRequest("'WarehouseId' must be a valid positive integer");
             }
 
             if (order.ShipTo < 0)
             {
-                return BadRequest("ShipTo must be a valid positive integer");
+                return BadRequest("'ShipTo' must be a valid positive integer");
             }
 
             if (order.BillTo < 0)
             {
-                return BadRequest("BillTo must be a valid positive integer");
+                return BadRequest("'BillTo' must be a valid positive integer");
             }
 
             if (order.TotalAmount < 0)
             {
-                return BadRequest("TotalAmount must be a positive number");
+                return BadRequest("'TotalAmount' must be a positive number");
             }
 
             if (order.TotalDiscount < 0)
             {
-                return BadRequest("TotalDiscount cannot be negative");
+                return BadRequest("'TotalDiscount' cannot be negative");
             }
 
             if (order.TotalTax < 0)
             {
-                return BadRequest("TotalTax cannot be negative");
+                return BadRequest("'TotalTax' cannot be negative");
             }
 
             if (order.TotalSurcharge < 0)
             {
-                return BadRequest("TotalSurcharge cannot be negative");
+                return BadRequest("'TotalSurcharge' cannot be negative");
             }
 
             if (order.RequestDate < order.OrderDate)
             {
-                return BadRequest("orderDate cannot be earlier than OrderDate");
+                return BadRequest("'RequestDate' cannot be earlier than 'OrderDate'");
             }
             var CreatedOrder = await _orderService.AddOrderAsync(
                 order.SourceId,
@@ -174,7 +174,7 @@ namespace CargoHubRefactor.Controllers
 
             if (string.IsNullOrEmpty(order.Reference))
             {
-                return BadRequest("Reference is required");
+                return BadRequest("'Reference' is required");
             }
 
             if (string.IsNullOrEmpty(order.OrderStatus))
@@ -184,32 +184,32 @@ namespace CargoHubRefactor.Controllers
 
             if (order.SourceId <= 0)
             {
-                return BadRequest("SourceId must be a valid positive integer");
+                return BadRequest("'SourceId' must be a valid positive integer");
             }
 
             if (order.WarehouseId <= 0)
             {
-                return BadRequest("WarehouseId must be a valid positive integer");
+                return BadRequest("'WarehouseId' must be a valid positive integer");
             }
 
             if (order.ShipTo < 0)
             {
-                return BadRequest("ShipTo must be a valid positive integer");
+                return BadRequest("'ShipTo' must be a valid positive integer");
             }
 
             if (order.BillTo < 0)
             {
-                return BadRequest("BillTo must be a valid positive integer");
+                return BadRequest("'BillTo' must be a valid positive integer");
             }
 
             if (order.TotalAmount < 0)
             {
-                return BadRequest("TotalAmount must be a positive number");
+                return BadRequest("'TotalAmount' must be a positive number");
             }
 
             if (order.TotalDiscount < 0)
             {
-                return BadRequest("TotalDiscount cannot be negative");
+                return BadRequest("'TotalDiscount' cannot be negative");
             }
 
             if (order.TotalTax < 0)
@@ -219,12 +219,12 @@ namespace CargoHubRefactor.Controllers
 
             if (order.TotalSurcharge < 0)
             {
-                return BadRequest("TotalSurcharge cannot be negative");
+                return BadRequest("'TotalSurcharge' cannot be negative");
             }
 
             if (order.RequestDate < order.OrderDate)
             {
-                return BadRequest("RequestDate cannot be earlier than OrderDate");
+                return BadRequest("'RequestDate' cannot be earlier than 'OrderDate'");
             }
 
             var updatedOrder = await _orderService.UpdateOrderAsync(

@@ -20,42 +20,42 @@ namespace CargoHubRefactor.Controllers{
             var item_lines = await _itemLineService.GetItemLinesAsync();
             if (item_lines == null || !item_lines.Any())
             {
-                return NotFound("No item lines found");
+                return NotFound("No Item Lines found");
             }
 
             return Ok(item_lines);
         }
 
         [HttpGet("limit/{limit}")]
-        public async Task<ActionResult<IEnumerable<Inventory>>> GetItemLines(int limit)
+        public async Task<ActionResult<IEnumerable<ItemLine>>> GetItemLines(int limit)
         {
             if (limit <= 0)
             {
-                return BadRequest("Cannot show itemlines with a limit below 1.");
+                return BadRequest("Cannot show Item Lines with a limit below 1.");
             }
 
             var itemlines = await _itemLineService.GetItemLinesAsync(limit);
             if (itemlines == null || !itemlines.Any())
             {
-                return NotFound("No itemlines found.");
+                return NotFound("No Item Lines found.");
             }
 
             return Ok(itemlines);
         }
 
         [HttpGet("limit/{limit}/page/{page}")]
-        public async Task<ActionResult<IEnumerable<Inventory>>> GetItemLinesPaged(int limit, int page)
+        public async Task<ActionResult<IEnumerable<ItemLine>>> GetItemLinesPaged(int limit, int page)
         {
             if (limit <= 0)
             {
-                return BadRequest("Cannot show ItemLines with a limit below 1.");
+                return BadRequest("Cannot show Item Lines with a limit below 1.");
             }
             if (page < 0) return BadRequest("Page number must be a positive integer");
 
             var ItemLines = await _itemLineService.GetItemLinesPagedAsync(limit, page);
             if (ItemLines == null || !ItemLines.Any())
             {
-                return NotFound("No ItemLines found.");
+                return NotFound("No Item Lines found.");
             }
 
             return Ok(ItemLines);
@@ -77,7 +77,7 @@ namespace CargoHubRefactor.Controllers{
         public async Task<ActionResult> AddItemLine([FromBody] ItemLine itemLine)
         {
             var result = await _itemLineService.AddItemLineAsync(itemLine);
-            if (result.message.StartsWith("Error"))
+            if (result.returnedItemLine == null)
             {
                 return BadRequest(result.message);
             }
@@ -88,7 +88,7 @@ namespace CargoHubRefactor.Controllers{
         public async Task<ActionResult> UpdateItemLine(int lineId, [FromBody] ItemLine itemLine)
         {
             var result = await _itemLineService.UpdateItemLineAsync(lineId, itemLine);
-            if (result.message.StartsWith("Error"))
+            if (result.returnedItemLine == null)
             {
                 return BadRequest(result.message);
             }

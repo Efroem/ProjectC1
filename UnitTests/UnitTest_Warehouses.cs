@@ -134,7 +134,7 @@ namespace UnitTests
             };
 
             var result = await _warehouseService.AddWarehouseAsync(warehouseDto);
-            Assert.AreEqual("Error: Invalid classification 'InvalidClass'.", result.message);
+            Assert.AreEqual("Invalid classification 'InvalidClass'.", result.message);
             Assert.IsNull(result.warehouse);
         }
 
@@ -181,7 +181,7 @@ namespace UnitTests
             };
 
             var result = await _warehouseService.UpdateWarehouseAsync(1, warehouseDto);
-            Assert.AreEqual("Error: Invalid classification 'InvalidClass'.", result.message);
+            Assert.AreEqual("Invalid classification 'InvalidClass'.", result.message);
             Assert.IsNull(result.ReturnedWarehouse);
         }
 
@@ -199,7 +199,7 @@ namespace UnitTests
         public async Task TestDeleteWarehouse_InvalidId()
         {
             var message = await _warehouseService.DeleteWarehouseAsync(999);
-            Assert.AreEqual("Error: Warehouse not found.", message);
+            Assert.AreEqual("Warehouse not found.", message);
         }
 
         [TestMethod]

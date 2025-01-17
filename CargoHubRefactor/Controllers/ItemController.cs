@@ -21,7 +21,7 @@ namespace CargoHubRefactor.Controllers
             var item_s = await _itemService.GetItemsAsync();
             if (item_s == null)
             {
-                return NotFound("No items found in the inventory.");
+                return NotFound("No items found.");
             }
 
             return Ok(item_s);
@@ -44,7 +44,7 @@ namespace CargoHubRefactor.Controllers
             return Ok(items);
         }
         [HttpGet("limit/{limit}/page/{page}")]
-        public async Task<ActionResult<IEnumerable<Inventory>>> GetItemsPaged(int limit, int page)
+        public async Task<ActionResult<IEnumerable<Item>>> GetItemsPaged(int limit, int page)
         {
             if (limit <= 0)
             {
@@ -89,7 +89,7 @@ namespace CargoHubRefactor.Controllers
         public async Task<ActionResult> AddItem([FromBody] Item item)
         {
             var result = await _itemService.AddItemAsync(item);
-            if (result.message.StartsWith("Error"))
+            if (result.returnedItem == null)
             {
                 return BadRequest(result.message);
             }
@@ -100,7 +100,7 @@ namespace CargoHubRefactor.Controllers
         public async Task<ActionResult> UpdateItem(string ItemId, [FromBody] Item item)
         {
             var result = await _itemService.UpdateItemAsync(ItemId, item);
-            if (result.message.StartsWith("Error"))
+            if (result.returnedItem == null)
             {
                 return BadRequest(result.message);
             }
