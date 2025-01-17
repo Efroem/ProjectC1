@@ -77,16 +77,16 @@ def test_post_clients_integration_AdminKey(_data):
     url = _data[0]["URL"] + 'Clients'
     headers = get_headers(_data[0]["AdminApiToken"])
     body = {
-    "name": "John Test",
-    "address": "123 Main St",
-    "city": "Anytown",
-    "zipCode": "12345",
-    "province": "Zeeland",
-    "country": "Netherlands",
-    "contactName": "John Doe",
-    "contactPhone": "+123456789",
-    "contactEmail": "test2.doe@example.com"
-}
+        "name": "hallo-Test",
+        "address": "12345 Test Suite 420",
+        "city": "South Anthonymouth",
+        "zipCode": "12345",
+        "province": "Test-Province",
+        "country": "United States",
+        "contactName": "Testy Testra",
+        "contactPhone": "431-688-3019",
+        "contactEmail": "testasdas@example.net"
+    }
 
     # Send a POST request to the API and check if it was successful
     post_response = requests.post(url, headers=headers, json=body)
