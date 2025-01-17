@@ -20,12 +20,12 @@ public class TransferService : ITransferService
 
         if (fromLocation == null || toLocation == null)
         {
-            return ("Error: Invalid source or destination location.", null);
+            return ("Invalid source or destination location.", null);
         }
 
         if (fromLocation.WarehouseId != toLocation.WarehouseId)
         {
-            return ("Error: Transfers must remain within the same warehouse.", null);
+            return ("Transfers must remain within the same warehouse.", null);
         }
 
         foreach (var item in transfer.Items)
@@ -33,12 +33,12 @@ public class TransferService : ITransferService
             var itemDetails = await _context.Items.FirstOrDefaultAsync(i => i.Uid == item.ItemId);
             if (itemDetails == null)
             {
-                return ($"Error: Item {item.ItemId} does not exist.", null);
+                return ($"Item {item.ItemId} does not exist.", null);
             }
 
             if (!fromLocation.ItemAmounts.ContainsKey(item.ItemId) || fromLocation.ItemAmounts[item.ItemId] < item.Amount)
             {
-                return ($"Error: Not enough stock for item {item.ItemId} in the source location.", null);
+                return ($"Not enough stock for item {item.ItemId} in the source location.", null);
             }
 
             // Validate dimension constraints for destination location
@@ -47,7 +47,7 @@ public class TransferService : ITransferService
                 itemDetails.Height > toLocation.MaxHeight ||
                 itemDetails.Depth > toLocation.MaxDepth)
             {
-                return ($"Error: Item {item.ItemId} exceeds destination location's constraints.", null);
+                return ($"Item {item.ItemId} exceeds destination location's constraints.", null);
             }
         }
         int nextId = 1;
@@ -93,13 +93,13 @@ public class TransferService : ITransferService
         var existingTransfer = await _context.Transfers.Include(t => t.Items).FirstOrDefaultAsync(t => t.TransferId == transferId);
         if (existingTransfer == null)
         {
-            return ("Error: Transfer not found.", null);
+            return ("Transfer not found.", null);
         }
 
         // Allow updates only if the current status is "Pending"
         if (existingTransfer.TransferStatus != "Pending")
         {
-            return ("Error: Only transfers with status 'Pending' can be updated.", null);
+            return ("Only transfers with status 'Pending' can be updated.", null);
         }
 
         // Validate `TransferFrom` and `TransferTo` locations
@@ -107,12 +107,12 @@ public class TransferService : ITransferService
         var toLocation = await _context.Locations.FirstOrDefaultAsync(l => l.LocationId == updatedTransfer.TransferTo);
         if (fromLocation == null || toLocation == null)
         {
-            return ("Error: Invalid source or destination location.", null);
+            return ("Invalid source or destination location.", null);
         }
 
         if (fromLocation.WarehouseId != toLocation.WarehouseId)
         {
-            return ("Error: Transfers must remain within the same warehouse.", null);
+            return ("Transfers must remain within the same warehouse.", null);
         }
 
         // Update basic fields
@@ -128,13 +128,13 @@ public class TransferService : ITransferService
             var itemDetails = await _context.Items.FirstOrDefaultAsync(i => i.Uid == item.ItemId);
             if (itemDetails == null)
             {
-                return ($"Error: Item {item.ItemId} does not exist.", null);
+                return ($"Item {item.ItemId} does not exist.", null);
             }
 
             // Validate stock in the source location
             if (!fromLocation.ItemAmounts.ContainsKey(item.ItemId) || fromLocation.ItemAmounts[item.ItemId] < item.Amount)
             {
-                return ($"Error: Not enough stock for item {item.ItemId} in the source location.", null);
+                return ($"Not enough stock for item {item.ItemId} in the source location.", null);
             }
 
             // Validate destination location constraints
@@ -143,7 +143,7 @@ public class TransferService : ITransferService
                 itemDetails.Height > toLocation.MaxHeight ||
                 itemDetails.Depth > toLocation.MaxDepth)
             {
-                return ($"Error: Item {item.ItemId} exceeds destination location's constraints.", null);
+                return ($"Item {item.ItemId} exceeds destination location's constraints.", null);
             }
 
             existingTransfer.Items.Add(item);
@@ -161,7 +161,7 @@ public class TransferService : ITransferService
         var transfer = await _context.Transfers.Include(t => t.Items).FirstOrDefaultAsync(t => t.TransferId == transferId);
         if (transfer == null)
         {
-            return "Error: Transfer not found.";
+            return "Transfer not found.";
         }
 
         if (status == "InProgress")
@@ -169,19 +169,19 @@ public class TransferService : ITransferService
             var fromLocation = await _context.Locations.FirstOrDefaultAsync(l => l.LocationId == transfer.TransferFrom);
             if (fromLocation == null)
             {
-                return "Error: Source location not found.";
+                return "Source location not found.";
             }
 
             foreach (var item in transfer.Items)
             {
                 if (!fromLocation.ItemAmounts.ContainsKey(item.ItemId))
                 {
-                    return $"Error: Item {item.ItemId} does not exist in the source location.";
+                    return $"Item {item.ItemId} does not exist in the source location.";
                 }
 
                 if (fromLocation.ItemAmounts[item.ItemId] < item.Amount)
                 {
-                    return $"Error: Not enough stock for item {item.ItemId} in the source location.";
+                    return $"Not enough stock for item {item.ItemId} in the source location.";
                 }
 
                 // Subtract stock from source location
@@ -193,7 +193,7 @@ public class TransferService : ITransferService
             var toLocation = await _context.Locations.FirstOrDefaultAsync(l => l.LocationId == transfer.TransferTo);
             if (toLocation == null)
             {
-                return "Error: Destination location not found.";
+                return "Destination location not found.";
             }
 
             foreach (var item in transfer.Items)
@@ -251,7 +251,7 @@ public class TransferService : ITransferService
         var transfer = await _context.Transfers.Include(t => t.Items).FirstOrDefaultAsync(t => t.TransferId == transferId);
         if (transfer == null)
         {
-            return "Error: Transfer not found.";
+            return "Transfer not found.";
         }
 
         // Add back items to origin location if the transfer is incomplete
@@ -282,7 +282,7 @@ public class TransferService : ITransferService
         var transfer = await _context.Transfers.FindAsync(transferId);
         if (transfer == null)
         {
-            return "Error: Transfer not found.";
+            return "Transfer not found.";
         }
 
         transfer.SoftDeleted = true;

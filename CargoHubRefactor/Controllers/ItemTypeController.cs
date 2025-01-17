@@ -20,7 +20,7 @@ namespace CargoHubRefactor.Controllers{
             var item_types = _itemTypeService.GetItemTypesAsync();
             if (item_types == null)
             {
-                return NotFound("No item lines found.");
+                return NotFound("No Item Types found.");
             }
 
             return Ok(item_types);
@@ -31,31 +31,31 @@ namespace CargoHubRefactor.Controllers{
         {
             if (limit <= 0)
             {
-                return BadRequest("Cannot show itemtypes with a limit below 1.");
+                return BadRequest("Cannot show Item Types with a limit below 1.");
             }
 
             var itemtypes = await _itemTypeService.GetItemTypesAsync(limit);
             if (itemtypes == null || !itemtypes.Any())
             {
-                return NotFound("No itemtypes found.");
+                return NotFound("No Item Types found.");
             }
 
             return Ok(itemtypes);
         }
 
         [HttpGet("limit/{limit}/page/{page}")]
-        public async Task<ActionResult<IEnumerable<Inventory>>> GetItemTypesPaged(int limit, int page)
+        public async Task<ActionResult<IEnumerable<ItemType>>> GetItemTypesPaged(int limit, int page)
         {
             if (limit <= 0)
             {
-                return BadRequest("Cannot show ItemTypes with a limit below 1.");
+                return BadRequest("Cannot show Item Types with a limit below 1.");
             }
             if (page < 0) return BadRequest("Page number must be a positive integer");
 
             var ItemTypes = await _itemTypeService.GetItemTypesPagedAsync(limit, page);
             if (ItemTypes == null || !ItemTypes.Any())
             {
-                return NotFound("No ItemTypes found.");
+                return NotFound("No Item Types found.");
             }
 
             return Ok(ItemTypes);
@@ -77,7 +77,7 @@ namespace CargoHubRefactor.Controllers{
         public async Task<ActionResult> AddItemType([FromBody] ItemType itemLine)
         {
             var result = await _itemTypeService.AddItemTypeAsync(itemLine);
-            if (result.message.StartsWith("Error"))
+            if (result.returnedItemType == null)
             {
                 return BadRequest(result.message);
             }
@@ -88,7 +88,7 @@ namespace CargoHubRefactor.Controllers{
         public async Task<ActionResult> UpdateItemType(int typeId, [FromBody] ItemType itemType)
         {
             var result = await _itemTypeService.UpdateItemTypeAsync(typeId, itemType);
-            if (result.message.StartsWith("Error"))
+            if (result.returnedItemType == null)
             {
                 return BadRequest(result.message);
             }

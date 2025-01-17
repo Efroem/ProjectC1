@@ -46,51 +46,51 @@ public class ItemService : IItemService
 
 
     if (string.IsNullOrWhiteSpace(item.Code))
-        return ("Error: 'Name' field must be filled in.", null);
+        return ("'Name' field must be filled in.", null);
     if (string.IsNullOrWhiteSpace(item.Description))
-        return ("Error: 'Description' field must be filled in.", null);
+        return ("'Description' field must be filled in.", null);
     if (string.IsNullOrWhiteSpace(item.ShortDescription))
-        return ("Error: 'ShortDescription' field must be filled in.", null);
+        return ("'ShortDescription' field must be filled in.", null);
     if (string.IsNullOrWhiteSpace(item.UpcCode))
-        return ("Error: 'UpcCode' field must be filled in.", null);
+        return ("'UpcCode' field must be filled in.", null);
     if (string.IsNullOrWhiteSpace(item.ModelNumber))
-        return ("Error: 'ModelNumber' field must be filled in.", null);
+        return ("'ModelNumber' field must be filled in.", null);
     if (string.IsNullOrWhiteSpace(item.CommodityCode))
-        return ("Error: 'CommodityCode' field must be filled in.", null);
+        return ("'CommodityCode' field must be filled in.", null);
     if (item.ItemLine <= 0)
-        return ("Error: 'ItemLine' must be a positive integer.", null);
+        return ("'ItemLine' must be a positive integer.", null);
     if (item.ItemGroup <= 0)
-        return ("Error: 'ItemGroup' must be a positive integer.", null);
+        return ("'ItemGroup' must be a positive integer.", null);
     if (item.ItemType <= 0)
-        return ("Error: 'ItemType' must be a positive integer.", null);
+        return ("'ItemType' must be a positive integer.", null);
     if (item.UnitPurchaseQuantity <= 0)
-        return ("Error: 'UnitPurchaseQuantity' must be a positive integer.", null);
+        return ("'UnitPurchaseQuantity' must be a positive integer.", null);
     if (item.UnitOrderQuantity <= 0)
-        return ("Error: 'UnitOrderQuantity' must be a positive integer.", null);
+        return ("'UnitOrderQuantity' must be a positive integer.", null);
     if (item.PackOrderQuantity <= 0)
-        return ("Error: 'PackOrderQuantity' must be a positive integer.", null);
+        return ("'PackOrderQuantity' must be a positive integer.", null);
     if (item.SupplierId <= 0)
-        return ("Error: 'SupplierId' must be a positive integer.", null);
+        return ("'SupplierId' must be a positive integer.", null);
     if (string.IsNullOrWhiteSpace(item.SupplierCode))
-        return ("Error: 'SupplierCode' field must be filled in.", null);
+        return ("'SupplierCode' field must be filled in.", null);
     if (string.IsNullOrWhiteSpace(item.SupplierPartNumber))
-        return ("Error: 'SupplierPartNumber' field must be filled in.", null);
+        return ("'SupplierPartNumber' field must be filled in.", null);
 
     if (await _context.Items.AnyAsync(i => i.Code == item.Code))
         {
-            return ("Error: An Item with this Code already exists.", null);
+            return ("An Item with this Code already exists.", null);
         }
     if (await _context.Items.AnyAsync(i => i.UpcCode == item.UpcCode))
         {
-            return ("Error: An Item with this Upc Code already exists.", null);
+            return ("An Item with this Upc Code already exists.", null);
         }
     if (await _context.Items.AnyAsync(i => i.ModelNumber == item.ModelNumber))
         {
-            return ("Error: An Item with this Model Number already exists.", null);
+            return ("An Item with this Model Number already exists.", null);
         }
     if (await _context.Items.AnyAsync(i => i.CommodityCode == item.CommodityCode))
         {
-            return ("Error: An Item with this Commodity Code already exists.", null);
+            return ("An Item with this Commodity Code already exists.", null);
         }
 
     // Check if supplier exists. if not. add supplier
@@ -171,57 +171,57 @@ public class ItemService : IItemService
         var item_ = await _context.Items.FindAsync(Id);
         if (item_ == null)
         {
-            return ("Error: Item  not found.", null);
+            return ("Item  not found.", null);
         }
 
         // Validate that all fields are filled in
         if (string.IsNullOrWhiteSpace(item.Code))
-            return ("Error: 'Name' field must be filled in.", null);
+            return ("'Name' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(item.Description))
-            return ("Error: 'Description' field must be filled in.", null);
+            return ("'Description' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(item.ShortDescription))
-            return ("Error: 'ShortDescription' field must be filled in.", null);
+            return ("'ShortDescription' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(item.UpcCode))
-            return ("Error: 'UpcCode' field must be filled in.", null);
+            return ("'UpcCode' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(item.ModelNumber))
-            return ("Error: 'ModelNumber' field must be filled in.", null);
+            return ("'ModelNumber' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(item.CommodityCode))
-            return ("Error: 'CommodityCode' field must be filled in.", null);
+            return ("'CommodityCode' field must be filled in.", null);
         if (item.ItemLine <= 0)
-            return ("Error: 'ItemLine' must be a positive integer.", null);
+            return ("'ItemLine' must be a positive integer.", null);
         if (item.ItemGroup <= 0)
-            return ("Error: 'ItemGroup' must be a positive integer.", null);
+            return ("'ItemGroup' must be a positive integer.", null);
         if (item.ItemType <= 0)
-            return ("Error: 'ItemType' must be a positive integer.", null);
+            return ("'ItemType' must be a positive integer.", null);
         if (item.UnitPurchaseQuantity <= 0)
-            return ("Error: 'UnitPurchaseQuantity' must be a positive integer.", null);
+            return ("'UnitPurchaseQuantity' must be a positive integer.", null);
         if (item.UnitOrderQuantity <= 0)
-            return ("Error: 'UnitOrderQuantity' must be a positive integer.", null);
+            return ("'UnitOrderQuantity' must be a positive integer.", null);
         if (item.PackOrderQuantity <= 0)
-            return ("Error: 'PackOrderQuantity' must be a positive integer.", null);
+            return ("'PackOrderQuantity' must be a positive integer.", null);
         if (item.SupplierId <= 0)
-            return ("Error: 'SupplierId' must be a positive integer.", null);
+            return ("'SupplierId' must be a positive integer.", null);
         if (string.IsNullOrWhiteSpace(item.SupplierCode))
-            return ("Error: 'SupplierCode' field must be filled in.", null);
+            return ("'SupplierCode' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(item.SupplierPartNumber))
-            return ("Error: 'SupplierPartNumber' field must be filled in.", null);
+            return ("'SupplierPartNumber' field must be filled in.", null);
 
 
         if (await _context.Items.AnyAsync(i => i.Code == item_.Code && item.Code == item_.Code))
             {
-                return ("Error: An Item with this Code already exists.", null);
+                return ("An Item with this Code already exists.", null);
             }
         if (await _context.Items.AnyAsync(i => i.UpcCode == item_.UpcCode && item.UpcCode == item_.UpcCode))
             {
-                return ("Error: An Item with this Upc Code already exists.", null);
+                return ("An Item with this Upc Code already exists.", null);
             }
         if (await _context.Items.AnyAsync(i => i.ModelNumber == item_.ModelNumber && item.ModelNumber == item_.ModelNumber))
             {
-                return ("Error: An Item with this Model Number already exists.", null);
+                return ("An Item with this Model Number already exists.", null);
             }
         if (await _context.Items.AnyAsync(i => i.CommodityCode == item_.CommodityCode && item.CommodityCode == item_.CommodityCode))
             {
-                return ("Error: An Item with this Commodity Code already exists.", null);
+                return ("An Item with this Commodity Code already exists.", null);
             }
    
 

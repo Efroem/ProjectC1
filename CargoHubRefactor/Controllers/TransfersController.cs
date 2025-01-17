@@ -27,13 +27,13 @@ namespace CargoHubRefactor.Controllers
         {
             if (limit <= 0)
             {
-                return BadRequest("Cannot show tranfers with a limit below 1.");
+                return BadRequest("Cannot show Transfers with a limit below 1.");
             }
 
             var transfers = await _transferService.GetAllTransfersAsync(limit);
             if (transfers == null || !transfers.Any())
             {
-                return NotFound("No transfers found.");
+                return NotFound("No Transfers found.");
             }
 
             return Ok(transfers);
@@ -44,13 +44,13 @@ namespace CargoHubRefactor.Controllers
         {
             if (limit <= 0)
             {
-                return BadRequest("Cannot show tranfers with a limit below 1.");
+                return BadRequest("Cannot show Transfers with a limit below 1.");
             }
 
             var transfers = await _transferService.GetAllTransfersPagedAsync(limit, page);
             if (transfers == null || !transfers.Any())
             {
-                return NotFound("No transfers found.");
+                return NotFound("No Transfers found.");
             }
 
             return Ok(transfers);
@@ -76,7 +76,7 @@ namespace CargoHubRefactor.Controllers
         public async Task<ActionResult> UpdateTransferStatus(int id, [FromBody] string status)
         {
             var message = await _transferService.UpdateTransferStatusAsync(id, status);
-            if (message.StartsWith("Error")) return BadRequest(message);
+            if (!message.Contains("Transfer status successfully updated.")) return BadRequest(message);
             return Ok(message);
         }
 
@@ -93,7 +93,7 @@ namespace CargoHubRefactor.Controllers
         public async Task<ActionResult> DeleteTransfer(int id)
         {
             var message = await _transferService.DeleteTransferAsync(id);
-            if (message.StartsWith("Error")) return NotFound(message);
+            if (!message.Contains("Transfer successfully deleted.")) return NotFound(message);
             return Ok(message);
         }
 
@@ -101,7 +101,7 @@ namespace CargoHubRefactor.Controllers
         public async Task<ActionResult> SoftDeleteTransfer(int id)
         {
             var message = await _transferService.SoftDeleteTransferAsync(id);
-            if (message.StartsWith("Error")) return NotFound(message);
+            if (!message.Contains("Transfer successfully soft deleted.")) return NotFound(message);
             return Ok(message);
         }
     }

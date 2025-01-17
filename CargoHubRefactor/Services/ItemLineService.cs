@@ -36,11 +36,11 @@ public class ItemLineService : IItemLineService
         int nextId;
 
         if (string.IsNullOrWhiteSpace(itemLine.Name))
-            return ("Error: 'Name' field must be filled in.", null);
+            return ("'Name' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(itemLine.Description))
-            return ("Error: 'Description' field must be filled in.", null);
+            return ("'Description' field must be filled in.", null);
         if (itemLine.ItemGroup <= 0)
-            return ("Error: 'ItemGroup' must be a positive integer.", null);
+            return ("'ItemGroup' must be a positive integer.", null);
 
         if (_context.ItemLines.Any())
         {
@@ -73,14 +73,14 @@ public class ItemLineService : IItemLineService
         var item_line = await _context.ItemLines.FindAsync(lineId);
         if (item_line == null)
         {
-            return ("Error: Item Line not found.", null);
+            return ("Item Line not found.", null);
         }
 
         // Validate that all fields are filled in
         if (string.IsNullOrWhiteSpace(itemLine.Name))
-            return ("Error: 'Name' field must be filled in.", null);
+            return ("'Name' field must be filled in.", null);
         if (string.IsNullOrWhiteSpace(itemLine.Description))
-            return ("Error: 'Description' field must be filled in.", null);
+            return ("'Description' field must be filled in.", null);
 
    
         item_line.Name = itemLine.Name;
@@ -89,7 +89,7 @@ public class ItemLineService : IItemLineService
         item_line.UpdatedAt = DateTime.Now; // Set UpdatedAt to current time
 
         await _context.SaveChangesAsync();
-        return ("ItemLine successfully updated.", item_line);
+        return ("Item Line successfully updated.", item_line);
     }
 
     public async Task<bool> DeleteItemLineAsync(int lineId)

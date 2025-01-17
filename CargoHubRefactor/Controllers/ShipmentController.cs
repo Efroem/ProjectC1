@@ -52,7 +52,7 @@ public class ShipmentController : ControllerBase
     public async Task<ActionResult> AddShipment([FromBody] Shipment shipment)
     {
         var result = await _shipmentService.AddShipmentAsync(shipment);
-        if (result.message.StartsWith("Error"))
+        if (result.shipment == null)
         {
             return BadRequest(result.message);
         }
@@ -63,7 +63,7 @@ public class ShipmentController : ControllerBase
     public async Task<ActionResult> UpdateShipment(int id, [FromBody] Shipment shipment)
     {
         var result = await _shipmentService.UpdateShipmentAsync(id, shipment);
-        if (result.StartsWith("Error"))
+        if (!result.Contains("Shipment successfully updated."))
         {
             return BadRequest(result);
         }
@@ -80,7 +80,7 @@ public class ShipmentController : ControllerBase
 
         var result = await _shipmentService.UpdateShipmentStatusAsync(id, request.Status);
 
-        if (result.StartsWith("Error"))
+        if (!result.Contains("successfully updated"))
         {
             return BadRequest(result);
         }
@@ -106,7 +106,7 @@ public class ShipmentController : ControllerBase
     public async Task<ActionResult> DeleteShipment(int id)
     {
         var result = await _shipmentService.DeleteShipmentAsync(id);
-        if (result.StartsWith("Error"))
+        if (!result.Contains("successfully deleted"))
         {
             return NotFound(result);
         }
@@ -117,7 +117,7 @@ public class ShipmentController : ControllerBase
     public async Task<ActionResult> SoftDeleteShipment(int id)
     {
         var result = await _shipmentService.DeleteShipmentAsync(id);
-        if (result.StartsWith("Error"))
+        if (!result.Contains("successfully soft deleted"))
         {
             return NotFound(result);
         }
@@ -132,7 +132,7 @@ public class ShipmentController : ControllerBase
 
         var result = await _shipmentService.SplitOrderIntoShipmentsAsync(request.OrderId, request.ItemsToSplit);
 
-        if (result.StartsWith("Error"))
+        if (!result.Contains("Successfully split order"))
             return BadRequest(result);
 
         return Ok(result);

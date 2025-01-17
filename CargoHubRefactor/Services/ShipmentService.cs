@@ -38,7 +38,7 @@ public class ShipmentService : IShipmentService
     {
         if (shipment == null)
         {
-            return ("Error: Invalid shipment data.", null);
+            return ("Invalid shipment data.", null);
         }
 
         shipment.CreatedAt = DateTime.Now;
@@ -91,7 +91,7 @@ public class ShipmentService : IShipmentService
         var existingShipment = await _context.Shipments.FindAsync(id);
         if (existingShipment == null)
         {
-            return "Error: Shipment not found.";
+            return "Shipment not found.";
         }
 
         //update shipment
@@ -161,7 +161,7 @@ public class ShipmentService : IShipmentService
 
         if (shipment == null)
         {
-            return "Error: Shipment not found.";
+            return "Shipment not found.";
         }
 
         //update the shipment status in de shipment zelf
@@ -197,12 +197,12 @@ public class ShipmentService : IShipmentService
                     }
                     else
                     {
-                        return $"Error: Insufficient inventory for item {shipmentItem.ItemId}.";
+                        return $"Insufficient inventory for item {shipmentItem.ItemId}.";
                     }
                 }
                 else
                 {
-                    return $"Error: Inventory not found for item {shipmentItem.ItemId}.";
+                    return $"Inventory not found for item {shipmentItem.ItemId}.";
                 }
             }
         }
@@ -231,7 +231,7 @@ public class ShipmentService : IShipmentService
         var shipment = await _context.Shipments.FindAsync(id);
         if (shipment == null)
         {
-            return "Error: Shipment not found.";
+            return "Shipment not found.";
         }
 
         _context.Shipments.Remove(shipment);
@@ -244,7 +244,7 @@ public class ShipmentService : IShipmentService
         var shipment = await _context.Shipments.FindAsync(id);
         if (shipment == null)
         {
-            return "Error: Shipment not found.";
+            return "Shipment not found.";
         }
 
         shipment.SoftDeleted = true;
@@ -257,14 +257,14 @@ public class ShipmentService : IShipmentService
         //pak de order van de database
         var order = await _orderService.GetOrderAsync(orderId); //gebruikt de method van de ordersevice
         if (order == null)
-            return "Error: Order not found.";
+            return "Order not found.";
 
         //kijken of de items bestaan in de order en de amount genoeg is om op the kunnen splitsen
         var orderItemsDict = order.OrderItems.ToDictionary(i => i.ItemId, i => i.Amount);
         foreach (var item in itemsToSplit)
         {
             if (!orderItemsDict.ContainsKey(item.ItemId) || orderItemsDict[item.ItemId] < item.Quantity)
-                return $"Error: Invalid item {item.ItemId} or insufficient quantity.";
+                return $"Invalid item {item.ItemId} or insufficient quantity.";
         }
 
         //order items ammount aanpassen

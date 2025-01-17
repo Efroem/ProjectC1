@@ -26,13 +26,13 @@ namespace CargoHubRefactor.Controllers
         {
             if (limit <= 0)
             {
-                return BadRequest("Cannot show warehouses with a limit below 1.");
+                return BadRequest("Cannot show Warehouses with a limit below 1.");
             }
 
             var warehouses = await _warehouseService.GetAllWarehousesAsync(limit);
             if (warehouses == null || !warehouses.Any())
             {
-                return NotFound("No transfers found.");
+                return NotFound("No Warehouses found.");
             }
 
             return Ok(warehouses);
@@ -43,13 +43,13 @@ namespace CargoHubRefactor.Controllers
         {
             if (limit <= 0)
             {
-                return BadRequest("Cannot show warehouses with a limit below 1.");
+                return BadRequest("Cannot show Warehouses with a limit below 1.");
             }
 
             var warehouses = await _warehouseService.GetAllWarehousesPagedAsync(limit, page);
             if (warehouses == null || !warehouses.Any())
             {
-                return NotFound("No warehouses found.");
+                return NotFound("No Warehouses found.");
             }
 
             return Ok(warehouses);
@@ -61,7 +61,7 @@ namespace CargoHubRefactor.Controllers
             var warehouse = await _warehouseService.GetWarehouseByIdAsync(id);
             if (warehouse == null)
             {
-                return NotFound("No warehouses found.");
+                return NotFound("No Warehouses found.");
             }
             return Ok(warehouse);
         }
@@ -70,7 +70,7 @@ namespace CargoHubRefactor.Controllers
         public async Task<ActionResult> AddWarehouse([FromBody] WarehouseDto warehouseDto)
         {
             var result = await _warehouseService.AddWarehouseAsync(warehouseDto);
-            if (result.message.StartsWith("Error"))
+            if (result.warehouse == null)
             {
                 return BadRequest(result.message);
             }
@@ -81,7 +81,7 @@ namespace CargoHubRefactor.Controllers
         public async Task<ActionResult> UpdateWarehouse(int id, [FromBody] WarehouseDto warehouseDto)
         {
             (string message, Warehouse ReturnedWarehouse) result = await _warehouseService.UpdateWarehouseAsync(id, warehouseDto);
-            if (result.message.StartsWith("Error"))
+            if (result.ReturnedWarehouse == null)
             {
                 return BadRequest(result.message);
             }
@@ -92,7 +92,7 @@ namespace CargoHubRefactor.Controllers
         public async Task<ActionResult> DeleteWarehouse(int id)
         {
             var result = await _warehouseService.DeleteWarehouseAsync(id);
-            if (result.StartsWith("Error"))
+            if (!result.Contains("Warehouse successfully deleted."))
             {
                 return NotFound(result);
             }
@@ -103,7 +103,7 @@ namespace CargoHubRefactor.Controllers
         public async Task<ActionResult> SoftDeleteWarehouse(int id)
         {
             var result = await _warehouseService.SoftDeleteWarehouseAsync(id);
-            if (result.StartsWith("Error"))
+            if (!result.Contains("Warehouse successfully soft deleted."))
             {
                 return NotFound(result);
             }

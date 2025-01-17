@@ -44,25 +44,25 @@ public class InventoryService : IInventoryService
             return ("Error: Item in Inventory does not exist", null);
 
         if (string.IsNullOrWhiteSpace(inventory.Description))
-            return ("Error: 'Description' field must be filled in.", null);
+            return ("'Description' field must be filled in.", null);
 
         if (inventory.ItemReference == null)
-            return ("Error: 'ItemReference' must be filled in.", null);
+            return ("'ItemReference' must be filled in.", null);
 
         if (inventory.TotalOnHand < 0)
-            return ("Error: 'TotalOnHand' cannot be negative.", null);
+            return ("'TotalOnHand' cannot be negative.", null);
 
         if (inventory.TotalExpected < 0)
-            return ("Error: 'TotalExpected' cannot be negative.", null);
+            return ("'TotalExpected' cannot be negative.", null);
 
         if (inventory.TotalOrdered < 0)
-            return ("Error: 'TotalOrdered' cannot be negative.", null);
+            return ("'TotalOrdered' cannot be negative.", null);
 
         if (inventory.TotalAllocated < 0)
-            return ("Error: 'TotalAllocated' cannot be negative.", null);
+            return ("'TotalAllocated' cannot be negative.", null);
 
         if (inventory.TotalAvailable < 0)
-            return ("Error: 'TotalAvailable' cannot be negative.", null);
+            return ("'TotalAvailable' cannot be negative.", null);
 
         nextId = _context.Inventories.Any() ? _context.Inventories.Max(c => c.InventoryId) + 1 : 1;
 
@@ -144,30 +144,30 @@ public class InventoryService : IInventoryService
         var inventory = await _context.Inventories.FindAsync(inventoryId);
         if (inventory == null)
         {
-            return ("Error: Item Group not found.", null);
+            return ("Inventory not found.", null);
         }
 
         // Validate that all fields are filled in
         if (string.IsNullOrWhiteSpace(Inventory.Description))
-            return ("Error: 'Description' field must be filled in.", null);
+            return ("'Description' field must be filled in.", null);
         
         if (string.IsNullOrWhiteSpace(Inventory.ItemReference))
-            return ("Error: 'ItemReference' field must be filled in.", null);
+            return ("'ItemReference' field must be filled in.", null);
 
         if (Inventory.TotalOnHand < 0)
-            return ("Error: 'TotalOnHand' cannot be negative.", null);
+            return ("'TotalOnHand' cannot be negative.", null);
 
         if (Inventory.TotalExpected < 0)
-            return ("Error: 'TotalExpected' cannot be negative.", null);
+            return ("'TotalExpected' cannot be negative.", null);
 
         if (Inventory.TotalOrdered < 0)
-            return ("Error: 'TotalOrdered' cannot be negative.", null);
+            return ("'TotalOrdered' cannot be negative.", null);
 
         if (Inventory.TotalAllocated < 0)
-            return ("Error: 'TotalAllocated' cannot be negative.", null);
+            return ("'TotalAllocated' cannot be negative.", null);
 
         if (Inventory.TotalAvailable < 0)
-            return ("Error: 'TotalAvailable' cannot be negative.", null);
+            return ("'TotalAvailable' cannot be negative.", null);
 
         inventory.ItemId = Inventory.ItemId;
         inventory.Description = Inventory.Description;
