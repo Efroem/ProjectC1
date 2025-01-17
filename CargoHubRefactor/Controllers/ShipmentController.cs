@@ -2,141 +2,146 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-[ServiceFilter(typeof(Filters))]
-[Route("api/v1/shipments")]
-[ApiController]
-public class ShipmentController : ControllerBase
-{
-    private readonly IShipmentService _shipmentService;
 
-    public ShipmentController(IShipmentService shipmentService)
-    {
-        _shipmentService = shipmentService;
-    }
 
-    [HttpGet]
-    public async Task<ActionResult<List<Shipment>>> GetAllShipments()
-    {
-        return Ok(await _shipmentService.GetAllShipmentsAsync());
-    }
+namespace CargoHubRefactor.Controllers {
+    [ServiceFilter(typeof(Filters))]
+    [Route("api/v1/shipments")]
+    [ApiController]
 
-    [HttpGet("limit/{limit}")]
-    public async Task<ActionResult<IEnumerable<Client>>> GetAllShipments(int limit)
+    public class ShipmentController : ControllerBase
     {
-        if (limit <= 0)
+        private readonly IShipmentService _shipmentService;
+
+        public ShipmentController(IShipmentService shipmentService)
         {
-            return BadRequest("Cannot show shipments with a limit below 1.");
+            _shipmentService = shipmentService;
         }
 
-        var shipments = await _shipmentService.GetAllShipmentsAsync(limit);
-        if (shipments == null || !shipments.Any())
+        [HttpGet]
+        public async Task<ActionResult<List<Shipment>>> GetAllShipments()
         {
-            return NotFound("No shipments found.");
+            return Ok(await _shipmentService.GetAllShipmentsAsync());
         }
 
-        return Ok(shipments);
-    }
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Shipment>> GetShipmentById(int id)
-    {
-        var shipment = await _shipmentService.GetShipmentByIdAsync(id);
-        if (shipment == null)
+        [HttpGet("limit/{limit}")]
+        public async Task<ActionResult<IEnumerable<Client>>> GetAllShipments(int limit)
         {
-            return NotFound("Error: Shipment not found.");
-        }
-        return Ok(shipment);
-    }
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show shipments with a limit below 1.");
+            }
 
-    [HttpPost]
-    public async Task<ActionResult> AddShipment([FromBody] Shipment shipment)
-    {
-        var result = await _shipmentService.AddShipmentAsync(shipment);
-        if (result.shipment == null)
-        {
-            return BadRequest(result.message);
-        }
-        return Ok(result.shipment);
-    }
+            var shipments = await _shipmentService.GetAllShipmentsAsync(limit);
+            if (shipments == null || !shipments.Any())
+            {
+                return NotFound("No shipments found.");
+            }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateShipment(int id, [FromBody] Shipment shipment)
-    {
-        var result = await _shipmentService.UpdateShipmentAsync(id, shipment);
-        if (!result.Contains("Shipment successfully updated."))
-        {
-            return BadRequest(result);
-        }
-        return Ok(result);
-    }
-
-    [HttpPut("{id}/status")]
-    public async Task<ActionResult> UpdateShipmentStatus(int id, [FromBody] ShipmentStatusUpdateRequest request)
-    {
-        if (request == null || string.IsNullOrEmpty(request.Status))
-        {
-            return BadRequest("Invalid request. Status is required.");
+            return Ok(shipments);
         }
 
-        var result = await _shipmentService.UpdateShipmentStatusAsync(id, request.Status);
-
-        if (!result.Contains("successfully updated"))
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Shipment>> GetShipmentById(int id)
         {
-            return BadRequest(result);
+            var shipment = await _shipmentService.GetShipmentByIdAsync(id);
+            if (shipment == null)
+            {
+                return NotFound("Error: Shipment not found.");
+            }
+            return Ok(shipment);
         }
 
-        return Ok(result);
-    }
-
-    [HttpGet("{id}/items")]
-    public async Task<ActionResult<List<ShipmentItem>>> GetShipmentItems(int id)
-    {
-        var shipmentItems = await _shipmentService.GetShipmentItemsAsync(id);
-
-        if (shipmentItems == null || shipmentItems.Count == 0)
+        [HttpPost]
+        public async Task<ActionResult> AddShipment([FromBody] Shipment shipment)
         {
-            return NotFound("No items found for the given shipment.");
+            var result = await _shipmentService.AddShipmentAsync(shipment);
+            if (result.shipment == null)
+            {
+                return BadRequest(result.message);
+            }
+            return Ok(result.shipment);
         }
 
-        return Ok(shipmentItems);
-    }
-
-
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteShipment(int id)
-    {
-        var result = await _shipmentService.DeleteShipmentAsync(id);
-        if (!result.Contains("successfully deleted"))
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateShipment(int id, [FromBody] Shipment shipment)
         {
-            return NotFound(result);
+            var result = await _shipmentService.UpdateShipmentAsync(id, shipment);
+            if (!result.Contains("Shipment successfully updated."))
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
-        return Ok(result);
-    }
 
-    [HttpDelete("{id}/test")]
-    public async Task<ActionResult> SoftDeleteShipment(int id)
-    {
-        var result = await _shipmentService.DeleteShipmentAsync(id);
-        if (!result.Contains("successfully soft deleted"))
+        [HttpPut("{id}/status")]
+        public async Task<ActionResult> UpdateShipmentStatus(int id, [FromBody] ShipmentStatusUpdateRequest request)
         {
-            return NotFound(result);
+            if (request == null || string.IsNullOrEmpty(request.Status))
+            {
+                return BadRequest("Invalid request. Status is required.");
+            }
+
+            var result = await _shipmentService.UpdateShipmentStatusAsync(id, request.Status);
+
+            if (!result.Contains("successfully updated"))
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
         }
-        return Ok(result);
+
+        [HttpGet("{id}/items")]
+        public async Task<ActionResult<List<ShipmentItem>>> GetShipmentItems(int id)
+        {
+            var shipmentItems = await _shipmentService.GetShipmentItemsAsync(id);
+
+            if (shipmentItems == null || shipmentItems.Count == 0)
+            {
+                return NotFound("No items found for the given shipment.");
+            }
+
+            return Ok(shipmentItems);
+        }
+
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteShipment(int id)
+        {
+            var result = await _shipmentService.DeleteShipmentAsync(id);
+            if (!result.Contains("successfully deleted"))
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}/test")]
+        public async Task<ActionResult> SoftDeleteShipment(int id)
+        {
+            var result = await _shipmentService.DeleteShipmentAsync(id);
+            if (!result.Contains("successfully soft deleted"))
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("split-order")]
+        public async Task<IActionResult> SplitOrder([FromBody] SplitOrderRequest request)
+        {
+            if (request == null || request.ItemsToSplit == null || !request.ItemsToSplit.Any())
+                return BadRequest("Invalid split request. ItemsToSplit cannot be null or empty.");
+
+            var result = await _shipmentService.SplitOrderIntoShipmentsAsync(request.OrderId, request.ItemsToSplit);
+
+            if (!result.Contains("Successfully split order"))
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
+
     }
-
-    [HttpPost("split-order")]
-    public async Task<IActionResult> SplitOrder([FromBody] SplitOrderRequest request)
-    {
-        if (request == null || request.ItemsToSplit == null || !request.ItemsToSplit.Any())
-            return BadRequest("Invalid split request. ItemsToSplit cannot be null or empty.");
-
-        var result = await _shipmentService.SplitOrderIntoShipmentsAsync(request.OrderId, request.ItemsToSplit);
-
-        if (!result.Contains("Successfully split order"))
-            return BadRequest(result);
-
-        return Ok(result);
-    }
-
-
 }

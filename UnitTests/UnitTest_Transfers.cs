@@ -269,7 +269,7 @@ namespace UnitTests
             };
 
             var result = await _transferService.AddTransferAsync(transfer);
-            Assert.AreEqual("Error: Item INVALID_ITEM does not exist.", result.message);
+            Assert.AreEqual("Item INVALID_ITEM does not exist.", result.message);
             Assert.IsNull(result.transfer);
         }
 
@@ -288,7 +288,7 @@ namespace UnitTests
         public async Task TestUpdateTransferStatus_InvalidId()
         {
             var result = await _transferService.UpdateTransferStatusAsync(999, "InProgress");
-            Assert.AreEqual("Error: Transfer not found.", result);
+            Assert.AreEqual("Transfer not found.", result);
         }
 
         [TestMethod]
@@ -305,7 +305,7 @@ namespace UnitTests
         public async Task TestDeleteTransfer_InvalidId()
         {
             var result = await _transferService.DeleteTransferAsync(999);
-            Assert.AreEqual("Error: Transfer not found.", result);
+            Assert.AreEqual("Transfer not found.", result);
         }
 
         [TestMethod]
@@ -348,7 +348,7 @@ namespace UnitTests
             transfer.TransferTo = 3; // Different warehouse
 
             var result = await _transferService.AddTransferAsync(transfer);
-            Assert.AreEqual("Error: Transfers must remain within the same warehouse.", result.message);
+            Assert.AreEqual("Transfers must remain within the same warehouse.", result.message);
             Assert.IsNull(result.transfer);
         }
 
@@ -367,7 +367,7 @@ namespace UnitTests
             };
 
             var result = await _transferService.AddTransferAsync(transfer);
-            Assert.AreEqual($"Error: Item ITEM004 exceeds destination location's constraints.", result.message);
+            Assert.AreEqual($"Item ITEM004 exceeds destination location's constraints.", result.message);
             Assert.IsNull(result.transfer);
         }
 
@@ -386,7 +386,7 @@ namespace UnitTests
             };
 
             var result = await _transferService.UpdateTransferAsync(1, transfer);
-            Assert.AreEqual("Error: Invalid source or destination location.", result.message);
+            Assert.AreEqual("Invalid source or destination location.", result.message);
             Assert.IsNull(result.transfer);
         }
 
@@ -394,7 +394,7 @@ namespace UnitTests
         public async Task TestUpdateTransferStatus_SourceLocationMissing()
         {
             var result = await _transferService.UpdateTransferStatusAsync(2, "InProgress");
-            Assert.AreEqual("Error: Source location not found.", result);
+            Assert.AreEqual("Source location not found.", result);
         }
 
         [TestMethod]
@@ -412,7 +412,7 @@ namespace UnitTests
             };
 
             var addResult = await _transferService.AddTransferAsync(transfer);
-            Assert.AreEqual($"Error: Not enough stock for item ITEM001 in the source location.", addResult.message);
+            Assert.AreEqual($"Not enough stock for item ITEM001 in the source location.", addResult.message);
             Assert.IsNull(addResult.transfer);
         }
 

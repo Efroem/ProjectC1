@@ -15,7 +15,7 @@
     <CollectCoverage>true</CollectCoverage>
     <CoverletOutput>coverage/</CoverletOutput>
     <CoverletOutputFormat>cobertura</CoverletOutputFormat>
-    <Exclude>[*]CargoHubRefactor.Migrations*,[*]CargoHubRefactor.Controllers*,[*]CargoHubRefactor.DbSetup*,[*]CargoHubRefactor.Program*,[*]CargoHubRefactor.WareHouseDto*</Exclude>
+    <Exclude>[*]CargoHubRefactor.Migrations*,[*]CargoHubRefactor.Controllers*,[*]CargoHubRefactor.DbSetup*,[*]CargoHubRefactor.Program*,[*]CargoHubRefactor.WareHouseDto*,[*]Filters*</Exclude>
   </PropertyGroup>
 
 
