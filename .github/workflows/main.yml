@@ -85,27 +85,9 @@ jobs:
         run: pytest
         working-directory: CargoHubRefactor/Tests
 
-  Unit_Tests:
-    runs-on: ubuntu-latest
-    needs: Build  # This ensures that the test job runs after the build job completes successfully
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Restore dependencies
-        run: |
-          dotnet restore
-        working-directory: CargoHubRefactor
-
-      - name: Run Unit Tests
-        run: dotnet test
-        working-directory: UnitTests
-
-
   Unit_Test_Coverage:
     runs-on: ubuntu-latest
-    needs: Unit_Tests
+    needs: Build
 
     steps:
     # Checkout the code
@@ -153,8 +135,8 @@ jobs:
       run: |
         coverage=$(xmllint --xpath "string(//*[local-name()='coverage']/@line-rate)" coverage/coverage.cobertura.xml | awk '{printf("%.0f\n", $1 * 100)}')
         echo "Coverage: $coverage%"
-        if [ "$coverage" -lt 65 ]; then
-          echo "Code coverage ($coverage%) is below the threshold of 80%."
+        if [ "$coverage" -lt 70 ]; then
+          echo "Code coverage ($coverage%) is below the threshold of 70%."
           exit 1
         fi
       working-directory: UnitTests
