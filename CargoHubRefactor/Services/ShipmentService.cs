@@ -21,6 +21,11 @@ public class ShipmentService : IShipmentService
         return await _context.Shipments.Include(s => s.SourceWarehouse).ToListAsync();
     }
 
+    public async Task<IEnumerable<Shipment>> GetShipmentsPagedAsync(int limit, int page)
+    {
+        return await _context.Shipments.Skip(limit * (page - 1)).Take(limit).ToListAsync();
+    }
+
     public async Task<List<Shipment>> GetAllShipmentsAsync(int limit)
     {
         return await _context.Shipments.Include(s => s.SourceWarehouse).Take(limit).ToListAsync();

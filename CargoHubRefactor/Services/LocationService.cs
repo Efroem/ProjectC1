@@ -28,6 +28,11 @@ public class LocationService : ILocationService
         return await _context.Locations.Take(limit).ToListAsync();
     }
 
+    public async Task<IEnumerable<Location>> GetLocationPagedAsync(int limit, int page)
+    {
+        return await _context.Locations.Skip(limit * (page - 1)).Take(limit).ToListAsync();
+    }
+
     public async Task<Location> AddLocationAsync(Location Location)
     {
         int nextId;
