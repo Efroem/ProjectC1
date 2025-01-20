@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 public class ShipmentService : IShipmentService
 {
@@ -205,23 +206,27 @@ public class ShipmentService : IShipmentService
                         inventory.UpdatedAt = DateTime.UtcNow;            //Update de datum 
 
                         int amountToRemove = shipmentItem.Amount;
-                        foreach (int locationId in inventory.Locations) {
-                            var location = await _context.Locations.FirstOrDefaultAsync(i => i.LocationId == locationId && warehouseIds.Contains(i.WarehouseId));
+                        foreach (int locationId in inventory.LocationsList) {
+                            var location = await _context.Locations.FirstOrDefaultAsync(i => i.LocationId == locationId /*&& warehouseIds.Contains(i.WarehouseId)*/);
                             if (location == null) continue;
                             if (location.ItemAmounts[shipmentItem.ItemId] < amountToRemove) {
                                 int amountToSubtract = location.ItemAmounts[shipmentItem.ItemId];
-                                location.ItemAmounts[shipmentItem.ItemId] = 0;
-                                amountToRemove = amountToSubtract;
+                                location.ItemAmounts.Remove(shipmentItem.ItemId);
+                                inventory.Locations.Remove(locationId);
+                                _context.Inventories.Update(inventory);
+                                amountToRemove -= amountToSubtract;
                             }
                             else {
                                 location.ItemAmounts[shipmentItem.ItemId] -= amountToRemove;
                                 amountToRemove = 0;
                             }
                             _context.Locations.Update(location);
+                            await _context.SaveChangesAsync();
                         }
 
                         //update in database
                         _context.Inventories.Update(inventory);
+                        await _context.SaveChangesAsync();
                     }
                     else
                     {
