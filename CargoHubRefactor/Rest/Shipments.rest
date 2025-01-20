@@ -19,22 +19,24 @@ Content-Type: application/json
 # Voegt een nieuwe shipment toe 
 POST http://localhost:5000/api/v1/shipments 
 Content-Type: application/json
+ApiToken: A1B2C3D4
 
 {
-"orderId": 12345, "sourceId": 1, 
-"orderDate": "2024-12-13T00:00:00", 
-"requestDate": "2024-12-15T00:00:00", 
-"shipmentDate": "2024-12-20T00:00:00", 
-"shipmentType": "Standard", 
-"shipmentStatus": "Pending", 
-"notes": "First shipment", 
-"carrierCode": "CARRIER001", 
-"carrierDescription": "Test Carrier", 
-"serviceCode": "EXPRESS", 
-"paymentType": "Prepaid", 
-"transferMode": "Air", 
-"totalPackageCount": 5, 
-"totalPackageWeight": 100.5
+    "orderId": "12345", 
+    "sourceId": 1, 
+    "orderDate": "2024-12-13T00:00:00", 
+    "requestDate": "2024-12-15T00:00:00", 
+    "shipmentDate": "2024-12-20T00:00:00", 
+    "shipmentType": "Standard", 
+    "shipmentStatus": "Pending", 
+    "notes": "First shipment", 
+    "carrierCode": "CARRIER001", 
+    "carrierDescription": "Test Carrier", 
+    "serviceCode": "EXPRESS", 
+    "paymentType": "Prepaid", 
+    "transferMode": "Air", 
+    "totalPackageCount": 5, 
+    "totalPackageWeight": 100.5
 }
 
 ###

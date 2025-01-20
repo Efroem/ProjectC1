@@ -493,7 +493,7 @@ namespace CargoHubRefactor.Migrations
                     b.Property<bool>("SoftDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("SourceId")
+                    b.Property<int>("SourceId")
                         .HasColumnType("INTEGER");
 
                     b.Property<double>("TotalAmount")
@@ -619,8 +619,6 @@ namespace CargoHubRefactor.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("ShipmentId");
-
-                    b.HasIndex("SourceId");
 
                     b.ToTable("Shipments");
                 });
@@ -886,17 +884,6 @@ namespace CargoHubRefactor.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("Order");
-                });
-
-            modelBuilder.Entity("Shipment", b =>
-                {
-                    b.HasOne("Warehouse", "SourceWarehouse")
-                        .WithMany()
-                        .HasForeignKey("SourceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("SourceWarehouse");
                 });
 
             modelBuilder.Entity("ShipmentItem", b =>

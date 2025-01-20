@@ -18,7 +18,7 @@ public class ShipmentService : IShipmentService
 
     public async Task<List<Shipment>> GetAllShipmentsAsync()
     {
-        return await _context.Shipments.Include(s => s.SourceWarehouse).ToListAsync();
+        return await _context.Shipments.ToListAsync();
     }
 
     public async Task<IEnumerable<Shipment>> GetShipmentsPagedAsync(int limit, int page)
@@ -28,13 +28,12 @@ public class ShipmentService : IShipmentService
 
     public async Task<List<Shipment>> GetAllShipmentsAsync(int limit)
     {
-        return await _context.Shipments.Include(s => s.SourceWarehouse).Take(limit).ToListAsync();
+        return await _context.Shipments.Take(limit).ToListAsync();
     }
 
     public async Task<Shipment> GetShipmentByIdAsync(int id)
     {
         return await _context.Shipments
-            .Include(s => s.SourceWarehouse)
             .FirstOrDefaultAsync(s => s.ShipmentId == id);
     }
 
