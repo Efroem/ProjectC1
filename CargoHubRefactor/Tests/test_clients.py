@@ -58,6 +58,19 @@ def test_get_client_by_id_integration_AdminKey(_data):
     print(response_data)
     assert status_code == 200 and response_data["clientId"] == 1
 
+def test_clients_invalid_apikey(_data):
+    url = _data[0]["URL"] + 'Clients/1'
+    
+    invalid_token = "INVALID_API_KEY"
+    headers = {
+        "ApiToken": invalid_token,
+        "Content-Type": "application/json"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    assert response.status_code == 403
+
 def test_get_client_by_id_integration_EmployeeKey(_data):
     url = _data[0]["URL"] + 'Clients/1'
     headers = get_headers(_data[0]["EmployeeApiToken"])
