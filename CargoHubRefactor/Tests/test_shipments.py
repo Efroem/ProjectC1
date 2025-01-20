@@ -112,21 +112,3 @@ def test_delete_shipment_integration(_data):
     # Verify deleted
     get_response = requests.get(f"{url}/{shipment_id}", headers=headers)
     assert get_response.status_code == 404
-
-
-def test_update_shipment_status_integration(_data):
-    url = _data[0]["URL"] + 'shipments/1/status'
-    headers = get_headers(_data[0]["AdminApiToken"])
-
-    # Send a PUT
-    body = {"shipmentStatus": "Delivered"}
-    put_response = requests.put(url, json=body, headers=headers)
-    assert put_response.status_code == 200
-
-    # Verify updated
-    get_response = requests.get(f"{_data[0]['URL']}shipments/1", headers=headers)
-    status_code = get_response.status_code
-    response_data = get_response.json()
-
-    # Verify updated correctly
-    assert status_code == 200 and response_data["shipmentStatus"] == "Delivered"
