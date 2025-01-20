@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 public interface ILocationService
 {
+    Task<IEnumerable<Location>> GetLocationPagedAsync(int limit, int page);
     Task<Location> GetLocationAsync(int locationId);
     Task<IEnumerable<Location>> GetLocationsAsync();
     Task<IEnumerable<Location>> GetLocationsAsync(int limit);

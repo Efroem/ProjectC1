@@ -53,6 +53,24 @@ namespace CargoHubRefactor.Controllers
             return Ok(locations);
         }
 
+        [HttpGet("limit/{limit}/page/{page}")]
+        public async Task<ActionResult<IEnumerable<ItemType>>> GetLocationPaged(int limit, int page)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show Locations with a limit below 1.");
+            }
+            if (page < 0) return BadRequest("Page number must be a positive integer");
+
+            var locations = await _locationService.GetLocationPagedAsync(limit, page);
+            if (locations == null || !locations.Any())
+            {
+                return NotFound("No Locatilocationsons found.");
+            }
+
+            return Ok(locations);
+        }
+
         [HttpGet("warehouse/{warehouseId}")]
         public async Task<IActionResult> GetLocationsByWarehouse(int warehouseId)
         {

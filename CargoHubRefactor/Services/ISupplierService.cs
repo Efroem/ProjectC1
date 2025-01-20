@@ -14,6 +14,8 @@ namespace Services
         Task<bool> SoftDeleteSupplierAsync(int id);
         Task<bool> DeleteAllSuppliersAsync();
         Task<int> GetLowestAvailableSupplierIdAsync();
+        Task<IEnumerable<Supplier>> GetSuppliersPagedAsync(int limit, int page);
+
 
     }
 }

@@ -31,6 +31,12 @@ public class OrderService : IOrderService
         return await _context.Orders.Take(limit).ToListAsync();
     }
 
+    public async Task<IEnumerable<Order>> GetOrdersPagedAsync(int limit, int page)
+    {
+        return await _context.Orders.Skip(limit * (page - 1)).Take(limit).ToListAsync();
+    }
+
+
     public async Task<double> GetOrderPriceTotalAsync(int id)
     {
         List<OrderItem> orderItems = await _context.OrderItems.Where(o => o.OrderId == id).ToListAsync();

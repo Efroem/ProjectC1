@@ -36,6 +36,24 @@ namespace CargoHubRefactor.Controllers
             return Ok(supplier);
         }
 
+        [HttpGet("limit/{limit}/page/{page}")]
+        public async Task<ActionResult<IEnumerable<Supplier>>> GetSuppliersPaged(int limit, int page)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot supplier with a limit below 1.");
+            }
+            if (page < 0) return BadRequest("Page number must be a positive integer");
+
+            var supplier = await _supplierService.GetSuppliersPagedAsync(limit, page);
+            if (supplier == null || !supplier.Any())
+            {
+                return NotFound("No supplier found.");
+            }
+
+            return Ok(supplier);
+        }
+
         [HttpPost]
         public async Task<ActionResult<Supplier>> CreateSupplier(Supplier supplier)
         {
