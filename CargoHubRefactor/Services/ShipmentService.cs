@@ -41,20 +41,36 @@ public class ShipmentService : IShipmentService
 
     public async Task<(string message, Shipment? shipment)> AddShipmentAsync(Shipment shipment)
     {
-        if (shipment == null)
+    if (shipment == null)
         {
             return ("Invalid shipment data.", null);
         }
 
+        var validStatuses = new[] { "Pending", "In Transit", "Delivered" };
+
+        // Default ShipmentStatus to "Pending" if not provided
+        shipment.ShipmentStatus ??= "Pending";
+
+        // Validate ShipmentStatus
+        if (!validStatuses.Contains(shipment.ShipmentStatus))
+        {
+            return ($"Invalid ShipmentStatus. Allowed values are: {string.Join(", ", validStatuses)}.", null);
+        }
+
         shipment.CreatedAt = DateTime.Now;
         shipment.UpdatedAt = DateTime.Now;
+        shipment.ShipmentStatus ??= "Pending";
+        shipment.TotalPackageWeight = 0; // Initialize
 
         // Convert OrderIdsList naar een string
         shipment.OrderId = string.Join(",", shipment.OrderIdsList);
 
+
         // Add shipment
         _context.Shipments.Add(shipment);
         await _context.SaveChangesAsync();
+
+
 
         //Update shipmentid in de orders database voor elke orderid en voeg shipmentitems toe
         foreach (var orderId in shipment.OrderIdsList)
@@ -74,6 +90,8 @@ public class ShipmentService : IShipmentService
                     //nieuwe shipmentitems toevoegen
                     foreach (var orderItem in orderItems)
                     {
+                        var item = await _context.Items.FirstOrDefaultAsync(i => i.Uid == orderItem.ItemId);
+                        if (item == null) continue;
                         var shipmentItem = new ShipmentItem
                         {
                             ShipmentId = shipment.ShipmentId,
@@ -81,6 +99,9 @@ public class ShipmentService : IShipmentService
                             Amount = orderItem.Amount
                         };
                         _context.ShipmentItems.Add(shipmentItem);
+
+                        shipment.TotalPackageWeight += item.Weight * orderItem.Amount;
+                        
                     }
                 }
             }
@@ -106,7 +127,7 @@ public class ShipmentService : IShipmentService
         existingShipment.RequestDate = shipment.RequestDate;
         existingShipment.ShipmentDate = shipment.ShipmentDate;
         existingShipment.ShipmentType = shipment.ShipmentType;
-        existingShipment.ShipmentStatus = shipment.ShipmentStatus;
+        existingShipment.ShipmentStatus = "Pending";
         existingShipment.Notes = shipment.Notes;
         existingShipment.CarrierCode = shipment.CarrierCode;
         existingShipment.CarrierDescription = shipment.CarrierDescription;
@@ -114,7 +135,7 @@ public class ShipmentService : IShipmentService
         existingShipment.PaymentType = shipment.PaymentType;
         existingShipment.TransferMode = shipment.TransferMode;
         existingShipment.TotalPackageCount = shipment.TotalPackageCount;
-        existingShipment.TotalPackageWeight = shipment.TotalPackageWeight;
+        existingShipment.TotalPackageWeight = 0;
         existingShipment.UpdatedAt = DateTime.Now;
 
         _context.Shipments.Update(existingShipment);
@@ -142,6 +163,10 @@ public class ShipmentService : IShipmentService
                 //nieuwe shipmentitems toevoegen
                 foreach (var orderItem in orderItems)
                 {
+
+                    var item = await _context.Items.FirstOrDefaultAsync(i => i.Uid == orderItem.ItemId);
+                    if (item == null) continue;
+
                     var shipmentItem = new ShipmentItem
                     {
                         ShipmentId = existingShipment.ShipmentId,
@@ -149,6 +174,8 @@ public class ShipmentService : IShipmentService
                         Amount = orderItem.Amount
                     };
                     _context.ShipmentItems.Add(shipmentItem);
+
+                    existingShipment.TotalPackageWeight += item.Weight * orderItem.Amount;
                 }
             }
         }
@@ -169,6 +196,13 @@ public class ShipmentService : IShipmentService
             return "Shipment not found.";
         }
 
+        var validStatuses = new[] { "Pending", "In Transit", "Delivered" };
+        if (!validStatuses.Contains(newStatus))
+        {
+            return $"Invalid status. Allowed statuses: {string.Join(", ", validStatuses)}.";
+        }
+
+
         //update the shipment status in de shipment zelf
         shipment.ShipmentStatus = newStatus;
         shipment.UpdatedAt = DateTime.UtcNow;
@@ -181,7 +215,7 @@ public class ShipmentService : IShipmentService
             warehouseIds.Add(order.WarehouseId);
         }
 
-        if (newStatus == "IN TRANSIT")
+        if (newStatus == "In Transit")
         {
             //pak je shipmentitems van de shipment
             var shipmentItems = await _context.ShipmentItems
@@ -237,9 +271,71 @@ public class ShipmentService : IShipmentService
                 {
                     return $"Inventory not found for item {shipmentItem.ItemId}.";
                 }
+                
+            }
+            
+        foreach (var orderId in shipment.OrderIdsList)
+        {
+            if (int.TryParse(orderId, out int parsedOrderId))
+            {
+                var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == parsedOrderId);
+                if (order != null)
+                {
+                    await _orderService.UpdateOrderAsync(
+                        order.Id,
+                        order.SourceId,
+                        order.OrderDate,
+                        order.RequestDate,
+                        order.Reference,
+                        order.ReferenceExtra,
+                        "InProgress",
+                        order.Notes,
+                        order.ShippingNotes,
+                        order.PickingNotes,
+                        order.WarehouseId,
+                        order.ShipTo,
+                        order.BillTo,
+                        order.ShipmentId,
+                        order.TotalDiscount,
+                        order.TotalTax,
+                        order.TotalSurcharge
+                    );
+                }
             }
         }
-
+    }
+    else if (newStatus == "Delivered")
+    {
+        foreach (var orderId in shipment.OrderIdsList)
+        {
+            if (int.TryParse(orderId, out int parsedOrderId))
+            {
+                var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == parsedOrderId);
+                if (order != null)
+                {
+                    await _orderService.UpdateOrderAsync(
+                        order.Id,
+                        order.SourceId,
+                        order.OrderDate,
+                        order.RequestDate,
+                        order.Reference,
+                        order.ReferenceExtra,
+                        "Delivered",
+                        order.Notes,
+                        order.ShippingNotes,
+                        order.PickingNotes,
+                        order.WarehouseId,
+                        order.ShipTo,
+                        order.BillTo,
+                        order.ShipmentId,
+                        order.TotalDiscount,
+                        order.TotalTax,
+                        order.TotalSurcharge
+                    );
+                }
+            }
+        }
+    }
         //save
         await _context.SaveChangesAsync();
 
@@ -287,12 +383,10 @@ public class ShipmentService : IShipmentService
 
     public async Task<string> SplitOrderIntoShipmentsAsync(int orderId, List<SplitOrderItem> itemsToSplit)
     {
-        //pak de order van de database
-        var order = await _orderService.GetOrderAsync(orderId); //gebruikt de method van de ordersevice
+        var order = await _orderService.GetOrderAsync(orderId);
         if (order == null)
             return "Order not found.";
 
-        //kijken of de items bestaan in de order en de amount genoeg is om op the kunnen splitsen
         var orderItemsDict = order.OrderItems.ToDictionary(i => i.ItemId, i => i.Amount);
         foreach (var item in itemsToSplit)
         {
@@ -300,16 +394,14 @@ public class ShipmentService : IShipmentService
                 return $"Invalid item {item.ItemId} or insufficient quantity.";
         }
 
-        //order items ammount aanpassen
         foreach (var item in itemsToSplit)
         {
             var originalItem = order.OrderItems.First(i => i.ItemId == item.ItemId);
             originalItem.Amount -= item.Quantity;
-            if (originalItem.Amount == 0) //als de amount van een item 0 is na het splitsen dan wordt deze verwijderd
+            if (originalItem.Amount == 0)
                 order.OrderItems.Remove(originalItem);
         }
 
-        //nieuwe shipment
         var newShipment = new Shipment
         {
             SourceId = order.SourceId,
@@ -327,11 +419,9 @@ public class ShipmentService : IShipmentService
             OrderIdsList = new List<string> { orderId.ToString() }
         };
 
-        //shipment opslaan om een id te genereren
         _context.Shipments.Add(newShipment);
         await _context.SaveChangesAsync();
 
-        //shipment items toevoegen
         foreach (var item in itemsToSplit)
         {
             var shipmentItem = new ShipmentItem
@@ -343,10 +433,8 @@ public class ShipmentService : IShipmentService
             _context.ShipmentItems.Add(shipmentItem);
         }
 
-        //save
         await _context.SaveChangesAsync();
 
-        //Update de order
         await _orderService.UpdateOrderAsync(
             order.Id,
             order.SourceId,
@@ -362,7 +450,6 @@ public class ShipmentService : IShipmentService
             order.ShipTo,
             order.BillTo,
             order.ShipmentId,
-            order.TotalAmount,
             order.TotalDiscount,
             order.TotalTax,
             order.TotalSurcharge
@@ -370,5 +457,6 @@ public class ShipmentService : IShipmentService
 
         return $"Successfully split order {orderId} into a new shipment with Shipment ID {newShipment.ShipmentId}.";
     }
+
 }
 

@@ -72,9 +72,8 @@ public class OrderService : IOrderService
     }
 
     public async Task<Order> AddOrderAsync(int sourceId, DateTime orderDate, DateTime requestDate, string reference,
-                                           string referenceExtra, string orderStatus, string notes,
-                                           string shippingNotes, string pickingNotes, int warehouseId,
-                                           int? shipTo, int? billTo, int? shipmentId, double totalAmount,
+                                           string referenceExtra, string notes, string shippingNotes, string pickingNotes,
+                                           int warehouseId, int? shipTo, int? billTo, int? shipmentId,
                                            double totalDiscount, double totalTax, double totalSurcharge, List<OrderItem> orderItems)
     {
         int nextId;
@@ -87,6 +86,17 @@ public class OrderService : IOrderService
         {
             nextId = 1;
         }
+
+        // Calculate total amount
+        double totalAmount = 0;
+        foreach (var item in orderItems)
+        {
+            var dbItem = await _context.Items.FirstOrDefaultAsync(i => i.Uid == item.ItemId);
+            if (dbItem == null) continue;
+
+            totalAmount += dbItem.Price * item.Amount;
+        }
+
         var order = new Order
         {
             Id = nextId,
@@ -95,7 +105,7 @@ public class OrderService : IOrderService
             RequestDate = requestDate,
             Reference = reference,
             ReferenceExtra = referenceExtra,
-            OrderStatus = orderStatus,
+            OrderStatus = "Pending", // Automatically set to "Pending"
             Notes = notes,
             ShippingNotes = shippingNotes,
             PickingNotes = pickingNotes,
@@ -110,7 +120,9 @@ public class OrderService : IOrderService
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
+
         _context.Orders.Add(order);
+
         int nextOrderItemId;
         if (_context.OrderItems.Any())
         {
@@ -120,24 +132,21 @@ public class OrderService : IOrderService
         {
             nextOrderItemId = 1;
         }
-        foreach (OrderItem Item in orderItems)
-        {
-            Item? dummyItem = await _context.Items.FirstOrDefaultAsync(l => l.Uid == Item.ItemId);
-            if (dummyItem == null) continue;
 
+        foreach (OrderItem item in orderItems)
+        {
             var orderItem = new OrderItem
             {
                 Id = nextOrderItemId,
                 OrderId = nextId,
-                ItemId = Item.ItemId,
-                Amount = Item.Amount
+                ItemId = item.ItemId,
+                Amount = item.Amount
             };
 
             nextOrderItemId++;
 
             await _context.OrderItems.AddAsync(orderItem);
         }
-
 
         await _context.SaveChangesAsync();
 
@@ -148,8 +157,7 @@ public class OrderService : IOrderService
                                               string reference, string referenceExtra, string orderStatus,
                                               string notes, string shippingNotes, string pickingNotes,
                                               int warehouseId, int? shipTo, int? billTo, int? shipmentId,
-                                              double totalAmount, double totalDiscount, double totalTax,
-                                              double totalSurcharge)
+                                              double totalDiscount, double totalTax, double totalSurcharge)
     {
         var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
         if (order == null)
@@ -157,12 +165,18 @@ public class OrderService : IOrderService
             return null;
         }
 
+        // Restrict OrderStatus updates
+        if (orderStatus != "InProgress" && orderStatus != "Delivered")
+        {
+            throw new InvalidOperationException("OrderStatus can only be updated to 'InProgress' or 'Delivered'.");
+        }
+
         order.SourceId = sourceId;
         order.OrderDate = orderDate;
         order.RequestDate = requestDate;
         order.Reference = reference;
         order.ReferenceExtra = referenceExtra;
-        order.OrderStatus = orderStatus;
+        order.OrderStatus = orderStatus; // Update status if valid
         order.Notes = notes;
         order.ShippingNotes = shippingNotes;
         order.PickingNotes = pickingNotes;
@@ -170,7 +184,6 @@ public class OrderService : IOrderService
         order.ShipTo = shipTo;
         order.BillTo = billTo;
         order.ShipmentId = shipmentId;
-        order.TotalAmount = totalAmount;
         order.TotalDiscount = totalDiscount;
         order.TotalTax = totalTax;
         order.TotalSurcharge = totalSurcharge;
@@ -215,6 +228,7 @@ public class OrderService : IOrderService
         var order = await _context.Orders
             .FirstOrDefaultAsync(o => o.Id == orderId);
 
+
         var orderItems = await _context.OrderItems.Where(o => o.OrderId == orderId).ToListAsync();
 
         if (order == null || orderItems.IsNullOrEmpty())
@@ -233,22 +247,6 @@ public class OrderService : IOrderService
             }
         }
         return itemsWithLocations;
-        // Fetch locations where these items exist
-        // var locations = await _context.Locations.Where(l => l.ItemAmounts.ContainsKey(ItemId))
-        // = await _context.Locations
-        //     .Where(l => l.ItemAmounts.Keys.Any(uid => ItemIds.Contains(uid)))
-        //     .ToListAsync();
-
-        // Group locations by item UID
-        // var groupedLocations = locations
-        //     .SelectMany(l => l.ItemAmounts
-        //         .Where(kvp => ItemIds.Contains(kvp.Key))
-        //         .Select(kvp => new { ItemId = kvp.Key, Location = l }))
-        //     .GroupBy(x => x.ItemId)
-        //     .ToDictionary(g => g.Key, g => g.Select(x => x.Location).ToList());
-
-        // return groupedLocations;
-        // return null;
     }
 
 }
