@@ -101,6 +101,10 @@ namespace CargoHubRefactor.Controllers
             if (location.Name.Contains("Dock") && !location.IsDock) {
                 return BadRequest("Location got a Dock name but location is not explicitly set to Dock");
             }
+
+            if (await _locationService.IsValidLocationNameAsync(location.Name) && location.IsDock) {
+                return BadRequest("Location is wrongly set to Dock but name is a valid Location name.");
+            }
             
 
             var createdLocation = await _locationService.AddLocationAsync(location);
