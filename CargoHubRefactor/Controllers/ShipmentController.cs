@@ -73,6 +73,7 @@ namespace CargoHubRefactor.Controllers {
         [HttpPost]
         public async Task<ActionResult> AddShipment([FromBody] Shipment shipment)
         {
+            // Service already defaults ShipmentStatus to "Pending" if not provided
             var result = await _shipmentService.AddShipmentAsync(shipment);
             if (result.shipment == null)
             {
