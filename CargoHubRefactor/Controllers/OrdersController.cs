@@ -282,7 +282,7 @@ namespace CargoHubRefactor.Controllers
         }
 
         [HttpGet("{orderId}/locations")]
-        public async Task<ActionResult<Dictionary<string, List<Location>>>> GetOrderItemLocations(int orderId)
+        public async Task<ActionResult<Dictionary<string, Dictionary<int, int>>>> GetOrderItemLocations(int orderId)
         {
             var groupedLocations = await _orderService.GetLocationsForOrderItemsAsync(orderId);
 
