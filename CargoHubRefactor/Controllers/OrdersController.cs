@@ -149,9 +149,9 @@ public class OrdersController : ControllerBase
         }
 
         // Validate and restrict OrderStatus updates
-        if (!string.IsNullOrEmpty(order.OrderStatus) && order.OrderStatus != "InProgress" && order.OrderStatus != "Delivered")
+        if (!string.IsNullOrEmpty(order.OrderStatus) && order.OrderStatus != "InProgress" && order.OrderStatus != "Delivered" && order.OrderStatus != "Pending")
         {
-            return BadRequest("OrderStatus can only be updated to 'InProgress' or 'Delivered'.");
+            return BadRequest("OrderStatus can only be updated to 'Pending', 'InProgress' or 'Delivered'.");
         }
 
         var updatedOrder = await _orderService.UpdateOrderAsync(
