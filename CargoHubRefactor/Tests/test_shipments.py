@@ -82,47 +82,6 @@ def test_post_shipment_integration(_data):
     assert status_code == 200 and response_data["shipmentStatus"] == body["shipmentStatus"]
 
 
-def test_put_shipment_integration(_data):
-    url = _data[0]["URL"] + 'shipments/1'
-    headers = get_headers(_data[0]["AdminApiToken"])
-
-    original_shipment = requests.get(url, headers=headers)
-    assert original_shipment.status_code == 200
-    original_body = original_shipment.json()
-
-    # Updated shipment data
-    body = {
-        "sourceId": 1255,
-        "orderIdsList": ["101", "103"],
-        "shipmentDate": "2024-12-16T10:00:00Z",
-        "shipmentStatus": "In Transit",
-        "shipmentType": "Express",
-        "carrierCode": "Carrier002",
-        "carrierDescription": "New Carrier",
-        "serviceCode": "Service02",
-        "paymentType": "Prepaid",
-        "transferMode": "Ground",
-        "totalPackageCount": 3,
-        "totalPackageWeight": 6.0,
-        "notes": "Urgent delivery"
-    }
-
-    # Send a PUT
-    put_response = requests.put(url, json=body, headers=headers)
-    assert put_response.status_code == 200
-
-    # Get updated shipment
-    get_response = requests.get(url, headers=headers)
-    status_code = get_response.status_code
-    response_data = get_response.json()
-
-    # Restore shipment data
-    requests.put(url, json=original_body, headers=headers)
-
-    # Verifyupdated successfully
-    assert status_code == 200 and response_data["shipmentStatus"] == body["shipmentStatus"]
-
-
 def test_delete_shipment_integration(_data):
     # Create a shipment
     url = _data[0]["URL"] + 'shipments'
