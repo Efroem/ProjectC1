@@ -14,44 +14,17 @@ public interface IOrderService
     Task<double> GetOrderWeightTotalAsync(int id);
 
     Task<Order> AddOrderAsync(
-        int sourceId,
-        DateTime orderDate,
-        DateTime requestDate,
-        string reference,
-        string referenceExtra,
-        string orderStatus,
-        string notes,
-        string shippingNotes,
-        string pickingNotes,
-        int warehouseId,
-        int? shipTo,
-        int? billTo,
-        int? shipmentId,
-        double totalAmount,
-        double totalDiscount,
-        double totalTax,
-        double totalSurcharge,
-        List<OrderItem> orderItems);
+        int sourceId, DateTime orderDate, DateTime requestDate, string reference,
+        string referenceExtra, string notes, string shippingNotes, string pickingNotes,
+        int warehouseId, int? shipTo, int? billTo, int? shipmentId, double totalDiscount,
+        double totalTax, double totalSurcharge, List<OrderItem> orderItems);
+
 
     Task<Order> UpdateOrderAsync(
-        int id,
-        int sourceId,
-        DateTime orderDate,
-        DateTime requestDate,
-        string reference,
-        string referenceExtra,
-        string orderStatus,
-        string notes,
-        string shippingNotes,
-        string pickingNotes,
-        int warehouseId,
-        int? shipTo,
-        int? billTo,
-        int? shipmentId,
-        double totalAmount,
-        double totalDiscount,
-        double totalTax,
-        double totalSurcharge);
+        int id, int sourceId, DateTime orderDate, DateTime requestDate, string reference,
+        string referenceExtra, string orderStatus, string notes, string shippingNotes,
+        string pickingNotes, int warehouseId, int? shipTo, int? billTo, int? shipmentId,
+        double totalDiscount, double totalTax, double totalSurcharge);
 
     Task<bool> DeleteOrderAsync(int orderId);
     Task<bool> SoftDeleteOrderAsync(int orderId);
