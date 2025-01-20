@@ -149,6 +149,12 @@ public class ItemService : IItemService
             ItemLine = item.ItemLine,
             ItemGroup = item.ItemGroup,
             ItemType = item.ItemType,
+            Height = item.Height,
+            Width = item.Width,
+            Depth = item.Depth,
+            Weight = item.Weight,
+            Price = item.Price,
+            Classification = item.Classification,
             UnitPurchaseQuantity = item.UnitPurchaseQuantity,
             UnitOrderQuantity = item.UnitOrderQuantity,
             PackOrderQuantity = item.PackOrderQuantity,
@@ -234,6 +240,12 @@ public class ItemService : IItemService
         item_.ItemLine = item.ItemLine;
         item_.ItemGroup = item.ItemGroup;
         item_.ItemType = item.ItemType;
+        item_.Height = item.Height;
+        item_.Width = item.Width;
+        item_.Depth = item.Depth;
+        item_.Weight = item.Weight;
+        item_.Price = item.Price;
+        item_.Classification = item.Classification;
         item_.UnitPurchaseQuantity = item.UnitPurchaseQuantity;
         item_.UnitOrderQuantity = item.UnitOrderQuantity;
         item_.PackOrderQuantity = item.PackOrderQuantity;

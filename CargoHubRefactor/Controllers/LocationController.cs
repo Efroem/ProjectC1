@@ -89,11 +89,19 @@ namespace CargoHubRefactor.Controllers
             {
                 return BadRequest("Enter a valid WarehouseID");
             }
-
-            if (!await _locationService.IsValidLocationNameAsync(location.Name))
-            {
-                return BadRequest("Location name must follow the format: 'Row: A, Rack: 1, Shelf: 0'. Row must be between A-Z, Rack between 1-100, and Shelf between 0-10.");
+            if (!location.Name.Contains("Dock")) {
+                if (!await _locationService.IsValidLocationNameAsync(location.Name))
+                {
+                    return BadRequest("Location name must follow the format: 'Row: A, Rack: 1, Shelf: 0'. Row must be between A-Z, Rack between 1-100, and Shelf between 0-10.");
+                }
+                if (!await _locationService.IsValidLocationNameAsync(location.Name) && (!location.Name.Contains("Dock"))) {
+                    return BadRequest("Name is neither a valid Location name nor a valid Dock name.");
+                }
             }
+            if (location.Name.Contains("Dock") && !location.IsDock) {
+                return BadRequest("Location got a Dock name but location is not explicitly set to Dock");
+            }
+            
 
             var createdLocation = await _locationService.AddLocationAsync(location);
             if (createdLocation != null)
