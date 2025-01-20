@@ -39,7 +39,8 @@ public class UnitTest_Shipment
         context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
 
-        context.ItemGroups.Add(new ItemGroup {
+        context.ItemGroups.Add(new ItemGroup
+        {
             GroupId = 1,  // Ensure unique GroupId
             Name = "dummy",
             Description = "Dummy",
@@ -47,7 +48,8 @@ public class UnitTest_Shipment
             UpdatedAt = DateTime.UtcNow
         });
 
-        context.ItemGroups.Add(new ItemGroup {
+        context.ItemGroups.Add(new ItemGroup
+        {
             GroupId = 2,  // Ensure unique GroupId
             Name = "dummy2",
             Description = "Dummy2",
@@ -56,7 +58,8 @@ public class UnitTest_Shipment
         });
 
         // Seed ItemTypes with unique IDs
-        context.ItemTypes.Add(new ItemType {
+        context.ItemTypes.Add(new ItemType
+        {
             TypeId = 1,  // Ensure unique TypeId
             Name = "dummy",
             Description = "Dummy",
@@ -64,7 +67,8 @@ public class UnitTest_Shipment
             UpdatedAt = DateTime.UtcNow
         });
 
-        context.ItemTypes.Add(new ItemType {
+        context.ItemTypes.Add(new ItemType
+        {
             TypeId = 2,  // Ensure unique TypeId
             Name = "dummy2",
             Description = "Dummy2",
@@ -73,7 +77,8 @@ public class UnitTest_Shipment
         });
 
         // Seed ItemLines with unique IDs
-        context.ItemLines.Add(new ItemLine {
+        context.ItemLines.Add(new ItemLine
+        {
             LineId = 1,  // Ensure unique LineId
             Name = "dummy",
             Description = "Dummy",
@@ -81,7 +86,8 @@ public class UnitTest_Shipment
             UpdatedAt = DateTime.UtcNow
         });
 
-        context.ItemLines.Add(new ItemLine {
+        context.ItemLines.Add(new ItemLine
+        {
             LineId = 2,  // Ensure unique LineId
             Name = "dummy2",
             Description = "Dummy2",
@@ -90,7 +96,8 @@ public class UnitTest_Shipment
         });
 
         // Seed Items with unique codes and references
-        context.Items.Add(new Item {
+        context.Items.Add(new Item
+        {
             Uid = "P000001",  // Unique Item Uid
             Code = "Dummy",
             Description = "dummy",
@@ -111,7 +118,8 @@ public class UnitTest_Shipment
             UpdatedAt = DateTime.UtcNow
         });
 
-        context.Items.Add(new Item {
+        context.Items.Add(new Item
+        {
             Uid = "P000002",  // Unique Item Uid
             Code = "Dummy2",
             Description = "dummy2",
@@ -145,11 +153,11 @@ public class UnitTest_Shipment
             ContactName = "John Doe",
             ContactPhone = "555-1234",
             ContactEmail = "johndoe@example.com",
-            RestrictedClassificationsList = new List<string>{"DummyRestricted"},
+            RestrictedClassificationsList = new List<string> { "DummyRestricted" },
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         });
-        
+
         context.Locations.Add(new Location
         {
             LocationId = 1,
@@ -186,11 +194,12 @@ public class UnitTest_Shipment
             Name = "Row: C, Rack: 3, Shelf: 3",
             Code = "LOC002",
             WarehouseId = 2,
-            ItemAmounts = new Dictionary<string, int>{},
+            ItemAmounts = new Dictionary<string, int> { },
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         });
-        context.Inventories.Add(new Inventory { 
+        context.Inventories.Add(new Inventory
+        {
             InventoryId = 1,  // Ensure unique InventoryId
             ItemId = "P000001",  // Reference the unique ItemId
             Description = "dummy",
@@ -200,11 +209,12 @@ public class UnitTest_Shipment
             TotalOrdered = 1,
             TotalAllocated = 1,
             TotalAvailable = 20,
-            LocationsList = new List<int> {1, 2},
+            LocationsList = new List<int> { 1, 2 },
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         });
-        context.Inventories.Add(new Inventory { 
+        context.Inventories.Add(new Inventory
+        {
             InventoryId = 2,  // Ensure unique InventoryId
             ItemId = "P000002",  // Reference the unique ItemId
             Description = "dummy2",
@@ -212,7 +222,7 @@ public class UnitTest_Shipment
             TotalOnHand = 100,
             TotalExpected = 1,
             TotalOrdered = 1,
-            LocationsList = new List<int> {1, 2},
+            LocationsList = new List<int> { 1, 2 },
             TotalAllocated = 1,
             TotalAvailable = 20,
             CreatedAt = DateTime.UtcNow,
@@ -304,13 +314,15 @@ public class UnitTest_Shipment
             UpdatedAt = DateTime.UtcNow.AddDays(-7)
         });
 
-        context.ShipmentItems.Add(new ShipmentItem {
+        context.ShipmentItems.Add(new ShipmentItem
+        {
             ShipmentId = 1,
             ItemId = "P000001",
             Amount = 15
         });
 
-        context.ShipmentItems.Add(new ShipmentItem {
+        context.ShipmentItems.Add(new ShipmentItem
+        {
             ShipmentId = 1,
             ItemId = "P000002",
             Amount = 5
@@ -390,20 +402,28 @@ public class UnitTest_Shipment
     }
 
     [TestMethod]
-    
-    public async Task TestUpdateShipmentStatus() {
-        string updatedStatus = await _shipmentService.UpdateShipmentStatusAsync(1, "IN TRANSIT");
+    public async Task TestUpdateShipmentStatus()
+    {
+        // Act
+        string updatedStatus = await _shipmentService.UpdateShipmentStatusAsync(1, "In Transit"); // Correcte hoofdlettergevoelige status
         Console.WriteLine(updatedStatus);
-        Assert.IsTrue(updatedStatus == $"Shipment {1} status successfully updated to 'IN TRANSIT'.");
+
+        // Assert
+        Assert.IsTrue(updatedStatus == $"Shipment {1} status successfully updated to 'In Transit'.");
+
+        // Controleer wijzigingen in locaties en voorraad
         Location location1 = await _dbContext.Locations.FirstOrDefaultAsync(l => l.LocationId == 1);
         Location location2 = await _dbContext.Locations.FirstOrDefaultAsync(l => l.LocationId == 2);
         Inventory inventory1 = await _dbContext.Inventories.FirstOrDefaultAsync(l => l.InventoryId == 1);
+
         Console.WriteLine(location1.ItemAmounts["P000002"]);
         Console.WriteLine(location2.ItemAmounts["P000002"]);
         Console.WriteLine(location2.ItemAmounts["P000001"]);
+
         Assert.IsTrue(!location1.ItemAmounts.ContainsKey("P000001") && location2.ItemAmounts["P000001"] == 5);
         Assert.IsTrue(location1.ItemAmounts["P000002"] == 5 && location2.ItemAmounts["P000002"] == 10);
     }
+
 
     [TestMethod]
     [DataRow(1, true)] // Test with an existing shipment ID
