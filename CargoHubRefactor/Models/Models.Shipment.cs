@@ -24,8 +24,6 @@ public class Shipment
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
-    public Warehouse? SourceWarehouse { get; set; }
-
     [NotMapped] // This ensures that this property is not mapped to the database
     public List<string> OrderIdsList
     {

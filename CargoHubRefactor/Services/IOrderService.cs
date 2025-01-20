@@ -55,5 +55,5 @@ public interface IOrderService
 
     Task<bool> DeleteOrderAsync(int orderId);
     Task<bool> SoftDeleteOrderAsync(int orderId);
-    Task<Dictionary<string, List<Location>>> GetLocationsForOrderItemsAsync(int orderId);
+    Task<Dictionary<string, Dictionary<int, int>>> GetLocationsForOrderItemsAsync(int orderId);
 }

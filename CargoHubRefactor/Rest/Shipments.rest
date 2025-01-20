@@ -18,8 +18,10 @@ Content-Type: application/json
 POST http://localhost:5000/api/v1/shipments
 ApiToken: A1B2C3D4
 Content-Type: application/json
+ApiToken: A1B2C3D4
 
 {
+
   "orderId": "5,6,3",
   "sourceId": 1,
   "orderDate": "2024-12-13T00:00:00",
@@ -35,6 +37,7 @@ Content-Type: application/json
   "transferMode": "Air",
   "totalPackageCount": 5,
   "totalPackageWeight": 100.5
+
 }
 
 ###

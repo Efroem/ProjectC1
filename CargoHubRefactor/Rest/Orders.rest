@@ -168,3 +168,4 @@ DELETE http://localhost:5000/api/v1/Orders/1
 ####
 
 GET http://localhost:5000/api/v1/orders/1/locations
+ApiToken: A1B2C3D4

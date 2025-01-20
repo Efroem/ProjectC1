@@ -208,25 +208,38 @@ public class OrderService : IOrderService
         return true;
     }
 
-    public async Task<Dictionary<string, List<Location>>> GetLocationsForOrderItemsAsync(int orderId)
+    public async Task<Dictionary<string, Dictionary<int, int>>> GetLocationsForOrderItemsAsync(int orderId)
     {
-        // // Get the order including its items
-        // var order = await _context.Orders
-        //     .Include(o => o.Items)
-        //     .FirstOrDefaultAsync(o => o.Id == orderId);
+        Dictionary<string, Dictionary<int, int>> itemsWithLocations = new Dictionary<string, Dictionary<int, int>>();
+        // Get the order including its items
+        var order = await _context.Orders
+            .FirstOrDefaultAsync(o => o.Id == orderId);
 
-        // if (order == null || order.Items == null || !order.Items.Any())
-        //     return null;
+        var orderItems = await _context.OrderItems.Where(o => o.OrderId == orderId).ToListAsync();
 
-        // // Extract item UIDs from the order
-        // var ItemIds = order.Items.Select(i => i.ItemId).ToList();
+        if (order == null || orderItems.IsNullOrEmpty())
+            return null;
 
-        // // Fetch locations where these items exist
-        // var locations = await _context.Locations
+        // Extract item UIDs from the order
+        var ItemIds = orderItems.Select(i => i.ItemId).ToList();
+
+        foreach(string itemId in ItemIds) {
+            Dictionary<int, int> locationWithAmount = new Dictionary<int, int>();
+            var locations = await _context.Locations.Where(l => l.ItemAmountsString.Contains(itemId) && l.WarehouseId == order.WarehouseId).ToListAsync();
+            if (locations.IsNullOrEmpty()) continue;
+            itemsWithLocations.Add(itemId, new Dictionary<int, int>());
+            foreach(Location location in locations) {
+                itemsWithLocations[itemId].Add(location.LocationId, location.ItemAmounts[itemId]);
+            }
+        }
+        return itemsWithLocations;
+        // Fetch locations where these items exist
+        // var locations = await _context.Locations.Where(l => l.ItemAmounts.ContainsKey(ItemId))
+        // = await _context.Locations
         //     .Where(l => l.ItemAmounts.Keys.Any(uid => ItemIds.Contains(uid)))
         //     .ToListAsync();
 
-        // // Group locations by item UID
+        // Group locations by item UID
         // var groupedLocations = locations
         //     .SelectMany(l => l.ItemAmounts
         //         .Where(kvp => ItemIds.Contains(kvp.Key))
@@ -235,7 +248,7 @@ public class OrderService : IOrderService
         //     .ToDictionary(g => g.Key, g => g.Select(x => x.Location).ToList());
 
         // return groupedLocations;
-        return null;
+        // return null;
     }
 
 }

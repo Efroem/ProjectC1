@@ -113,13 +113,6 @@ public class CargoHubDbContext : DbContext
             .HasForeignKey(t => t.TransferTo)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Shipment - Warehouse (Many-to-One)
-        modelBuilder.Entity<Shipment>()
-            .HasOne(s => s.SourceWarehouse)
-            .WithMany()
-            .HasForeignKey(s => s.SourceId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         // ShipmentItem - Shipment (Many-to-One)
         modelBuilder.Entity<ShipmentItem>()
             .HasOne(si => si.Shipment)
