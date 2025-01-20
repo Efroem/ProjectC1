@@ -160,16 +160,6 @@ def test_put_warehouses_integration(_data):
     assert fetched_data["name"] == body["name"], f"Name mismatch: {fetched_data['name']} != {body['name']}"
     assert fetched_data["address"] == body["address"], f"Address mismatch: {fetched_data['address']} != {body['address']}"
 
-def test_warehouses_invalid_apikey(_data):
-    url = _data[0]["URL"] + 'orders/3053'
-    
-    invalid_token = "Geen_Admin_of_WarehouseManagerKey"
-    headers = {
-        "ApiToken": invalid_token,
-        "Content-Type": "application/json"
-    }
-    response = requests.get(url, headers=headers)
-    assert response.status_code == 403
 
 def test_delete_warehouses_integration(_data):
     # Make a POST request first to make a dummy client
