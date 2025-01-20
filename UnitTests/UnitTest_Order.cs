@@ -28,8 +28,7 @@ public class UnitTest_Order
         context.Database.EnsureCreated();
 
         // Seed ItemGroups with unique IDs
-        context.ItemGroups.Add(new ItemGroup
-        {
+        context.ItemGroups.Add(new ItemGroup {
             GroupId = 1,  // Ensure unique GroupId
             Name = "dummy",
             Description = "Dummy",
@@ -37,8 +36,7 @@ public class UnitTest_Order
             UpdatedAt = DateTime.UtcNow
         });
 
-        context.ItemGroups.Add(new ItemGroup
-        {
+        context.ItemGroups.Add(new ItemGroup {
             GroupId = 2,  // Ensure unique GroupId
             Name = "dummy2",
             Description = "Dummy2",
@@ -47,8 +45,7 @@ public class UnitTest_Order
         });
 
         // Seed ItemTypes with unique IDs
-        context.ItemTypes.Add(new ItemType
-        {
+        context.ItemTypes.Add(new ItemType {
             TypeId = 1,  // Ensure unique TypeId
             Name = "dummy",
             Description = "Dummy",
@@ -56,8 +53,7 @@ public class UnitTest_Order
             UpdatedAt = DateTime.UtcNow
         });
 
-        context.ItemTypes.Add(new ItemType
-        {
+        context.ItemTypes.Add(new ItemType {
             TypeId = 2,  // Ensure unique TypeId
             Name = "dummy2",
             Description = "Dummy2",
@@ -66,8 +62,7 @@ public class UnitTest_Order
         });
 
         // Seed ItemLines with unique IDs
-        context.ItemLines.Add(new ItemLine
-        {
+        context.ItemLines.Add(new ItemLine {
             LineId = 1,  // Ensure unique LineId
             Name = "dummy",
             Description = "Dummy",
@@ -75,8 +70,7 @@ public class UnitTest_Order
             UpdatedAt = DateTime.UtcNow
         });
 
-        context.ItemLines.Add(new ItemLine
-        {
+        context.ItemLines.Add(new ItemLine {
             LineId = 2,  // Ensure unique LineId
             Name = "dummy2",
             Description = "Dummy2",
@@ -85,8 +79,7 @@ public class UnitTest_Order
         });
 
         // Seed Items with unique codes and references
-        context.Items.Add(new Item
-        {
+        context.Items.Add(new Item {
             Uid = "P000001",  // Unique Item Uid
             Code = "Dummy",
             Description = "dummy",
@@ -109,8 +102,7 @@ public class UnitTest_Order
             UpdatedAt = DateTime.UtcNow
         });
 
-        context.Items.Add(new Item
-        {
+        context.Items.Add(new Item {
             Uid = "P000002",  // Unique Item Uid
             Code = "Dummy2",
             Description = "dummy2",
@@ -270,12 +262,11 @@ public class UnitTest_Order
             Name = "Row: C, Rack: 3, Shelf: 3",
             Code = "LOC002",
             WarehouseId = 2,
-            ItemAmounts = new Dictionary<string, int> { },
+            ItemAmounts = new Dictionary<string, int>{},
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         });
-        context.Inventories.Add(new Inventory
-        {
+        context.Inventories.Add(new Inventory { 
             InventoryId = 1,  // Ensure unique InventoryId
             ItemId = "P000001",  // Reference the unique ItemId
             Description = "dummy",
@@ -285,12 +276,11 @@ public class UnitTest_Order
             TotalOrdered = 1,
             TotalAllocated = 1,
             TotalAvailable = 20,
-            LocationsList = new List<int> { 1, 2 },
+            LocationsList = new List<int> {1, 2},
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         });
-        context.Inventories.Add(new Inventory
-        {
+        context.Inventories.Add(new Inventory { 
             InventoryId = 2,  // Ensure unique InventoryId
             ItemId = "P000002",  // Reference the unique ItemId
             Description = "dummy2",
@@ -298,7 +288,7 @@ public class UnitTest_Order
             TotalOnHand = 100,
             TotalExpected = 1,
             TotalOrdered = 1,
-            LocationsList = new List<int> { 1, 2 },
+            LocationsList = new List<int> {1, 2},
             TotalAllocated = 1,
             TotalAvailable = 20,
             CreatedAt = DateTime.UtcNow,
@@ -327,14 +317,12 @@ public class UnitTest_Order
 
     [TestMethod]
     [DataRow(1, true)]
-    public async Task TestGetLocationsForOrder(int orderId, bool expectedResult)
-    {
+    public async Task TestGetLocationsForOrder(int orderId, bool expectedResult) {
         Dictionary<string, Dictionary<int, int>> locations = await orderService.GetLocationsForOrderItemsAsync(orderId);
         Console.WriteLine(locations.Count());
         Assert.IsTrue(locations.Count() == 2);
 
-        if (locations.Count() == 2)
-        {
+        if (locations.Count() == 2) {
             Location location1 = await _dbContext.Locations.FirstOrDefaultAsync(l => l.LocationId == 1);
             Location location2 = await _dbContext.Locations.FirstOrDefaultAsync(l => l.LocationId == 2);
             Assert.AreEqual(expectedResult, locations["P000001"][1] == location1.ItemAmounts["P000001"]);
@@ -343,103 +331,134 @@ public class UnitTest_Order
             Assert.AreEqual(expectedResult, locations["P000002"][2] == location2.ItemAmounts["P000002"]);
         }
 
-
-    }
+        
+    } 
 
     [TestMethod]
-    [DataRow(0, true)]  // Geen orderitems: verwacht succesvolle order (lege lijst)
-    [DataRow(1, true)]  // Geldige items: verwacht succesvolle order
-    [DataRow(2, false)] // Ongeldig item: verwacht fout
-    public void TestAddOrder(int orderItemListId, bool expectedResult)
+    [DataRow(0, true)]
+    [DataRow(1, true)]
+    [DataRow(2, false)]
+  
+    public void TestAddOrder(int OrderItemListId, bool expectedResult)
     {
-        int orderItemAmountBefore = _dbContext.OrderItems.Any() ? _dbContext.OrderItems.Count() : 0;
-
-        List<List<OrderItem>> orderItemLists = new List<List<OrderItem>> {
-        new List<OrderItem>(), // Geen items
-        new List<OrderItem> {
-            new OrderItem { ItemId = "P000001", Amount = 5 },
-            new OrderItem { ItemId = "P000002", Amount = 3 }
-        },
-        new List<OrderItem> {
-            new OrderItem { ItemId = "P000001", Amount = 5 },
-            new OrderItem { ItemId = "Invalid", Amount = 3 } // Ongeldig item
-        }
-    };
-
-        try
+        int orderItemAmountBefore;
+        if (_dbContext.OrderItems.Any())
         {
-            var newOrder = orderService.AddOrderAsync(
-                sourceId: 2,
-                orderDate: DateTime.UtcNow.AddDays(-7),
-                requestDate: DateTime.UtcNow.AddDays(-3),
-                reference: "ORD-12345 Test",
-                referenceExtra: "Special handling required Test",
-                notes: "Test notes.",
-                shippingNotes: "Test shipping notes.",
-                pickingNotes: "Test picking notes.",
-                warehouseId: 5,
-                shipTo: 2001,
-                billTo: 2002,
-                shipmentId: 3001,
-                totalDiscount: 50.00,
-                totalTax: 25.50,
-                totalSurcharge: 10.00,
-                orderItems: orderItemLists[orderItemListId]
-            ).Result;
-
-            int orderItemAmountAfter = _dbContext.OrderItems.Count();
-
-            // Assert order is created if expected
-            Assert.AreEqual(expectedResult, newOrder != null);
-            Assert.AreEqual(expectedResult ? orderItemAmountBefore + orderItemLists[orderItemListId].Count : orderItemAmountBefore, orderItemAmountAfter);
+            orderItemAmountBefore = _dbContext.OrderItems.Max(l => l.Id);
         }
-        catch
+        else
         {
-            Assert.IsFalse(expectedResult);
+            orderItemAmountBefore = 0;
+        }
+        List<List<OrderItem>> OrderItemLists = new List<List<OrderItem>>() {
+            new List<OrderItem>() {},
+            new List<OrderItem>{
+                new OrderItem{
+                    ItemId = "P000001",
+                    Amount = 5
+                },
+                new OrderItem{
+                    ItemId = "P000002",
+                    Amount = 3
+                }
+            },
+            new List<OrderItem>{
+                new OrderItem{
+                    ItemId = "P000001",
+                    Amount = 5
+                },
+                new OrderItem{
+                    ItemId = "Invalid",
+                    Amount = 3
+                }
+            }
+        };
+
+        var newOrder = orderService.AddOrderAsync(
+            sourceId: 2,
+            orderDate: DateTime.UtcNow.AddDays(-7),
+            requestDate: DateTime.UtcNow.AddDays(-3),
+            reference: "ORD-12345 Test",
+            referenceExtra: "Special handling required Test",
+            orderStatus: "Processing Test",
+            notes: "Customer prefers expedited shipping Ttest.",
+            shippingNotes: "Fragile items. Handle with care. Test",
+            pickingNotes: "Verify quantities before packing. Test",
+            warehouseId: 5,
+            shipTo: 2001,
+            billTo: 2002,
+            shipmentId: 3001,
+            totalAmount: 500.75,
+            totalDiscount: 50.00,
+            totalTax: 25.50,
+            totalSurcharge: 10.00,
+            orderItems: OrderItemLists[OrderItemListId]
+        ).Result;
+
+        int orderItemAmountAfter;
+        if (_dbContext.OrderItems.Any())
+        {
+            orderItemAmountAfter = _dbContext.OrderItems.Max(l => l.Id);
+        }
+        else
+        {
+            orderItemAmountAfter = 0;
+        }
+
+        Console.WriteLine($"Before: {orderItemAmountBefore}, After: {orderItemAmountAfter}");
+
+        Assert.IsNotNull(newOrder);
+        Assert.AreEqual(2, _dbContext.Orders.Count());
+        switch (OrderItemListId) {
+            case 0:
+                break;
+            case 1: 
+                Assert.IsTrue(orderItemAmountBefore + 2 == orderItemAmountAfter);
+                break;
+            case 2:
+                Assert.IsTrue(orderItemAmountBefore + 1 == orderItemAmountAfter);
+                break;
         }
     }
 
-
     [TestMethod]
-    [DataRow(1, "Fragile items. Handle with care. Updated", true)]  // Bestaande order
-    [DataRow(999, "Nonexistent", false)]                           // Niet-bestaande order
+    [DataRow(1, "Fragile items. Handle with care. Updated" , true)]
+    [DataRow(999, "Nonexistent", false)]
     public void TestUpdateOrder(int orderId, string updatedShipmentNotes, bool expectedResult)
     {
         try
         {
             var updatedOrder = orderService.UpdateOrderAsync(
-                id: orderId,
+                id: orderId, 
                 sourceId: 2,
                 orderDate: DateTime.UtcNow.AddDays(-7),
                 requestDate: DateTime.UtcNow.AddDays(-3),
                 reference: "ORD-12345 Updated",
                 referenceExtra: "Special handling required Updated",
-                orderStatus: "InProgress", // Correcte status
-                notes: "Updated notes.",
+                orderStatus: "Processing Updated",
+                notes: "Customer prefers expedited shipping Updated.",
                 shippingNotes: updatedShipmentNotes,
-                pickingNotes: "Updated picking notes.",
+                pickingNotes: "Verify quantities before packing. Updated",
                 warehouseId: 5,
                 shipTo: 2001,
                 billTo: 2002,
                 shipmentId: 3001,
+                totalAmount: 500.75,
                 totalDiscount: 50.00,
                 totalTax: 25.50,
                 totalSurcharge: 10.00
-            ).Result;
+            );
 
-            Assert.AreEqual(expectedResult, updatedOrder != null);
-            if (expectedResult)
-            {
-                Assert.AreEqual(updatedShipmentNotes, updatedOrder.ShippingNotes);
+            Assert.AreEqual(updatedOrder.Result != null, expectedResult);
+            if (updatedOrder.Result != null) {
+                Assert.AreEqual(updatedShipmentNotes == updatedOrder.Result.ShippingNotes, expectedResult);
             }
         }
-        catch (InvalidOperationException ex)
+        catch (KeyNotFoundException)
         {
-            Console.WriteLine(ex.Message);
             Assert.IsFalse(expectedResult);
         }
     }
-
 
     [TestMethod]
     [DataRow(1, true)]

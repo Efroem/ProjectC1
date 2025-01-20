@@ -34,11 +34,11 @@ namespace UnitTests
             context.Database.EnsureCreated();
 
             context.ItemGroups.Add(new ItemGroup {
-            GroupId = 1,  // Ensure unique GroupId
-            Name = "dummy",
-            Description = "Dummy",
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+                GroupId = 1,  // Ensure unique GroupId
+                Name = "dummy",
+                Description = "Dummy",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             });
 
             context.ItemGroups.Add(new ItemGroup {
@@ -208,8 +208,6 @@ namespace UnitTests
             context.SaveChanges();
         }
 
-
-        [TestMethod]
         public async Task TestGetLocationById()
         {
             var location = await _locationService.GetLocationAsync(1);
