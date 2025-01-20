@@ -215,6 +215,7 @@ public class OrderService : IOrderService
         var order = await _context.Orders
             .FirstOrDefaultAsync(o => o.Id == orderId);
 
+
         var orderItems = await _context.OrderItems.Where(o => o.OrderId == orderId).ToListAsync();
 
         if (order == null || orderItems.IsNullOrEmpty())
@@ -233,22 +234,6 @@ public class OrderService : IOrderService
             }
         }
         return itemsWithLocations;
-        // Fetch locations where these items exist
-        // var locations = await _context.Locations.Where(l => l.ItemAmounts.ContainsKey(ItemId))
-        // = await _context.Locations
-        //     .Where(l => l.ItemAmounts.Keys.Any(uid => ItemIds.Contains(uid)))
-        //     .ToListAsync();
-
-        // Group locations by item UID
-        // var groupedLocations = locations
-        //     .SelectMany(l => l.ItemAmounts
-        //         .Where(kvp => ItemIds.Contains(kvp.Key))
-        //         .Select(kvp => new { ItemId = kvp.Key, Location = l }))
-        //     .GroupBy(x => x.ItemId)
-        //     .ToDictionary(g => g.Key, g => g.Select(x => x.Location).ToList());
-
-        // return groupedLocations;
-        // return null;
     }
 
 }

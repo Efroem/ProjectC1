@@ -198,7 +198,7 @@ public class UnitTest_Order
             Notes = "Customer prefers expedited shipping.",
             ShippingNotes = "Fragile items. Handle with care.",
             PickingNotes = "Verify quantities before packing.",
-            WarehouseId = 5,
+            WarehouseId = 1,
             ShipTo = 2001,
             BillTo = 2002,
             ShipmentId = 3001,
@@ -214,7 +214,7 @@ public class UnitTest_Order
         {
             Id = 1,
             OrderId = 1, // This links the OrderItem to the Order with Id 1
-            ItemId = "ITEM-001", // Example ItemId, adjust as needed
+            ItemId = "P000001", // Example ItemId, adjust as needed
             Amount = 10 // Example quantity, adjust as needed
         });
 
@@ -222,8 +222,77 @@ public class UnitTest_Order
         {
             Id = 2,
             OrderId = 1, // This links the OrderItem to the Order with Id 1
-            ItemId = "ITEM-001", // Example ItemId, adjust as needed
+            ItemId = "P000002", // Example ItemId, adjust as needed
             Amount = 15 // Example quantity, adjust as needed
+        });
+
+        context.Locations.Add(new Location
+        {
+            LocationId = 1,
+            Name = "Row: A, Rack: 1, Shelf: 1",
+            Code = "LOC001",
+            WarehouseId = 1,
+            ItemAmounts = new Dictionary<string, int>{
+                {"P000001", 10},
+                {"P000002", 10}
+            },
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        context.Locations.Add(new Location
+        {
+            LocationId = 2,
+            Name = "Row: B, Rack: 2, Shelf: 2",
+            Code = "LOC002",
+            ItemAmounts = new Dictionary<string, int>{
+                {"P000001", 10},
+                {"P000002", 10}
+            },
+            WarehouseId = 1,
+            MaxHeight = 100,
+            MaxWidth = 20,
+            MaxDepth = 20,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+        context.Locations.Add(new Location
+        {
+            LocationId = 3,
+            Name = "Row: C, Rack: 3, Shelf: 3",
+            Code = "LOC002",
+            WarehouseId = 2,
+            ItemAmounts = new Dictionary<string, int>{},
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+        context.Inventories.Add(new Inventory { 
+            InventoryId = 1,  // Ensure unique InventoryId
+            ItemId = "P000001",  // Reference the unique ItemId
+            Description = "dummy",
+            ItemReference = "dummy",
+            TotalOnHand = 100,
+            TotalExpected = 1,
+            TotalOrdered = 1,
+            TotalAllocated = 1,
+            TotalAvailable = 20,
+            LocationsList = new List<int> {1, 2},
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+        context.Inventories.Add(new Inventory { 
+            InventoryId = 2,  // Ensure unique InventoryId
+            ItemId = "P000002",  // Reference the unique ItemId
+            Description = "dummy2",
+            ItemReference = "dummy2",
+            TotalOnHand = 100,
+            TotalExpected = 1,
+            TotalOrdered = 1,
+            LocationsList = new List<int> {1, 2},
+            TotalAllocated = 1,
+            TotalAvailable = 20,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         });
 
 
@@ -246,8 +315,24 @@ public class UnitTest_Order
         Assert.AreEqual(exists, order.Result != null);
     }
 
-    // [TestMethod]
-    // public void 
+    [TestMethod]
+    [DataRow(1, true)]
+    public async Task TestGetLocationsForOrder(int orderId, bool expectedResult) {
+        Dictionary<string, Dictionary<int, int>> locations = await orderService.GetLocationsForOrderItemsAsync(orderId);
+        Console.WriteLine(locations.Count());
+        Assert.IsTrue(locations.Count() == 2);
+
+        if (locations.Count() == 2) {
+            Location location1 = await _dbContext.Locations.FirstOrDefaultAsync(l => l.LocationId == 1);
+            Location location2 = await _dbContext.Locations.FirstOrDefaultAsync(l => l.LocationId == 2);
+            Assert.AreEqual(expectedResult, locations["P000001"][1] == location1.ItemAmounts["P000001"]);
+            Assert.AreEqual(expectedResult, locations["P000001"][2] == location2.ItemAmounts["P000001"]);
+            Assert.AreEqual(expectedResult, locations["P000002"][1] == location1.ItemAmounts["P000002"]);
+            Assert.AreEqual(expectedResult, locations["P000002"][2] == location2.ItemAmounts["P000002"]);
+        }
+
+        
+    } 
 
     [TestMethod]
     [DataRow(0, true)]
