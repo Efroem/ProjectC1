@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # Fixture to provide URL and AdminApiToken
 @pytest.fixture
 def _data():
-    return [{'URL': 'http://localhost:5000/api/v1/', 'AdminApiToken': 'A1B2C3D4'}]
+    return [{'URL': 'http://localhost:5000/api/v1/', 'AdminApiToken': 'A1B2C3D4', 'WarehouseMangerToken': 'K11L12M13'}]
 
 # Helper function to get headers with AdminApiToken
 def get_headers(admin_api_token):
@@ -111,8 +111,11 @@ def test_post_invalid_classifications_integration(_data):
 
 def test_put_warehouses_integration(_data):
     url = _data[0]["URL"] + 'Warehouses/1'
-    admin_api_token = _data[0]["AdminApiToken"]  # Extract token from the fixture
+    admin_api_token = _data[0]["AdminApiToken"] 
+    warehousemanager_api_token = _data[0]["WarehouseMangerToken"]
     headers = get_headers(admin_api_token)
+    headers2 = get_headers(warehousemanager_api_token)
+
     
     body = {
         "code": "WH0010",
@@ -135,7 +138,7 @@ def test_put_warehouses_integration(_data):
     print(f"Original Data: {original_data}")
 
     # Send a PUT request to update the warehouse
-    put_response = requests.put(url, json=body, headers=headers)
+    put_response = requests.put(url, json=body, headers=headers2)
     assert put_response.status_code == 200, "PUT request failed"
     updated_data = put_response.json()
     print(f"Updated Data: {updated_data}")
@@ -147,7 +150,7 @@ def test_put_warehouses_integration(_data):
     print(f"Fetched Data: {fetched_data}")
 
     # Restore the original warehouse data
-    restore_response = requests.put(url, json=original_data, headers=headers)
+    restore_response = requests.put(url, json=original_data, headers=headers2)
     assert restore_response.status_code == 200, "Failed to restore original warehouse data"
     restored_data = restore_response.json()
     print(f"Restored Data: {restored_data}")
@@ -156,6 +159,7 @@ def test_put_warehouses_integration(_data):
     assert fetched_data["warehouseId"] == 1, "Warehouse ID mismatch"
     assert fetched_data["name"] == body["name"], f"Name mismatch: {fetched_data['name']} != {body['name']}"
     assert fetched_data["address"] == body["address"], f"Address mismatch: {fetched_data['address']} != {body['address']}"
+
 
 def test_delete_warehouses_integration(_data):
     # Make a POST request first to make a dummy client
