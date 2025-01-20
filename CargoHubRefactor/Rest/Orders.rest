@@ -147,7 +147,7 @@ ApiToken: E5F6G7
   "RequestDate": "2025-01-07T00:00:00",
   "Reference": "Order123",
   "ReferenceExtra": "Some extra reference",
-  "OrderStatus": "New",
+  "OrderStatus": "Delivered",
   "Notes": "Some notes",
   "ShippingNotes": "Shipping instructions",
   "PickingNotes": "Picking instructions",

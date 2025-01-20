@@ -104,7 +104,7 @@ def test_put_orders_integration_FloorManagerAPIkey(_data):
     "requestDate": "2024-12-12T10:00:00Z",
     "reference": "ORD12347",
     "referenceExtra": "EXTRA125",
-    "orderStatus": "Pending",
+    "orderStatus": "Delivered",
     "notes": "Handle with care",
     "shippingNotes": "No special instructions",
     "pickingNotes": "Pick all items",
