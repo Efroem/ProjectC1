@@ -172,6 +172,14 @@ public class ShipmentService : IShipmentService
         shipment.ShipmentStatus = newStatus;
         shipment.UpdatedAt = DateTime.UtcNow;
 
+        List<int> warehouseIds = new List<int>();
+        foreach (string orderId in shipment.OrderIdsList) {
+            int orderIdInt = Convert.ToInt32(orderId);
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderIdInt);
+            if (order == null) continue;
+            warehouseIds.Add(order.WarehouseId);
+        }
+
         if (newStatus == "IN TRANSIT")
         {
             //pak je shipmentitems van de shipment
@@ -195,6 +203,22 @@ public class ShipmentService : IShipmentService
                         inventory.TotalAvailable -= shipmentItem.Amount; //Reduce available inventory
                         inventory.TotalOnHand -= shipmentItem.Amount;     //Decrease total on hand as well
                         inventory.UpdatedAt = DateTime.UtcNow;            //Update de datum 
+
+                        int amountToRemove = shipmentItem.Amount;
+                        foreach (int locationId in inventory.Locations) {
+                            var location = await _context.Locations.FirstOrDefaultAsync(i => i.LocationId == locationId && warehouseIds.Contains(i.WarehouseId));
+                            if (location == null) continue;
+                            if (location.ItemAmounts[shipmentItem.ItemId] < amountToRemove) {
+                                int amountToSubtract = location.ItemAmounts[shipmentItem.ItemId];
+                                location.ItemAmounts[shipmentItem.ItemId] = 0;
+                                amountToRemove = amountToSubtract;
+                            }
+                            else {
+                                location.ItemAmounts[shipmentItem.ItemId] -= amountToRemove;
+                                amountToRemove = 0;
+                            }
+                            _context.Locations.Update(location);
+                        }
 
                         //update in database
                         _context.Inventories.Update(inventory);
