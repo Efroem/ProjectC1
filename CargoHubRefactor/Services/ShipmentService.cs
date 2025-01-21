@@ -119,6 +119,16 @@ public class ShipmentService : IShipmentService
         {
             return "Shipment not found.";
         }
+        
+        if (existingShipment.ShipmentStatus != "Pending")
+        {
+            return $"Only shipments with status 'Pending' can be updated. Current status is '{existingShipment.ShipmentStatus}'.";
+        }
+
+        if (shipment.ShipmentStatus != existingShipment.ShipmentStatus)
+        {
+            return $"ShipmentStatus cannot be updated using this method. Leave the ShipmentStatus field on {existingShipment.ShipmentStatus} to update. To update the status, use the /status endpoint instead.";
+        }
 
         //update shipment
         existingShipment.OrderId = string.Join(",", shipment.OrderIdsList); // Update orderids as comma-separated string
@@ -202,6 +212,20 @@ public class ShipmentService : IShipmentService
             return $"Invalid status. Allowed statuses: {string.Join(", ", validStatuses)}.";
         }
 
+        if (shipment.ShipmentStatus == "Pending" && newStatus != "In Transit")
+        {
+            return "You can only update a 'Pending' shipment to 'In Transit'.";
+        }
+
+        if (shipment.ShipmentStatus == "In Transit" && newStatus != "Delivered")
+        {
+            return "You can only update an 'In Transit' shipment to 'Delivered'.";
+        }
+
+        if (shipment.ShipmentStatus == "In Transit" || shipment.ShipmentStatus == "Delivered")
+        {
+            return $"Cannot update a shipment that is already '{shipment.ShipmentStatus}'.";
+        }
 
         //update the shipment status in de shipment zelf
         shipment.ShipmentStatus = newStatus;
