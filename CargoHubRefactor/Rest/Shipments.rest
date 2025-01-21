@@ -91,12 +91,12 @@ Content-Type: application/json
 }
 ###
 //update status van shipment en update automatisch the inventory voor de items in de shipment
-PUT http://localhost:5000/api/v1/shipments/10106/status
+PUT http://localhost:5000/api/v1/shipments/1/status
 ApiToken: A1B2C3D4
 Content-Type: application/json
 
 {
-  "Status": "IN TRANSIT"
+  "Status": "In Transit"
 }
 
 ###
