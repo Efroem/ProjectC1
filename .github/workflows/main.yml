@@ -148,3 +148,5 @@ jobs:
         name: coverage-report
         path: coverage-report
       
+    - name: Display Coverage XML
+      run: cat coverage/coverage.cobertura.xml
