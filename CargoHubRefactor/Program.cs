@@ -131,7 +131,6 @@ namespace CargoHubRefactor
             using (var scope = app.Services.CreateScope())
             {
                 var setupItems = scope.ServiceProvider.GetRequiredService<SetupItems>();
-                await setupItems.GetItemCategoryRelations();
             }
 
             await app.RunAsync();

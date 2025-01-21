@@ -166,9 +166,9 @@ public class OrderService : IOrderService
         }
 
         // Restrict OrderStatus updates
-        if (orderStatus != "InProgress" && orderStatus != "Delivered")
+        if (orderStatus != "InProgress" && orderStatus != "Delivered" && orderStatus != "Pending")
         {
-            throw new InvalidOperationException("OrderStatus can only be updated to 'InProgress' or 'Delivered'.");
+            throw new InvalidOperationException("OrderStatus can only be updated to 'Pending', 'InProgress' or 'Delivered'.");
         }
 
         order.SourceId = sourceId;
