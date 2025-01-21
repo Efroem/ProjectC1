@@ -240,13 +240,14 @@ public class ShipmentService : IShipmentService
                         inventory.UpdatedAt = DateTime.UtcNow;            //Update de datum 
 
                         int amountToRemove = shipmentItem.Amount;
-                        foreach (int locationId in inventory.LocationsList) {
+                        List<int> locationIds = new List<int>(inventory.LocationsList);
+                        foreach (int locationId in locationIds) {
                             var location = await _context.Locations.FirstOrDefaultAsync(i => i.LocationId == locationId /*&& warehouseIds.Contains(i.WarehouseId)*/);
                             if (location == null) continue;
                             if (location.ItemAmounts[shipmentItem.ItemId] < amountToRemove) {
                                 int amountToSubtract = location.ItemAmounts[shipmentItem.ItemId];
                                 location.ItemAmounts.Remove(shipmentItem.ItemId);
-                                inventory.Locations.Remove(locationId);
+                                inventory.LocationsList.Remove(locationId);
                                 _context.Inventories.Update(inventory);
                                 amountToRemove -= amountToSubtract;
                             }
@@ -255,12 +256,12 @@ public class ShipmentService : IShipmentService
                                 amountToRemove = 0;
                             }
                             _context.Locations.Update(location);
-                            await _context.SaveChangesAsync();
+                            // await _context.SaveChangesAsync();
                         }
 
                         //update in database
                         _context.Inventories.Update(inventory);
-                        await _context.SaveChangesAsync();
+                        // await _context.SaveChangesAsync();
                     }
                     else
                     {
