@@ -147,6 +147,11 @@ jobs:
       with:
         name: coverage-report
         path: coverage-report
-      
-    - name: Display Coverage XML
-      run: cat coverage/coverage.cobertura.xml
+
+    - name: Debug List Files in Coverage Directory
+      run: |
+        echo "Contents of the coverage directory:"
+        ls -R coverage || echo "Coverage directory does not exist."
+      working-directory: UnitTests
+    # - name: Display Coverage XML
+    #   run: cat coverage/coverage.cobertura.xml
