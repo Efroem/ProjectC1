@@ -28,6 +28,20 @@ def test_get_item_types_integration(_data):
     # Verify that the status code is 200 (OK)
     assert status_code == 200 and len(response_data) >= 1
 
+
+def test_item_types_invalid_apikey(_data):
+    url = _data[0]["URL"] + 'Item_Types/1'
+    
+    invalid_token = "INVALID_API_KEY"
+    headers = {
+        "ApiToken": invalid_token,
+        "Content-Type": "application/json"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    assert response.status_code == 403
+
 def test_get_item_types_by_id_integration(_data):
     url = _data[0]["URL"] + 'Item_Types/1'
     headers = get_headers(_data[0]["AdminApiToken"])

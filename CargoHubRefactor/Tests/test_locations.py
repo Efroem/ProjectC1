@@ -105,6 +105,19 @@ def test_put_locations_integration(_data):
 #     else:
 #         print("Resource with ID not found.")
 
+def test_locations_invalid_apikey(_data):
+    url = _data[0]["URL"] + 'Locations/1'
+    
+    invalid_token = "INVALID_API_KEY"
+    headers = {
+        "ApiToken": invalid_token,
+        "Content-Type": "application/json"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    assert response.status_code == 403
+
 def test_delete_locations_integration(_data):
     # Make a POST request first to make a dummy client
     url = _data[0]["URL"] + 'Locations/1'

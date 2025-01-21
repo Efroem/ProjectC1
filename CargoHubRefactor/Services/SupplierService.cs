@@ -20,6 +20,11 @@ namespace Services
             return await _context.Suppliers.ToListAsync();
         }
 
+        public async Task<IEnumerable<Supplier>> GetAllSuppliersAsync(int limit)
+        {
+            return await _context.Suppliers.Take(limit).ToListAsync();
+        }
+
         public async Task<Supplier> GetSupplierByIdAsync(int id)
         {
             return await _context.Suppliers.FindAsync(id);

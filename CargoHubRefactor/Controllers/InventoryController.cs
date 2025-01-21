@@ -16,6 +16,18 @@ namespace CargoHubRefactor.Controllers{
             _InventoryService = InventoryService;
         }
 
+        [HttpGet("{inventoryId}")]
+        public async Task<ActionResult> GetInventoryById(int inventoryId)
+        {
+            var inventory = _InventoryService.GetInventoryByIdAsync(inventoryId);
+            if (inventory.Result == null)
+            {
+                return NotFound($"Inventory with ID {inventoryId} not found.");
+            }
+
+            return Ok(inventory);
+        }
+
         [HttpGet]
         public async Task<ActionResult> GetInventories()
         {
@@ -63,17 +75,6 @@ namespace CargoHubRefactor.Controllers{
             return Ok(inventories);
         }
 
-        [HttpGet("{inventoryId}")]
-        public async Task<ActionResult> GetInventoryById(int inventoryId)
-        {
-            var inventory = _InventoryService.GetInventoryByIdAsync(inventoryId);
-            if (inventory.Result == null)
-            {
-                return NotFound($"Inventory with ID {inventoryId} not found.");
-            }
-
-            return Ok(inventory);
-        }
 
         [HttpPost]
         public async Task<ActionResult> AddInventory([FromBody] Inventory Inventory)

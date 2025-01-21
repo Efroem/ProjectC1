@@ -15,6 +15,17 @@ namespace CargoHubRefactor.Controllers
             _warehouseService = warehouseService;
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Warehouse>> GetWarehouseById(int id)
+        {
+            var warehouse = await _warehouseService.GetWarehouseByIdAsync(id);
+            if (warehouse == null)
+            {
+                return NotFound("No Warehouses found.");
+            }
+            return Ok(warehouse);
+        }
+
         [HttpGet]
         public async Task<ActionResult<List<Warehouse>>> GetAllWarehouses()
         {
@@ -53,17 +64,6 @@ namespace CargoHubRefactor.Controllers
             }
 
             return Ok(warehouses);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Warehouse>> GetWarehouseById(int id)
-        {
-            var warehouse = await _warehouseService.GetWarehouseByIdAsync(id);
-            if (warehouse == null)
-            {
-                return NotFound("No Warehouses found.");
-            }
-            return Ok(warehouse);
         }
 
         [HttpPost]

@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 
-namespace CargoHubRefactor.Controllers {
+namespace CargoHubRefactor.Controllers
+{
     [ServiceFilter(typeof(Filters))]
     [Route("api/v1/shipments")]
     [ApiController]
@@ -16,6 +17,18 @@ namespace CargoHubRefactor.Controllers {
         public ShipmentController(IShipmentService shipmentService)
         {
             _shipmentService = shipmentService;
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Shipment>> GetShipmentById(int id)
+        {
+            var shipment = await _shipmentService.GetShipmentByIdAsync(id);
+            if (shipment == null)
+            {
+                return NotFound("Error: Shipment not found.");
+            }
+            return Ok(shipment);
         }
 
         [HttpGet]
@@ -41,7 +54,7 @@ namespace CargoHubRefactor.Controllers {
             return Ok(shipments);
         }
 
-         [HttpGet("limit/{limit}/page/{page}")]
+        [HttpGet("limit/{limit}/page/{page}")]
         public async Task<ActionResult<IEnumerable<Shipment>>> GetShipmentPaged(int limit, int page)
         {
             if (limit <= 0)
@@ -59,15 +72,17 @@ namespace CargoHubRefactor.Controllers {
             return Ok(shipments);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Shipment>> GetShipmentById(int id)
+        [HttpGet("{id}/items")]
+        public async Task<ActionResult<List<ShipmentItem>>> GetShipmentItems(int id)
         {
-            var shipment = await _shipmentService.GetShipmentByIdAsync(id);
-            if (shipment == null)
+            var shipmentItems = await _shipmentService.GetShipmentItemsAsync(id);
+
+            if (shipmentItems == null || shipmentItems.Count == 0)
             {
-                return NotFound("Error: Shipment not found.");
+                return NotFound("No items found for the given shipment.");
             }
-            return Ok(shipment);
+
+            return Ok(shipmentItems);
         }
 
         [HttpPost]
@@ -80,6 +95,20 @@ namespace CargoHubRefactor.Controllers {
                 return BadRequest(result.message);
             }
             return Ok(result.shipment);
+        }
+
+        [HttpPost("split-order")]
+        public async Task<IActionResult> SplitOrder([FromBody] SplitOrderRequest request)
+        {
+            if (request == null || request.ItemsToSplit == null || !request.ItemsToSplit.Any())
+                return BadRequest("Invalid split request. ItemsToSplit cannot be null or empty.");
+
+            var result = await _shipmentService.SplitOrderIntoShipmentsAsync(request.OrderId, request.ItemsToSplit);
+
+            if (!result.Contains("Successfully split order"))
+                return BadRequest(result);
+
+            return Ok(result);
         }
 
         [HttpPut("{id}")]
@@ -111,18 +140,6 @@ namespace CargoHubRefactor.Controllers {
             return Ok(result);
         }
 
-        [HttpGet("{id}/items")]
-        public async Task<ActionResult<List<ShipmentItem>>> GetShipmentItems(int id)
-        {
-            var shipmentItems = await _shipmentService.GetShipmentItemsAsync(id);
-
-            if (shipmentItems == null || shipmentItems.Count == 0)
-            {
-                return NotFound("No items found for the given shipment.");
-            }
-
-            return Ok(shipmentItems);
-        }
 
 
         [HttpDelete("{id}")]
@@ -146,21 +163,5 @@ namespace CargoHubRefactor.Controllers {
             }
             return Ok(result);
         }
-
-        [HttpPost("split-order")]
-        public async Task<IActionResult> SplitOrder([FromBody] SplitOrderRequest request)
-        {
-            if (request == null || request.ItemsToSplit == null || !request.ItemsToSplit.Any())
-                return BadRequest("Invalid split request. ItemsToSplit cannot be null or empty.");
-
-            var result = await _shipmentService.SplitOrderIntoShipmentsAsync(request.OrderId, request.ItemsToSplit);
-
-            if (!result.Contains("Successfully split order"))
-                return BadRequest(result);
-
-            return Ok(result);
-        }
-
-
     }
 }

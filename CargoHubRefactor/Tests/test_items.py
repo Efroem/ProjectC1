@@ -82,6 +82,18 @@ def test_post_items_integration(_data):
     assert status_code == 200 and response_data["code"] == body["code"] and response_data["description"] == body["description"]
 
 
+def test_items_invalid_apikey(_data):
+    url = _data[0]["URL"] + 'Items/1'
+    
+    invalid_token = "INVALID_API_KEY"
+    headers = {
+        "ApiToken": invalid_token,
+        "Content-Type": "application/json"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    assert response.status_code == 403
 
 def test_put_items_integration(_data):
     url = _data[0]["URL"] + 'Items/P000001'
