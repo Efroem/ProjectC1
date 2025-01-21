@@ -102,25 +102,9 @@ public class TransferService : ITransferService
             return ("Transfer not found.", null);
         }
 
-        // Allow updates only if the current status is "Pending"
-        if (existingTransfer.TransferStatus != "Pending")
+        if (updatedTransfer.TransferStatus != "Pending")
         {
-            return ("Only transfers with status 'Pending' can be updated.", null);
-        }
-
-                if (existingTransfer.TransferStatus == "Completed")
-        {
-            return ("Completed transfers cannot be updated.", null);
-        }
-
-        if (existingTransfer.TransferStatus == "InProgress" && updatedTransfer.TransferStatus == "Pending")
-        {
-            return ("Cannot change status back to 'Pending' from 'InProgress'.", null);
-        }
-
-        if (existingTransfer.TransferStatus == "Pending" && updatedTransfer.TransferStatus == "Completed")
-        {
-            return ("Cannot directly move from 'Pending' to 'Completed'. The transfer must first be set to 'InProgress'.", null);
+            return ("TransferStatus cannot be updated using this method. Leave the TransferStatus field on 'Pending'. To update the status, use the /status endpoint instead.", null);
         }
 
         // Validate `TransferFrom` and `TransferTo` locations
@@ -134,6 +118,11 @@ public class TransferService : ITransferService
         if (fromLocation.WarehouseId != toLocation.WarehouseId)
         {
             return ("Transfers must remain within the same warehouse.", null);
+        }
+
+        if (updatedTransfer.Items == null || !updatedTransfer.Items.Any())
+        {
+            return ("No items provided for the transfer.", null);
         }
 
         // Update basic fields
@@ -185,8 +174,8 @@ public class TransferService : ITransferService
             return "Transfer not found.";
         }
 
-        if (status == "Pending" || (transfer.TransferStatus == "Pending" && status == "InProgress") ||
-        (transfer.TransferStatus == "InProgress" && status == "Completed"))
+        if ((transfer.TransferStatus == "Pending" && status == "InProgress") ||
+            (transfer.TransferStatus == "InProgress" && status == "Completed"))
         {
 
             if (status == "InProgress")
@@ -241,8 +230,9 @@ public class TransferService : ITransferService
 
             return "Transfer status successfully updated.";
         }
-        return "Invalid status transition.";
+        return "Invalid status transition or status. You can only update a transfer from 'Pending' to 'InProgress', or 'InProgress' to 'Completed'.";
     }
+
     public async Task<List<Transfer>> GetAllTransfersAsync()
     {
         return await _context.Transfers

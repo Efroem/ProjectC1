@@ -433,7 +433,7 @@ namespace UnitTests
         public async Task WrongTransferStatusTransition()
         {
             var result = await _transferService.UpdateTransferStatusAsync(1, "Completed");
-            Assert.AreEqual("Invalid status transition.", result);
+            Assert.AreEqual("Invalid status transition or status. You can only update a transfer from 'Pending' to 'InProgress', or 'InProgress' to 'Completed'.", result);
         }
 
         [TestMethod]
