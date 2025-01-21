@@ -8,7 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 @pytest.fixture
 def _data():
-    return [{'URL': 'http://localhost:5000/api/v1/', 'AdminApiToken': 'A1B2C3D4'}]
+    return [{'URL': 'http://localhost:5000/api/v1/', 'AdminApiToken': 'A1B2C3D4', "FloorManagerApiToken": "E5F6G7",}]
 
 # Helper function to get headers with AdminApiToken
 def get_headers(admin_api_token):
@@ -88,10 +88,12 @@ def test_post_orders_integration(_data):
     # Verify that the status code is 200 (OK)
     assert status_code == 200 and response_data["shippingNotes"] == body["shippingNotes"] and response_data["pickingNotes"] == body["pickingNotes"]
 
-def test_put_orders_integration(_data):
+def test_put_orders_integration_FloorManagerAPIkey(_data):
     url = _data[0]["URL"] + 'orders/3053'
     headers = get_headers(_data[0]["AdminApiToken"])
+    headers2 = get_headers(_data[0]["FloorManagerApiToken"])
 
+    print(headers)
     original_order = requests.get(url, headers=headers)
     assert original_order.status_code == 200
     original_body = original_order.json()
@@ -102,7 +104,7 @@ def test_put_orders_integration(_data):
     "requestDate": "2024-12-12T10:00:00Z",
     "reference": "ORD12347",
     "referenceExtra": "EXTRA125",
-    "orderStatus": "Pending",
+    "orderStatus": "Delivered",
     "notes": "Handle with care",
     "shippingNotes": "No special instructions",
     "pickingNotes": "Pick all items",
@@ -128,7 +130,7 @@ def test_put_orders_integration(_data):
 
 
     # Send a PUT request to the API
-    put_response = requests.put(url, json=body, headers=headers)
+    put_response = requests.put(url, json=body, headers=headers2)
     assert put_response.status_code == 200
 
     # Get the updated order
@@ -144,6 +146,17 @@ def test_put_orders_integration(_data):
 
     # Verify that the status code is 200 (OK) and the order details are correct
     assert status_code == 200 and response_data["id"] == original_body["id"] and response_data["notes"] == body["notes"]
+
+def test_orders_invalid_apikey(_data):
+    url = _data[0]["URL"] + 'orders/3053'
+    
+    invalid_token = "NO_ADMIN_OR_FLOORMANAGERKEY"
+    headers = {
+        "ApiToken": invalid_token,
+        "Content-Type": "application/json"
+    }
+    response = requests.get(url, headers=headers)
+    assert response.status_code == 403
 
 def test_delete_orders_integration(_data):
     # Make a POST request first to make a dummy client

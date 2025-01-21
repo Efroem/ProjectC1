@@ -15,6 +15,8 @@ def _data():
         "EmployeeApiToken": "H8I9J10",
         "FloorManagerApiToken": "E5F6G7",
         "WarehouseManagerApiToken": "K11L12M13",
+        "InvalidToken": "asdasasd",
+
     }
 
 def get_headers(token):
@@ -65,19 +67,21 @@ def test_admin_token_get_access(_data):
 
 
 def test_floor_manager_token_put_limited_paths(_data):
+    # Define URLs for both allowed and disallowed paths
     url_allowed = _data["URL"] + "Orders/1"
     url_not_allowed = _data["URL"] + "Clients/1"
-    url_not_allowed_post = _data["URL"] + "Clients/1"
-
+    
+    # Headers with Floor Manager API token
     headers = get_headers(_data["FloorManagerApiToken"])
 
+    # Define request body for the allowed PUT request
     body = {
     "SourceId": 123,
     "OrderDate": "2025-01-07T00:00:00",
     "RequestDate": "2025-01-07T00:00:00",
     "Reference": "Order123",
     "ReferenceExtra": "Some extra reference",
-    "OrderStatus": "New",
+    "OrderStatus": "Delivered",
     "Notes": "Some notes",
     "ShippingNotes": "Shipping instructions",
     "PickingNotes": "Picking instructions",
@@ -91,23 +95,25 @@ def test_floor_manager_token_put_limited_paths(_data):
     "TotalSurcharge": 2.0,
     "OrderItems": []
     }
+
+    # Define request body for the disallowed PUT request
     body2 = {
-    "name": "Jane Doe",
-    "address": "456 Secondary St",
-    "city": "New City",
-    "zipCode": "54321",
-    "province": "Berlin",
-    "country": "Germany",
-    "contactName": "Jane Doe",
-    "contactPhone": "+987654321",
-    "contactEmail": "jane.doe@example.com"
+        "name": "Jane Doe",
+        "address": "456 Secondary St",
+        "city": "New City",
+        "zipCode": "54321",
+        "province": "Berlin",
+        "country": "Germany",
+        "contactName": "Jane Doe",
+        "contactPhone": "+987654321",
+        "contactEmail": "jane.doe@example.com"
     }
 
-    # Floor Manager can PUT on allowed paths
+    # Floor Manager can PUT on allowed paths (Orders)
     response = requests.put(url_allowed, headers=headers, json=body)
     assert response.status_code == 200, f"PUT failed with status {response.status_code} on allowed path"
 
-    # Floor Manager cannot PUT on disallowed paths
+    # Floor Manager cannot PUT on disallowed paths (Clients)
     response = requests.put(url_not_allowed, headers=headers, json=body2)
     assert response.status_code == 403, f"Expected 403 for PUT on disallowed path, got {response.status_code}"
 
@@ -155,28 +161,20 @@ def test_warehouse_manager_token_put_limited_paths(_data):
 
 ### Tests for Invalid Tokens
 def test_invalid_token(_data):
-    url = _data["URL"] + "Orders"
+    url = _data["URL"] + "Clients"
     headers = get_headers("InvalidToken")
 
     body = {
-  "SourceId": 125,
-  "OrderDate": "2024-12-10T10:00:00Z",
-  "RequestDate": "2024-12-12T10:00:00Z",
-  "Reference": "ORD12347",
-  "ReferenceExtra": "EXTRA125",
-  "OrderStatus": "Pending",
-  "Notes": "Handle with care",
-  "ShippingNotes": "No special instructions",
-  "PickingNotes": "Pick all items",
-  "WarehouseId": 4,
-  "ShipTo": 60,
-  "BillTo": 100,
-  "ShipmentId": 91,
-  "TotalAmount": 2500.00,
-  "TotalDiscount": 200.00,
-  "TotalTax": 150.00,
-  "TotalSurcharge": 30.00
-}
+        "name": "Jane Doe",
+        "address": "456 Secondary St",
+        "city": "New City",
+        "zipCode": "54321",
+        "province": "Berlin",
+        "country": "Germany",
+        "contactName": "Jane Doe",
+        "contactPhone": "+987654321",
+        "contactEmail": "jane.doe@example.com"
+    }
 
     # Invalid tokens should be forbidden
     response = requests.get(url, headers=headers)
@@ -187,27 +185,19 @@ def test_invalid_token(_data):
 
 ### Tests for Missing Token
 def test_missing_token(_data):
-    url = _data["URL"] + "Orders"
+    url = _data["URL"] + "Clients"
 
     body = {
-  "SourceId": 125,
-  "OrderDate": "2024-12-10T10:00:00Z",
-  "RequestDate": "2024-12-12T10:00:00Z",
-  "Reference": "ORD12347",
-  "ReferenceExtra": "EXTRA125",
-  "OrderStatus": "Pending",
-  "Notes": "Handle with care",
-  "ShippingNotes": "No special instructions",
-  "PickingNotes": "Pick all items",
-  "WarehouseId": 4,
-  "ShipTo": 60,
-  "BillTo": 100,
-  "ShipmentId": 91,
-  "TotalAmount": 2500.00,
-  "TotalDiscount": 200.00,
-  "TotalTax": 150.00,
-  "TotalSurcharge": 30.00
-}
+        "name": "Jane Doe",
+        "address": "456 Secondary St",
+        "city": "New City",
+        "zipCode": "54321",
+        "province": "Berlin",
+        "country": "Germany",
+        "contactName": "Jane Doe",
+        "contactPhone": "+987654321",
+        "contactEmail": "jane.doe@example.com"
+    }
 
     # Requests without tokens should be unauthorized
     response = requests.get(url)
