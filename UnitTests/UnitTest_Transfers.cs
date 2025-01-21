@@ -419,6 +419,7 @@ namespace UnitTests
         [TestMethod]
         public async Task TestCompleteTransfer_StockUpdated()
         {
+            await _transferService.UpdateTransferStatusAsync(1, "InProgress");
             var result = await _transferService.UpdateTransferStatusAsync(1, "Completed");
             Assert.AreEqual("Transfer status successfully updated.", result);
 
@@ -426,6 +427,13 @@ namespace UnitTests
             Assert.IsNotNull(toLocation);
             Assert.AreEqual(2, toLocation.ItemAmounts["ITEM001"]);
             Assert.AreEqual(1, toLocation.ItemAmounts["ITEM002"]);
+        }
+
+        [TestMethod]
+        public async Task WrongTransferStatusTransition()
+        {
+            var result = await _transferService.UpdateTransferStatusAsync(1, "Completed");
+            Assert.AreEqual("Invalid status transition.", result);
         }
 
         [TestMethod]
