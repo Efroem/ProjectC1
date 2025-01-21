@@ -112,7 +112,7 @@ jobs:
     # Run tests with Coverlet
     - name: Run tests and collect coverage
       run: |
-        dotnet test --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutput=coverage/ /p:CoverletOutputFormat=cobertura
+        dotnet test --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutput=coverage/coverage.cobertura.xml /p:CoverletOutputFormat=cobertura 
       working-directory: UnitTests
 
     # Install ReportGenerator (optional, for readable reports)
