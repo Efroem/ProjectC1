@@ -14,6 +14,18 @@ namespace CargoHubRefactor.Controllers{
             _itemTypeService = itemTypeService;
         }
 
+        [HttpGet("{typeId}")]
+        public async Task<ActionResult> GetItemTypeById(int typeId)
+        {
+            var item_type = await _itemTypeService.GetItemTypeByIdAsync(typeId);
+            if (item_type == null)
+            {
+                return NotFound($"Item Type with ID: {typeId} not found.");
+            }
+
+            return Ok(item_type);
+        }
+
         [HttpGet]
         public async Task<ActionResult> GetItemTypes()
         {
@@ -61,17 +73,6 @@ namespace CargoHubRefactor.Controllers{
             return Ok(ItemTypes);
         }
 
-        [HttpGet("{typeId}")]
-        public async Task<ActionResult> GetItemTypeById(int typeId)
-        {
-            var item_type = await _itemTypeService.GetItemTypeByIdAsync(typeId);
-            if (item_type == null)
-            {
-                return NotFound($"Item Type with ID: {typeId} not found.");
-            }
-
-            return Ok(item_type);
-        }
 
         [HttpPost]
         public async Task<ActionResult> AddItemType([FromBody] ItemType itemLine)

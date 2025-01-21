@@ -14,6 +14,30 @@ namespace CargoHubRefactor.Controllers {
             _clientService = clientService;
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Client>> GetClient(int id)
+        {
+            var client = await _clientService.GetClientAsync(id);
+            if (client == null)
+            {
+                return NotFound($"Client with ID: {id} not found.");
+            }
+
+            return Ok(client);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Client>>> GetClients()
+        {
+            var clients = await _clientService.GetClientsAsync();
+            if (clients == null || !clients.Any())
+            {
+                return NotFound("No clients found.");
+            }
+
+            return Ok(clients);
+        }
+
         [HttpGet("limit/{limit}")]
         public async Task<ActionResult<IEnumerable<Client>>> GetClients(int limit)
         {
@@ -49,29 +73,6 @@ namespace CargoHubRefactor.Controllers {
             return Ok(clients);
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Client>>> GetClients()
-        {
-            var clients = await _clientService.GetClientsAsync();
-            if (clients == null || !clients.Any())
-            {
-                return NotFound("No clients found.");
-            }
-
-            return Ok(clients);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Client>> GetClient(int id)
-        {
-            var client = await _clientService.GetClientAsync(id);
-            if (client == null)
-            {
-                return NotFound($"Client with ID: {id} not found.");
-            }
-
-            return Ok(client);
-        }
 
         [HttpPost]
         public async Task<ActionResult<Client>> AddClient([FromBody] Client client)

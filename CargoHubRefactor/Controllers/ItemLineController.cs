@@ -14,6 +14,18 @@ namespace CargoHubRefactor.Controllers{
             _itemLineService = itemLineService;
         }
 
+         [HttpGet("{lineId}")]
+        public async Task<ActionResult> GetItemLineById(int lineId)
+        {
+            var item_line = await _itemLineService.GetItemLineByIdAsync(lineId);
+            if (item_line == null)
+            {
+                return NotFound($"Item Line with ID: {lineId} not found.");
+            }
+
+            return Ok(item_line);
+        }
+
         [HttpGet]
         public async Task<ActionResult> GetItemLines()
         {
@@ -61,17 +73,6 @@ namespace CargoHubRefactor.Controllers{
             return Ok(ItemLines);
         }
 
-        [HttpGet("{lineId}")]
-        public async Task<ActionResult> GetItemLineById(int lineId)
-        {
-            var item_line = await _itemLineService.GetItemLineByIdAsync(lineId);
-            if (item_line == null)
-            {
-                return NotFound($"Item Line with ID: {lineId} not found.");
-            }
-
-            return Ok(item_line);
-        }
 
         [HttpPost]
         public async Task<ActionResult> AddItemLine([FromBody] ItemLine itemLine)

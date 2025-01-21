@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # Fixture to provide URL and AdminApiToken
 @pytest.fixture
 def _data():
-    return [{'URL': 'http://localhost:5000/api/v1/', 'AdminApiToken': 'A1B2C3D4', 'WarehouseMangerToken': 'K11L12M13'}]
+    return [{'URL': 'http://localhost:5000/api/v1/', 'AdminApiToken': 'A1B2C3D4', 'WarehouseManagerToken': 'K11L12M13'}]
 
 # Helper function to get headers with AdminApiToken
 def get_headers(admin_api_token):
@@ -44,6 +44,19 @@ def test_get_warehouse_by_id_integration(_data):
 
     # Verify that the status code is 200 (OK) and the warehouseId matches
     assert status_code == 200 and response_data["warehouseId"] == 1
+
+def test_invalid_get_warehouses_integration_FloorManagerAPIKey(_data):
+    url = _data[0]["URL"] + 'Warehouses'
+    headers = get_headers(_data[0]["WarehouseManagerToken"])
+
+    # Send a GET request to the API
+    response = requests.get(url, headers=headers)
+
+    # Get the status code and response data
+    status_code = response.status_code
+
+    # Verify that the status code is 401 (Unauthorized)
+    assert status_code == 403, f"Expected status code 403, got {status_code}"
 
 def test_post_warehouses_integration(_data):
     url = _data[0]["URL"] + 'Warehouses'
@@ -112,7 +125,7 @@ def test_post_invalid_classifications_integration(_data):
 def test_put_warehouses_integration(_data):
     url = _data[0]["URL"] + 'Warehouses/1'
     admin_api_token = _data[0]["AdminApiToken"] 
-    warehousemanager_api_token = _data[0]["WarehouseMangerToken"]
+    warehousemanager_api_token = _data[0]["WarehouseManagerToken"]
     headers = get_headers(admin_api_token)
     headers2 = get_headers(warehousemanager_api_token)
 

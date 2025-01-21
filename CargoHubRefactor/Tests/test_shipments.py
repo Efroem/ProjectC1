@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 @pytest.fixture
 def _data():
-    return [{'URL': 'http://localhost:5000/api/v1/', 'AdminApiToken': 'A1B2C3D4'}]
+    return [{'URL': 'http://localhost:5000/api/v1/', 'AdminApiToken': 'A1B2C3D4', "FloorManagerApiToken": "E5F6G7",}]
 
 
 def get_headers(admin_api_token):
@@ -45,6 +45,18 @@ def test_get_shipment_by_id_integration(_data):
     # Verify status code 200 (OK) and shipment id match
     assert status_code == 200 and response_data["shipmentId"] == 1
 
+def test_invalid_get_shipments_integration_FloorManagerAPIKey(_data):
+    url = _data[0]["URL"] + 'orders'
+    headers = get_headers(_data[0]["FloorManagerApiToken"])
+
+    # Send a GET request to the API
+    response = requests.get(url, headers=headers)
+
+    # Get the status code and response data
+    status_code = response.status_code
+
+    # Verify that the status code is 401 (Unauthorized)
+    assert status_code == 403, f"Expected status code 403, got {status_code}"
 
 def test_post_shipment_integration(_data):
     url = _data[0]["URL"] + 'shipments'

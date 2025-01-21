@@ -28,6 +28,19 @@ def test_get_orders_integration(_data):
     # Verify that the status code is 200 (OK)
     assert status_code == 200 and len(response_data) >= 1
 
+def test_invalid_get_orders_integration_FloorManagerAPIKey(_data):
+    url = _data[0]["URL"] + 'orders'
+    headers = get_headers(_data[0]["FloorManagerApiToken"])
+
+    # Send a GET request to the API
+    response = requests.get(url, headers=headers)
+
+    # Get the status code and response data
+    status_code = response.status_code
+
+    # Verify that the status code is 401 (Unauthorized)
+    assert status_code == 403, f"Expected status code 403, got {status_code}"
+
 def test_get_orders_by_id_integration(_data):
     url = _data[0]["URL"] + 'orders/2'
     headers = get_headers(_data[0]["AdminApiToken"])

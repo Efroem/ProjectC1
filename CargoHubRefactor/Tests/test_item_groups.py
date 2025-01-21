@@ -96,6 +96,20 @@ def test_put_item_group_integration(_data):
     # Revert changes to the original data
     requests.put(url, json=dummyJson, headers=headers)
 
+
+def test_item_groups_invalid_apikey(_data):
+    url = _data[0]["URL"] + 'Item_Groups/1'
+    
+    invalid_token = "INVALID_API_KEY"
+    headers = {
+        "ApiToken": invalid_token,
+        "Content-Type": "application/json"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    assert response.status_code == 403
+
 def test_delete_item_group_integration(_data):
     # Make a POST request first to make a dummy client
     url = _data[0]["URL"] + 'Item_Groups/1'

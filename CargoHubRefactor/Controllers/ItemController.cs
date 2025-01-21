@@ -15,6 +15,18 @@ namespace CargoHubRefactor.Controllers
             _itemService = itemService;
         }
 
+        [HttpGet("{ItemId}")]
+        public async Task<ActionResult> GetItemById(string ItemId)
+        {
+            var item_ = await _itemService.GetItemByIdAsync(ItemId);
+            if (item_ == null)
+            {
+                return NotFound($"Item with ID: {ItemId} not found.");
+            }
+
+            return Ok(item_);
+        }
+
         [HttpGet]
         public async Task<ActionResult> GetItems()
         {
@@ -61,17 +73,6 @@ namespace CargoHubRefactor.Controllers
             return Ok(Items);
         }
 
-        [HttpGet("{ItemId}")]
-        public async Task<ActionResult> GetItemById(string ItemId)
-        {
-            var item_ = await _itemService.GetItemByIdAsync(ItemId);
-            if (item_ == null)
-            {
-                return NotFound($"Item with ID: {ItemId} not found.");
-            }
-
-            return Ok(item_);
-        }
 
         [HttpGet("{ItemId}/Locations/{LocationId}")]
         public async Task<ActionResult> GetItemAmountAtLocationById(string ItemId, int LocationId)

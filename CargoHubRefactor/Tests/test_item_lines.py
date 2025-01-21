@@ -68,6 +68,20 @@ def test_post_item_lines_integration(_data):
     # Cleanup by deleting the created item line
     requests.delete(f"{url}/{lineId}", headers=headers)
 
+
+def test_item_lines_invalid_apikey(_data):
+    url = _data[0]["URL"] + 'Item_Lines/1'
+    
+    invalid_token = "INVALID_API_KEY"
+    headers = {
+        "ApiToken": invalid_token,
+        "Content-Type": "application/json"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    assert response.status_code == 403
+
 def test_put_item_lines_integration(_data):
     url = _data[0]["URL"] + 'Item_Lines/1'
     headers = get_headers(_data[0]["AdminApiToken"])

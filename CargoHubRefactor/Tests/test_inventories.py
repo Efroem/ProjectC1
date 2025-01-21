@@ -42,6 +42,19 @@ def test_get_inventory_by_id_integration(_data):
     # Verify that the status code is 200 (OK)
     assert status_code == 200 and response_data["inventoryId"] == 1
 
+def test_inventory_invalid_apikey(_data):
+    url = _data[0]["URL"] + 'Inventories/1'
+    
+    invalid_token = "INVALID_API_KEY"
+    headers = {
+        "ApiToken": invalid_token,
+        "Content-Type": "application/json"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    assert response.status_code == 403
+
 def test_post_inventory_integration(_data):
     url = _data[0]["URL"] + 'Inventories'
     headers = get_headers(_data[0]["AdminApiToken"])

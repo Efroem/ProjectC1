@@ -16,6 +16,14 @@ namespace CargoHubRefactor.Controllers
             _transferService = transferService;
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Transfer>> GetTransferById(int id)
+        {
+            var transfer = await _transferService.GetTransferByIdAsync(id);
+            if (transfer == null) return NotFound("Transfer not found.");
+            return Ok(transfer);
+        }
+
         [HttpGet]
         public async Task<ActionResult<List<Transfer>>> GetAllTransfers()
         {
@@ -54,14 +62,6 @@ namespace CargoHubRefactor.Controllers
             }
 
             return Ok(transfers);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Transfer>> GetTransferById(int id)
-        {
-            var transfer = await _transferService.GetTransferByIdAsync(id);
-            if (transfer == null) return NotFound("Transfer not found.");
-            return Ok(transfer);
         }
 
         [HttpPost]

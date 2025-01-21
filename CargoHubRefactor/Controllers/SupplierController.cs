@@ -18,14 +18,7 @@ namespace CargoHubRefactor.Controllers
             _supplierService = supplierService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Supplier>>> GetAllSuppliers()
-        {
-            var suppliers = await _supplierService.GetAllSuppliersAsync();
-            return Ok(suppliers);
-        }
-
-        [HttpGet("{id}")]
+         [HttpGet("{id}")]
         public async Task<ActionResult<Supplier>> GetSupplierById(int id)
         {
             var supplier = await _supplierService.GetSupplierByIdAsync(id);
@@ -34,6 +27,34 @@ namespace CargoHubRefactor.Controllers
                 return NotFound($"Supplier with ID: {id} not found.");
             }
             return Ok(supplier);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Supplier>>> GetAllSuppliers()
+        {
+            var suppliers = await _supplierService.GetAllSuppliersAsync();
+            if (suppliers == null)
+            {
+                return NotFound($"No suppliers found.");
+            }
+            return Ok(suppliers);
+        }
+
+        [HttpGet("limit/{limit}")]
+        public async Task<ActionResult<IEnumerable<Supplier>>> GetAllSuppliers(int limit)
+        {
+            if (limit <= 0)
+            {
+                return BadRequest("Cannot show suppliers with a limit below 1.");
+            }
+
+            var suppliers = await _supplierService.GetAllSuppliersAsync(limit);
+            if (suppliers == null || !suppliers.Any())
+            {
+                return NotFound("No suppliers found.");
+            }
+
+            return Ok(suppliers);
         }
 
         [HttpGet("limit/{limit}/page/{page}")]

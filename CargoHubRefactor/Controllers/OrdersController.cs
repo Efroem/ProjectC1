@@ -86,6 +86,17 @@ namespace CargoHubRefactor.Controllers
             return Ok($"Total Price for Order {id}: €\n{totalPrice:F2}");
         }
 
+        [HttpGet("{orderId}/locations")]
+        public async Task<ActionResult<Dictionary<string, Dictionary<int, int>>>> GetOrderItemLocations(int orderId)
+        {
+            var groupedLocations = await _orderService.GetLocationsForOrderItemsAsync(orderId);
+
+            if (groupedLocations == null || !groupedLocations.Any())
+                return NotFound("Locations not found for the order.");
+
+            return Ok(groupedLocations);
+        }
+
         [HttpGet("{id}/TotalWeight")]
         public async Task<IActionResult> GetOrderWeightTotal(int id)
         {
@@ -281,15 +292,5 @@ namespace CargoHubRefactor.Controllers
             return Ok($"Order with ID: {id} successfully soft deleted");
         }
 
-        [HttpGet("{orderId}/locations")]
-        public async Task<ActionResult<Dictionary<string, Dictionary<int, int>>>> GetOrderItemLocations(int orderId)
-        {
-            var groupedLocations = await _orderService.GetLocationsForOrderItemsAsync(orderId);
-
-            if (groupedLocations == null || !groupedLocations.Any())
-                return NotFound("Locations not found for the order.");
-
-            return Ok(groupedLocations);
-        }
     }
 }
