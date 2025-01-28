@@ -1,6 +1,7 @@
 namespace UnitTests;
 using CargoHubRefactor;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Security.Cryptography;
 using System.Text;
@@ -17,21 +18,19 @@ public class UnitTest_APIKeys
     public void Setup()
     {
 
-        // string projectRoot = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..", "CargoHubRefactor"); // Adjust if needed
-        // string fullPath = Path.GetFullPath(projectRoot);
-        // envFilePath = Path.Combine(fullPath, ".env");
+        string projectRoot = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..", "CargoHubRefactor"); // Adjust if needed
+        string fullPath = Path.GetFullPath(projectRoot);
+        envFilePath = Path.Combine(fullPath, ".env");
 
-        // Console.WriteLine($"Loading .env file from: {envFilePath}");
-
-        // // Ensure the .env file is loaded correctly
-        // if (File.Exists(envFilePath))
-        // {
-        //     DotNetEnv.Env.Load(envFilePath);
-        // }
-        // else
-        // {
-        //     Console.WriteLine(".env file not found at expected path.");
-        // }
+        // Ensure the .env file is loaded correctly
+        if (File.Exists(envFilePath))
+        {
+            DotNetEnv.Env.Load(envFilePath);
+        }
+        else
+        {
+            Console.WriteLine(".env file not found at expected path.");
+        }
 
         var options = new DbContextOptionsBuilder<CargoHubDbContext>()
             .UseInMemoryDatabase(databaseName: "TestCargoHubDatabase")
@@ -354,14 +353,6 @@ public class UnitTest_APIKeys
             Key = "*ɨ�@A�K�0���iRU�;F ���ۇ�"
         });
 
-        context.APIKeys.Add(new APIKey
-        {
-            APIKeyId = 5,
-            Name = "EnvTestToken",
-            Key = "WrongEnvKey"
-        });
-
-
         context.SaveChanges();
     }
 
@@ -370,7 +361,6 @@ public class UnitTest_APIKeys
     [DataRow("FloorManagerApiToken")]
     [DataRow("EmployeeApiToken")]
     [DataRow("WarehouseManagerToken")]
-
     public async Task TestGetKey(string TokenName)
     {
 
@@ -403,22 +393,62 @@ public class UnitTest_APIKeys
         Assert.IsTrue(compareKey != null);
         compareKey.Key = compareKey.Key.Replace("\0", ""); // Remove null characters
        
-
-
         Assert.AreEqual(apiKey.ToLowerInvariant().Trim(), compareKey.Key.ToLowerInvariant().Trim());
-
     }
 
     [TestMethod]
-    public async Task TestGetKeyFromWorkflowEnvAsync() {
-        string apiKey = await apiKeyService.GetEnvTestTokenAsync();
+    [DataRow("AdminApiToken")]
+    [DataRow("FloorManagerApiToken")]
+    [DataRow("EmployeeApiToken")]
+    [DataRow("WarehouseManagerToken")]
+
+    public async Task TestGetKeyWithouTDatabase(string TokenName)
+    {
+    
+        var databaseToken = _dbContext.APIKeys.FirstOrDefault(x => x.Name == TokenName);
+        Assert.IsTrue(databaseToken != null);
+        _dbContext.Remove(databaseToken);
+        await _dbContext.SaveChangesAsync();
+        Assert.IsTrue(_dbContext.APIKeys.FirstOrDefault(x => x.Name == TokenName) == null);
+        
+        string apiKey = null;
+        switch (TokenName) {
+            case "AdminApiToken": 
+                apiKey = await apiKeyService.GetAdminApiTokenAsync();
+                break;
+
+            case "FloorManagerApiToken": 
+                apiKey = await apiKeyService.GetFloorManagerApiTokenAsync();
+                break;
+
+            case "EmployeeApiToken": 
+                apiKey = await apiKeyService.GetEmployeeApiTokenAsync();
+                break;
+
+            case "WarehouseManagerToken": 
+                apiKey = await apiKeyService.GetWarehouseManagerTokenAsync();
+                break;
+                
+            default :
+                apiKey = null;
+                break;
+        }
         Assert.IsTrue(apiKey != null);
 
-        var apiKeyBytes = Encoding.UTF8.GetBytes(apiKey); // Force UTF-8 encoding
-        apiKey = Encoding.UTF8.GetString(apiKeyBytes);
-        
-        Assert.AreEqual(HashString("RightEnvKey").Trim(), apiKey.Trim());
+        var compareKey = TokenName switch
+        {
+            "AdminApiToken" => "v�W���ƨ�B����v$7rԄtP��D-���",
+            "FloorManagerApiToken" => "P�t[���4 Ah8~n�w3}T�z�;c�",
+            "EmployeeApiToken" => "��}���j�����-@�|�vS3h=�v�tT�",
+            "WarehouseManagerToken" => "*ɨ�@A�K�0���iRU�;F ���ۇ�",
+            _ => "Invalid day"
+        };
+        apiKey = apiKey.Replace("\0", ""); // Remove null characters
 
+        Assert.IsTrue(compareKey != null);
+        compareKey = compareKey.Replace("\0", ""); // Remove null characters
+       
+        Assert.AreEqual(apiKey.ToLowerInvariant().Trim(), compareKey.ToLowerInvariant().Trim());
     }
 
     public static string HashString(string input)
