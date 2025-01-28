@@ -41,6 +41,10 @@ public class ApiKeyService : IApiKeyService
         return await GetTokenAsync("WarehouseManagerToken");
     }
 
+    public async Task<string> GetEnvTestTokenAsync() {
+        return await GetTokenAsync("EnvTestToken");
+    }
+
     private async Task<string> GetTokenAsync(string key)
     {
         // Check if environment specifies to use database

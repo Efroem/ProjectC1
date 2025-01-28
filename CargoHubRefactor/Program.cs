@@ -15,7 +15,7 @@ namespace CargoHubRefactor
 
             builder.Services.AddDistributedMemoryCache();
 
-            DotNetEnv.Env.Load();
+            // DotNetEnv.Env.Load();
 
             builder.Services.AddSession(options =>
             {
