@@ -150,6 +150,8 @@ def test_put_warehouses_integration(_data):
     original_data = original_response.json()
     print(f"Original Data: {original_data}")
 
+    
+
     # Send a PUT request to update the warehouse
     put_response = requests.put(url, json=body, headers=headers2)
     assert put_response.status_code == 200, "PUT request failed"

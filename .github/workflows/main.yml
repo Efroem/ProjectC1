@@ -45,12 +45,21 @@ jobs:
 
   Integration_Tests:
     runs-on: ubuntu-latest
-    needs: Build  # This ensures that the test job runs after the build job completes successfully
+    needs: Build  # Ensures the test job runs after the build job completes successfully
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set environment variables
+        env:
+          AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
+          EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
+          FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
+          WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
+        run: |
+          printenv | grep 'ApiToken'
+      
       - name: Install pytest
         run: |
           python -m pip install --upgrade pip
@@ -58,6 +67,12 @@ jobs:
           pip install requests
 
       - name: Start ASP.NET application in background
+        env:
+          AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
+          EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
+          FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
+          WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
+          
         run: |
           nohup dotnet run > output.log &
         working-directory: CargoHubRefactor
@@ -68,7 +83,7 @@ jobs:
 
           for i in {1..120}; do  # Retry every 5 seconds, up to 20 times (10 minutes total)
             if curl -s http://localhost:5000/api/health | grep "Healthy"; then
-              echo "ASP.NET application is healthyt!"
+              echo "ASP.NET application is healthy!"
               break
             fi
             echo "Still waiting for ASP.NET application... (Attempt $i)"
@@ -82,8 +97,13 @@ jobs:
           fi
 
       - name: Run Python Integration Tests
-
-        run: pytest
+        env:
+          AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
+          EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
+          FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
+          WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
+        run: 
+          pytest
         working-directory: CargoHubRefactor/Tests
 
   Unit_Test_Coverage:
@@ -110,13 +130,29 @@ jobs:
     - name: Build
       run: dotnet build --no-restore --configuration Release UnitTests/UnitTests.csproj
 
+    - name: Set environment variables
+      env:
+        AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
+        EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
+        FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
+        WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
+        EnvTestToken: ${{ secrets.ENVTESTTOKEN }}
+
+      run: |
+        printenv | grep 'ApiToken'
+    
     # Run tests with Coverlet
     - name: Run tests and collect coverage
-      env: 
-        EnvTestToken: RightEnvKey
-        
+      env:
+        AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
+        EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
+        FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
+        WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
+        EnvTestToken: ${{ secrets.ENVTESTTOKEN }}
+
       run: |
         dotnet test --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutput=coverage/ /p:CoverletOutputFormat=cobertura
+
       working-directory: UnitTests
 
     # Install ReportGenerator (optional, for readable reports)
