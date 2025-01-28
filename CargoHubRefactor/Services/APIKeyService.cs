@@ -50,10 +50,10 @@ public class ApiKeyService : IApiKeyService
         // Check if environment specifies to use database
         var apiKeyFromEnv = Environment.GetEnvironmentVariable(key);
 
-        LoadHashedKeysInDB("AdminApiToken", "A1B2C3D4");
-        LoadHashedKeysInDB("EmployeeApiToken", "H8I9J10");
-        LoadHashedKeysInDB("FloorManagerApiToken", "E5F6G7");
-        LoadHashedKeysInDB("WarehouseManagerToken", "K11L12M13");
+        // LoadHashedKeysInDB("AdminApiToken", "A1B2C3D4");
+        // LoadHashedKeysInDB("EmployeeApiToken", "H8I9J10");
+        // LoadHashedKeysInDB("FloorManagerApiToken", "E5F6G7");
+        // LoadHashedKeysInDB("WarehouseManagerToken", "K11L12M13");
 
         if (!string.IsNullOrEmpty(apiKeyFromEnv))
         {
@@ -79,9 +79,9 @@ public class ApiKeyService : IApiKeyService
     {
         using (SHA256 sha256 = SHA256.Create())
         {
-            // return Encoding.Default.GetString(sha256.ComputeHash(Encoding.ASCII.GetBytes(input)));
-            byte[] hashBytes = sha256.ComputeHash(Encoding.ASCII.GetBytes(input));
-            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            return Encoding.Default.GetString(sha256.ComputeHash(Encoding.ASCII.GetBytes(input)));
+            // byte[] hashBytes = sha256.ComputeHash(Encoding.ASCII.GetBytes(input));
+            // return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
     }
 }

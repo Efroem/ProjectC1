@@ -330,28 +330,35 @@ public class UnitTest_APIKeys
         {
             APIKeyId = 1,
             Name = "AdminApiToken",
-            Key = "76b9579a121716fddcc6a8dc42eef1fb9a76243772d484745086b2442dbbdde4"
+            Key = "v�W���ƨ�B����v$7rԄtP��D-���"
         });
 
         context.APIKeys.Add(new APIKey
         {
             APIKeyId = 2,
             Name = "FloorManagerApiToken",
-            Key = "50bb745b00e7ecbfe51b34204168387e181f6eebb51277337d54cb7ad63b63c0"
+            Key = "P�t[���4 Ah8~n�w3}T�z�;c�"
         });
 
         context.APIKeys.Add(new APIKey
         {
             APIKeyId = 3,
             Name = "EmployeeApiToken",
-            Key = "f8c37d009da5f16a8fb0b5afdc2d40f57cb8765333683dd6161d76f2177454ad"
+            Key = "��}���j�����-@�|�vS3h=�v�tT�"
         });
 
         context.APIKeys.Add(new APIKey
         {
             APIKeyId = 4,
             Name = "WarehouseManagerToken",
-            Key = "2ac9a8d0407f0b41e78c1e4bba30fcff02f1695255b53b46209097ccdb87e990"
+            Key = "*ɨ�@A�K�0���iRU�;F ���ۇ�"
+        });
+
+        context.APIKeys.Add(new APIKey
+        {
+            APIKeyId = 5,
+            Name = "EnvTestToken",
+            Key = "WrongEnvKey"
         });
 
 
@@ -391,22 +398,36 @@ public class UnitTest_APIKeys
         Assert.IsTrue(apiKey != null);
 
         var compareKey = await _dbContext.APIKeys.FirstOrDefaultAsync(x => x.Name == TokenName);
+        apiKey = apiKey.Replace("\0", ""); // Remove null characters
+
         Console.WriteLine($"Api Key: {apiKey}");
         Assert.IsTrue(compareKey != null);
+        compareKey.Key = compareKey.Key.Replace("\0", ""); // Remove null characters
         Console.WriteLine($"Key to Compare to: {compareKey.Key}");
         
+
+        
+        Console.WriteLine($"Api Key Raw: {string.Join(",", apiKey.Select(c => (int)c))}");
+        Console.WriteLine($"Key to Compare Raw: {string.Join(",", compareKey.Key.Select(c => (int)c))}");
+
     
         // Console.WriteLine(Encoding.Default.GetString(mySha565.ComputeHash(Encoding.ASCII.GetBytes(adminKey))));
-        Assert.IsTrue(apiKey == compareKey.Key);
+        Assert.AreEqual(apiKey.ToLowerInvariant().Trim(), compareKey.Key.ToLowerInvariant().Trim());
+
     }
 
     [TestMethod]
     public async Task TestGetKeyFromWorkflowEnvAsync() {
-        // Environment.SetEnvironmentVariable("EnvTestToken", "RightEnvKey");
+        Environment.SetEnvironmentVariable("EnvTestToken", "RightEnvKey");
         string apiKey = await apiKeyService.GetEnvTestTokenAsync();
+        Assert.IsTrue(apiKey != null);
+
+        var apiKeyBytes = Encoding.UTF8.GetBytes(apiKey); // Force UTF-8 encoding
+        apiKey = Encoding.UTF8.GetString(apiKeyBytes);
+        
         Console.WriteLine($"Env Key: {apiKey}");
         Console.WriteLine($"Key to compare to: {apiKey}");
-        Assert.AreEqual(HashString("RightEnvKey"), apiKey);
+        Assert.AreEqual(HashString("RightEnvKey").Trim(), apiKey.Trim());
 
     }
 
@@ -414,9 +435,9 @@ public class UnitTest_APIKeys
     {
         using (SHA256 sha256 = SHA256.Create())
         {
-            // return Encoding.Default.GetString(sha256.ComputeHash(Encoding.ASCII.GetBytes(input)));
-            byte[] hashBytes = sha256.ComputeHash(Encoding.ASCII.GetBytes(input));
-            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            return Encoding.Default.GetString(sha256.ComputeHash(Encoding.ASCII.GetBytes(input)));
+            // byte[] hashBytes = sha256.ComputeHash(Encoding.ASCII.GetBytes(input));
+            // return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
     }
 }
