@@ -405,14 +405,12 @@ public class UnitTest_APIKeys
        
 
 
-        // Console.WriteLine(Encoding.Default.GetString(mySha565.ComputeHash(Encoding.ASCII.GetBytes(adminKey))));
         Assert.AreEqual(apiKey.ToLowerInvariant().Trim(), compareKey.Key.ToLowerInvariant().Trim());
 
     }
 
     [TestMethod]
     public async Task TestGetKeyFromWorkflowEnvAsync() {
-        // Environment.SetEnvironmentVariable("EnvTestToken", "RightEnvKey");
         string apiKey = await apiKeyService.GetEnvTestTokenAsync();
         Assert.IsTrue(apiKey != null);
 
@@ -428,8 +426,6 @@ public class UnitTest_APIKeys
         using (SHA256 sha256 = SHA256.Create())
         {
             return Encoding.Default.GetString(sha256.ComputeHash(Encoding.ASCII.GetBytes(input)));
-            // byte[] hashBytes = sha256.ComputeHash(Encoding.ASCII.GetBytes(input));
-            // return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
     }
 }
