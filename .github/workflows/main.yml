@@ -67,6 +67,12 @@ jobs:
           pip install requests
 
       - name: Start ASP.NET application in background
+        env:
+          AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
+          EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
+          FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
+          WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
+          
         run: |
           nohup dotnet run > output.log &
         working-directory: CargoHubRefactor
