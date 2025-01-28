@@ -50,6 +50,8 @@ public class ApiKeyService : IApiKeyService
         // Check if environment specifies to use database
         var apiKeyFromEnv = Environment.GetEnvironmentVariable(key);
 
+        Console.WriteLine($"Env Key{apiKeyFromEnv}");
+
         if (!string.IsNullOrEmpty(apiKeyFromEnv))
         {
             apiKeyFromEnv = HashString(apiKeyFromEnv);
