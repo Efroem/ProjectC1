@@ -400,17 +400,11 @@ public class UnitTest_APIKeys
         var compareKey = await _dbContext.APIKeys.FirstOrDefaultAsync(x => x.Name == TokenName);
         apiKey = apiKey.Replace("\0", ""); // Remove null characters
 
-        Console.WriteLine($"Api Key: {apiKey}");
         Assert.IsTrue(compareKey != null);
         compareKey.Key = compareKey.Key.Replace("\0", ""); // Remove null characters
-        Console.WriteLine($"Key to Compare to: {compareKey.Key}");
-        
+       
 
-        
-        Console.WriteLine($"Api Key Raw: {string.Join(",", apiKey.Select(c => (int)c))}");
-        Console.WriteLine($"Key to Compare Raw: {string.Join(",", compareKey.Key.Select(c => (int)c))}");
 
-    
         // Console.WriteLine(Encoding.Default.GetString(mySha565.ComputeHash(Encoding.ASCII.GetBytes(adminKey))));
         Assert.AreEqual(apiKey.ToLowerInvariant().Trim(), compareKey.Key.ToLowerInvariant().Trim());
 
@@ -425,8 +419,6 @@ public class UnitTest_APIKeys
         var apiKeyBytes = Encoding.UTF8.GetBytes(apiKey); // Force UTF-8 encoding
         apiKey = Encoding.UTF8.GetString(apiKeyBytes);
         
-        Console.WriteLine($"Env Key: {apiKey}");
-        Console.WriteLine($"Key to compare to: {apiKey}");
         Assert.AreEqual(HashString("RightEnvKey").Trim(), apiKey.Trim());
 
     }
