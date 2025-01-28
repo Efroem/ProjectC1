@@ -117,9 +117,9 @@ public class Filters : IAsyncActionFilter
     {
         using (SHA256 sha256 = SHA256.Create())
         {
-            return Encoding.Default.GetString(sha256.ComputeHash(Encoding.ASCII.GetBytes(input)));
-            // byte[] hashBytes = sha256.ComputeHash(Encoding.ASCII.GetBytes(input));
-            // return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            // return Encoding.Default.GetString(sha256.ComputeHash(Encoding.ASCII.GetBytes(input)));
+            byte[] hashBytes = sha256.ComputeHash(Encoding.ASCII.GetBytes(input));
+            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
     }
 }

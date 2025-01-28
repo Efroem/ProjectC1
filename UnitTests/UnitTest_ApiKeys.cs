@@ -330,28 +330,28 @@ public class UnitTest_APIKeys
         {
             APIKeyId = 1,
             Name = "AdminApiToken",
-            Key = "v�W���ƨ�B����v$7rԄtP��D-���"
+            Key = "76b9579a121716fddcc6a8dc42eef1fb9a76243772d484745086b2442dbbdde4"
         });
 
         context.APIKeys.Add(new APIKey
         {
             APIKeyId = 2,
             Name = "FloorManagerApiToken",
-            Key = "P�t[���4 Ah8~n�w3}T�z�;c�"
+            Key = "50bb745b00e7ecbfe51b34204168387e181f6eebb51277337d54cb7ad63b63c0"
         });
 
         context.APIKeys.Add(new APIKey
         {
             APIKeyId = 3,
             Name = "EmployeeApiToken",
-            Key = "��}���j�����-@�|�vS3h=�v�tT�"
+            Key = "f8c37d009da5f16a8fb0b5afdc2d40f57cb8765333683dd6161d76f2177454ad"
         });
 
         context.APIKeys.Add(new APIKey
         {
             APIKeyId = 4,
             Name = "WarehouseManagerToken",
-            Key = "*ɨ�@A�K�0���iRU�;F ���ۇ�"
+            Key = "2ac9a8d0407f0b41e78c1e4bba30fcff02f1695255b53b46209097ccdb87e990"
         });
 
 
@@ -359,62 +359,64 @@ public class UnitTest_APIKeys
     }
 
     [TestMethod]
-    [DataRow("AdminApiToken", true)]
-    [DataRow("FloorManagerApiToken", true)]
-    [DataRow("EmployeeApiToken", true)]
-    [DataRow("WarehouseManagerToken", true)]
-    [DataRow("EnvTestToken", true)]
+    [DataRow("AdminApiToken")]
+    [DataRow("FloorManagerApiToken")]
+    [DataRow("EmployeeApiToken")]
+    [DataRow("WarehouseManagerToken")]
 
-    public async Task TestGetAdminKey(string TokenName, bool expectedResult)
+    public async Task TestGetKey(string TokenName)
     {
-        if (TokenName != "EnvTestToken") {
 
-        
-            Console.WriteLine(TokenName);
-            string apiKey = null;
-            switch (TokenName) {
-                case "AdminApiToken": 
-                    apiKey = await apiKeyService.GetAdminApiTokenAsync();
-                    break;
-
-                case "FloorManagerApiToken": 
-                    apiKey = await apiKeyService.GetFloorManagerApiTokenAsync();
-                    break;
-
-                case "EmployeeApiToken": 
-                    apiKey = await apiKeyService.GetEmployeeApiTokenAsync();
-                    break;
-                case "WarehouseManagerToken": 
-                    apiKey = await apiKeyService.GetWarehouseManagerTokenAsync();
-                    break;
-                default :
-                    apiKey = null;
-                    break;
-            }
-            Assert.AreEqual(apiKey != null , expectedResult);
-
-            var compareKey = await _dbContext.APIKeys.FirstOrDefaultAsync(x => x.Name == TokenName);
-            Console.WriteLine($"Api Key: {apiKey}");
-            Assert.AreEqual(compareKey != null, expectedResult);
-            Console.WriteLine($"Key to Compare to: {compareKey.Key}");
-            
-        
-            // Console.WriteLine(Encoding.Default.GetString(mySha565.ComputeHash(Encoding.ASCII.GetBytes(adminKey))));
-            Assert.AreEqual(apiKey == compareKey.Key, expectedResult);
-        }
         Console.WriteLine(TokenName);
-        Environment.SetEnvironmentVariable("EnvTestToken", "RightEnvKey");
-        string envApiKey = await apiKeyService.GetEnvTestTokenAsync();
-        Assert.AreEqual("RightEnvKey", envApiKey);
+        string apiKey = null;
+        switch (TokenName) {
+            case "AdminApiToken": 
+                apiKey = await apiKeyService.GetAdminApiTokenAsync();
+                break;
+
+            case "FloorManagerApiToken": 
+                apiKey = await apiKeyService.GetFloorManagerApiTokenAsync();
+                break;
+
+            case "EmployeeApiToken": 
+                apiKey = await apiKeyService.GetEmployeeApiTokenAsync();
+                break;
+            case "WarehouseManagerToken": 
+                apiKey = await apiKeyService.GetWarehouseManagerTokenAsync();
+                break;
+            default :
+                apiKey = null;
+                break;
+        }
+        Assert.IsTrue(apiKey != null);
+
+        var compareKey = await _dbContext.APIKeys.FirstOrDefaultAsync(x => x.Name == TokenName);
+        Console.WriteLine($"Api Key: {apiKey}");
+        Assert.IsTrue(compareKey != null);
+        Console.WriteLine($"Key to Compare to: {compareKey.Key}");
+        
+    
+        // Console.WriteLine(Encoding.Default.GetString(mySha565.ComputeHash(Encoding.ASCII.GetBytes(adminKey))));
+        Assert.IsTrue(apiKey == compareKey.Key);
+    }
+
+    [TestMethod]
+    public async Task TestGetKeyFromWorkflowEnvAsync() {
+        // Environment.SetEnvironmentVariable("EnvTestToken", "RightEnvKey");
+        string apiKey = await apiKeyService.GetEnvTestTokenAsync();
+        Console.WriteLine($"Env Key: {apiKey}");
+        Console.WriteLine($"Key to compare to: {apiKey}");
+        Assert.AreEqual(HashString("RightEnvKey"), apiKey);
+
     }
 
     public static string HashString(string input)
     {
         using (SHA256 sha256 = SHA256.Create())
         {
-            return Encoding.Default.GetString(sha256.ComputeHash(Encoding.ASCII.GetBytes(input)));
-            // byte[] hashBytes = sha256.ComputeHash(Encoding.ASCII.GetBytes(input));
-            // return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            // return Encoding.Default.GetString(sha256.ComputeHash(Encoding.ASCII.GetBytes(input)));
+            byte[] hashBytes = sha256.ComputeHash(Encoding.ASCII.GetBytes(input));
+            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
     }
 }
