@@ -146,9 +146,12 @@ def test_put_warehouses_integration(_data):
 
     # Get the original warehouse data before PUT
     original_response = requests.get(url, headers=headers)
+    print("Full Response: ", original_response.text)
     assert original_response.status_code == 200, "Failed to fetch the original warehouse data"
     original_data = original_response.json()
     print(f"Original Data: {original_data}")
+
+    
 
     # Send a PUT request to update the warehouse
     put_response = requests.put(url, json=body, headers=headers2)
