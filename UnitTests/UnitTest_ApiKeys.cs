@@ -418,7 +418,7 @@ public class UnitTest_APIKeys
 
     [TestMethod]
     public async Task TestGetKeyFromWorkflowEnvAsync() {
-        Environment.SetEnvironmentVariable("EnvTestToken", "RightEnvKey");
+        // Environment.SetEnvironmentVariable("EnvTestToken", "RightEnvKey");
         string apiKey = await apiKeyService.GetEnvTestTokenAsync();
         Assert.IsTrue(apiKey != null);
 

@@ -50,11 +50,6 @@ public class ApiKeyService : IApiKeyService
         // Check if environment specifies to use database
         var apiKeyFromEnv = Environment.GetEnvironmentVariable(key);
 
-        // LoadHashedKeysInDB("AdminApiToken", "A1B2C3D4");
-        // LoadHashedKeysInDB("EmployeeApiToken", "H8I9J10");
-        // LoadHashedKeysInDB("FloorManagerApiToken", "E5F6G7");
-        // LoadHashedKeysInDB("WarehouseManagerToken", "K11L12M13");
-
         if (!string.IsNullOrEmpty(apiKeyFromEnv))
         {
             apiKeyFromEnv = HashString(apiKeyFromEnv);
@@ -68,12 +63,6 @@ public class ApiKeyService : IApiKeyService
         // Fall back to app configuration or environment variables
     }
 
-    private void LoadHashedKeysInDB(string name, string key) {
-        var ApiKey = _dbContext.APIKeys.FirstOrDefault(a => a.Name == name);
-        if (ApiKey == null) return;
-        ApiKey.Key = HashString(key);
-        _dbContext.SaveChanges();
-    }
 
     public static string HashString(string input)
     {
