@@ -17,21 +17,21 @@ public class UnitTest_APIKeys
     public void Setup()
     {
 
-        string projectRoot = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..", "CargoHubRefactor"); // Adjust if needed
-        string fullPath = Path.GetFullPath(projectRoot);
-        envFilePath = Path.Combine(fullPath, ".env");
+        // string projectRoot = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..", "CargoHubRefactor"); // Adjust if needed
+        // string fullPath = Path.GetFullPath(projectRoot);
+        // envFilePath = Path.Combine(fullPath, ".env");
 
-        Console.WriteLine($"Loading .env file from: {envFilePath}");
+        // Console.WriteLine($"Loading .env file from: {envFilePath}");
 
-        // Ensure the .env file is loaded correctly
-        if (File.Exists(envFilePath))
-        {
-            DotNetEnv.Env.Load(envFilePath);
-        }
-        else
-        {
-            Console.WriteLine(".env file not found at expected path.");
-        }
+        // // Ensure the .env file is loaded correctly
+        // if (File.Exists(envFilePath))
+        // {
+        //     DotNetEnv.Env.Load(envFilePath);
+        // }
+        // else
+        // {
+        //     Console.WriteLine(".env file not found at expected path.");
+        // }
 
         var options = new DbContextOptionsBuilder<CargoHubDbContext>()
             .UseInMemoryDatabase(databaseName: "TestCargoHubDatabase")
