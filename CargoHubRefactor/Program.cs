@@ -15,6 +15,8 @@ namespace CargoHubRefactor
 
             builder.Services.AddDistributedMemoryCache();
 
+            DotNetEnv.Env.Load();
+
             builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -43,6 +45,7 @@ namespace CargoHubRefactor
             builder.Services.AddScoped<ReportingService>();
             builder.Services.AddScoped<IShipmentService, ShipmentService>();
             builder.Services.AddScoped<SetupItems>();
+            builder.Services.AddScoped<IApiKeyService, ApiKeyService>();
             builder.Services.AddScoped<Filters>();
 
             // Add health checks

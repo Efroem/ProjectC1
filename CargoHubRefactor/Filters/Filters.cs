@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -7,13 +9,15 @@ using Microsoft.Extensions.Configuration;
 
 public class Filters : IAsyncActionFilter
 {
-    private readonly IConfiguration _configuration;
+    // private readonly IConfiguration _configuration;
+    private readonly IApiKeyService _apiKeyService;  
     private readonly string[] _floorManagerAllowedPaths;
     private readonly string[] _warehouseManagerAllowedPaths;
 
-    public Filters(IConfiguration configuration)
+    public Filters(IApiKeyService apiKeyService)
     {
-        _configuration = configuration;
+
+        _apiKeyService = apiKeyService;
         _floorManagerAllowedPaths = new[] { "/api/v1/Orders", "/api/v1/Shipments" };
         _warehouseManagerAllowedPaths = new[] { "/api/v1/Warehouses" };
     }
@@ -23,10 +27,10 @@ public class Filters : IAsyncActionFilter
         var httpContext = context.HttpContext;
 
         // Retrieve API tokens from configuration
-        var adminToken = _configuration["ApiKeys:AdminApiToken"];
-        var employeeToken = _configuration["ApiKeys:EmployeeApiToken"];
-        var floorManagerToken = _configuration["ApiKeys:FloorManagerApiToken"];
-        var warehouseManagerToken = _configuration["ApiKeys:WarehouseManagerToken"];
+        var adminToken = await _apiKeyService.GetAdminApiTokenAsync();
+        var employeeToken = await _apiKeyService.GetEmployeeApiTokenAsync();
+        var floorManagerToken = await _apiKeyService.GetFloorManagerApiTokenAsync();
+        var warehouseManagerToken = await _apiKeyService.GetWarehouseManagerTokenAsync();
 
         // Validate that tokens are properly configured
         if (string.IsNullOrEmpty(adminToken) || string.IsNullOrEmpty(employeeToken) ||
@@ -44,8 +48,7 @@ public class Filters : IAsyncActionFilter
             await httpContext.Response.WriteAsync("Unauthorized: Missing ApiToken header.");
             return;
         }
-
-        var apiToken = httpContext.Request.Headers["ApiToken"].ToString();
+        var apiToken = HashString(httpContext.Request.Headers["ApiToken"].ToString());
         var requestPath = httpContext.Request.Path;
         var requestMethod = httpContext.Request.Method;
 
@@ -108,5 +111,15 @@ public class Filters : IAsyncActionFilter
         // Invalid or unrecognized token
         httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
         await httpContext.Response.WriteAsync("Forbidden: Invalid or unauthorized ApiToken.");
+    }
+
+    public static string HashString(string input)
+    {
+        using (SHA256 sha256 = SHA256.Create())
+        {
+            return Encoding.Default.GetString(sha256.ComputeHash(Encoding.ASCII.GetBytes(input)));
+            // byte[] hashBytes = sha256.ComputeHash(Encoding.ASCII.GetBytes(input));
+            // return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+        }
     }
 }

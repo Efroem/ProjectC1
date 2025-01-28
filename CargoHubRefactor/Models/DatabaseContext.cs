@@ -20,8 +20,14 @@ public class CargoHubDbContext : DbContext
     public DbSet<ShipmentItem> ShipmentItems { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
+    public DbSet<APIKey> APIKeys { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        
+        modelBuilder.Entity<APIKey>()
+            .Property(a => a.APIKeyId)
+            .HasColumnName("APIKeyId");
+
         // Location - Warehouse (One-to-Many)
         modelBuilder.Entity<Location>()
             .HasOne(l => l.Warehouse)
