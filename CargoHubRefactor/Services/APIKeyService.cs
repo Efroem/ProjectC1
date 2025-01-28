@@ -56,9 +56,10 @@ public class ApiKeyService : IApiKeyService
             return apiKeyFromEnv; // If found in the environment, return it.
         }
         else {
-            var apiKeyFromDb = _dbContext.APIKeys.FirstOrDefault(x => x.Name == key).Key;
-            if (apiKeyFromDb == null) return null;
-            return apiKeyFromDb;
+            // var apiKeyFromDb = _dbContext.APIKeys.FirstOrDefault(x => x.Name == key).Key;
+            // if (apiKeyFromDb == null) return null;
+            // return apiKeyFromDb;
+            return null;
         }
         // Fall back to app configuration or environment variables
     }
