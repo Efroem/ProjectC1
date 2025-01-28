@@ -51,12 +51,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up environment variables
+      - name: Set environment variables
+        env:
+          AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
+          EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
+          FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
+          WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
         run: |
-          export AdminApiToken="${{ secrets.ADMIN_API_TOKEN }}"
-          export EmployeeApiToken="${{ secrets.EMPLOYEE_API_TOKEN }}"
-          export FloorManagerApiToken="${{ secrets.FLOOR_MANAGER_API_TOKEN }}"
-          export WarehouseManagerToken="${{ secrets.WAREHOUSE_MANAGER_TOKEN }}"
+          printenv | grep 'ApiToken'
       
       - name: Debug exported variables
         run: printenv | grep 'ApiToken'
@@ -119,17 +121,16 @@ jobs:
     - name: Build
       run: dotnet build --no-restore --configuration Release UnitTests/UnitTests.csproj
 
-    - name: Set up environment variables
+    - name: Set environment variables
+      env:
+        AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
+        EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
+        FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
+        WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
+        EnvTestToken: ${{ secrets.ENVTESTTOKEN }}
       run: |
-        export AdminApiToken="${{ secrets.ADMINAPITOKEN }}"
-        export EmployeeApiToken="${{ secrets.EMPLOYEEAPITOKEN }}"
-        export FloorManagerApiToken="${{ secrets.FLOORMANAGERAPITOKEN }}"
-        export WarehouseManagerToken="${{ secrets.WAREHOUSEMANAGERTOKEN }}"
-        export EnvTestToken="${{ secrets.ENVTESTTOKEN }}"
+        printenv | grep 'ApiToken'
     
-    - name: Debug exported variables
-      run: printenv | grep 'ApiToken'
-
     # Run tests with Coverlet
     - name: Run tests and collect coverage
       # env: 
