@@ -53,10 +53,13 @@ jobs:
 
       - name: Set up environment variables
         run: |
-          echo "AdminApiToken=${{ secrets.ADMIN_API_TOKEN }}" >> $GITHUB_ENV
-          echo "EmployeeApiToken=${{ secrets.EMPLOYEE_API_TOKEN }}" >> $GITHUB_ENV
-          echo "FloorManagerApiToken=${{ secrets.FLOOR_MANAGER_API_TOKEN }}" >> $GITHUB_ENV
-          echo "WarehouseManagerToken=${{ secrets.WAREHOUSE_MANAGER_TOKEN }}" >> $GITHUB_ENV
+          export AdminApiToken="${{ secrets.ADMIN_API_TOKEN }}"
+          export EmployeeApiToken="${{ secrets.EMPLOYEE_API_TOKEN }}"
+          export FloorManagerApiToken="${{ secrets.FLOOR_MANAGER_API_TOKEN }}"
+          export WarehouseManagerToken="${{ secrets.WAREHOUSE_MANAGER_TOKEN }}"
+      
+      - name: Debug exported variables
+        run: printenv | grep 'ApiToken'
 
       - name: Install pytest
         run: |
@@ -116,10 +119,21 @@ jobs:
     - name: Build
       run: dotnet build --no-restore --configuration Release UnitTests/UnitTests.csproj
 
+    - name: Set up environment variables
+      run: |
+        export AdminApiToken="${{ secrets.ADMINAPITOKEN }}"
+        export EmployeeApiToken="${{ secrets.EMPLOYEEAPITOKEN }}"
+        export FloorManagerApiToken="${{ secrets.FLOORMANAGERAPITOKEN }}"
+        export WarehouseManagerToken="${{ secrets.WAREHOUSEMANAGERTOKEN }}"
+        export EnvTestToken="${{ secrets.ENVTESTTOKEN }}"
+    
+    - name: Debug exported variables
+      run: printenv | grep 'ApiToken'
+
     # Run tests with Coverlet
     - name: Run tests and collect coverage
-      env: 
-        EnvTestToken: RightEnvKey
+      # env: 
+      #   EnvTestToken: RightEnvKey
         
       run: |
         dotnet test --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutput=coverage/ /p:CoverletOutputFormat=cobertura
