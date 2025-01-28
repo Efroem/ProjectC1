@@ -45,11 +45,18 @@ jobs:
 
   Integration_Tests:
     runs-on: ubuntu-latest
-    needs: Build  # This ensures that the test job runs after the build job completes successfully
+    needs: Build  # Ensures the test job runs after the build job completes successfully
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set up environment variables
+        run: |
+          echo "AdminApiToken=${{ secrets.ADMIN_API_TOKEN }}" >> $GITHUB_ENV
+          echo "EmployeeApiToken=${{ secrets.EMPLOYEE_API_TOKEN }}" >> $GITHUB_ENV
+          echo "FloorManagerApiToken=${{ secrets.FLOOR_MANAGER_API_TOKEN }}" >> $GITHUB_ENV
+          echo "WarehouseManagerToken=${{ secrets.WAREHOUSE_MANAGER_TOKEN }}" >> $GITHUB_ENV
 
       - name: Install pytest
         run: |
@@ -68,7 +75,7 @@ jobs:
 
           for i in {1..120}; do  # Retry every 5 seconds, up to 20 times (10 minutes total)
             if curl -s http://localhost:5000/api/health | grep "Healthy"; then
-              echo "ASP.NET application is healthyt!"
+              echo "ASP.NET application is healthy!"
               break
             fi
             echo "Still waiting for ASP.NET application... (Attempt $i)"
@@ -80,18 +87,8 @@ jobs:
             cat output.log
             exit 1
           fi
-      
-      - name: Set up environment variables
-        env:
-          AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
-          EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
-          FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
-          WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
-        run: |
-          echo "Environment variables are set!"
 
       - name: Run Python Integration Tests
-
         run: pytest
         working-directory: CargoHubRefactor/Tests
 
