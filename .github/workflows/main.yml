@@ -51,14 +51,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set environment variables
-        env:
-          AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
-          EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
-          FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
-          WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
-        run: |
-          printenv | grep 'ApiToken'
+      # - name: Set environment variables
+      #   env:
+      #     AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
+      #     EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
+      #     FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
+      #     WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
+      #   run: |
+      #     printenv | grep 'ApiToken'
       
       - name: Install pytest
         run: |
@@ -91,7 +91,14 @@ jobs:
           fi
 
       - name: Run Python Integration Tests
-        run: pytest
+        env:
+          AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
+          EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
+          FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
+          WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
+        run: 
+          pytest
+          printenv | grep 'ApiToken'
         working-directory: CargoHubRefactor/Tests
 
   Unit_Test_Coverage:
@@ -118,21 +125,29 @@ jobs:
     - name: Build
       run: dotnet build --no-restore --configuration Release UnitTests/UnitTests.csproj
 
-    - name: Set environment variables
+    # - name: Set environment variables
+    #   env:
+    #     AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
+    #     EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
+    #     FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
+    #     WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
+    #     EnvTestToken: ${{ secrets.ENVTESTTOKEN }}
+
+    #   run: |
+    #     printenv | grep 'ApiToken'
+    
+    # Run tests with Coverlet
+    - name: Run tests and collect coverage
       env:
         AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
         EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
         FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
         WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
         EnvTestToken: ${{ secrets.ENVTESTTOKEN }}
-      run: |
-        printenv | grep 'ApiToken'
-    
-    # Run tests with Coverlet
-    - name: Run tests and collect coverage
-        
+
       run: |
         dotnet test --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutput=coverage/ /p:CoverletOutputFormat=cobertura
+        printenv | grep 'ApiToken'
       working-directory: UnitTests
 
     # Install ReportGenerator (optional, for readable reports)
