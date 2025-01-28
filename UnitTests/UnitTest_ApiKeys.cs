@@ -330,28 +330,28 @@ public class UnitTest_APIKeys
         {
             APIKeyId = 1,
             Name = "AdminApiToken",
-            Key = HashString("A1B2C3D4")
+            Key = "v�W���ƨ�B����v$7rԄtP��D-���"
         });
 
         context.APIKeys.Add(new APIKey
         {
             APIKeyId = 2,
             Name = "FloorManagerApiToken",
-            Key = HashString("E5F6G7")
+            Key = "P�t[���4 Ah8~n�w3}T�z�;c�"
         });
 
         context.APIKeys.Add(new APIKey
         {
             APIKeyId = 3,
             Name = "EmployeeApiToken",
-            Key = HashString("H8I9J10")
+            Key = "��}���j�����-@�|�vS3h=�v�tT�"
         });
 
         context.APIKeys.Add(new APIKey
         {
             APIKeyId = 4,
             Name = "WarehouseManagerToken",
-            Key = HashString("K11L12M13")
+            Key = "*ɨ�@A�K�0���iRU�;F ���ۇ�"
         });
 
 

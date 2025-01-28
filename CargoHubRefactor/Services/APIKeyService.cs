@@ -45,24 +45,15 @@ public class ApiKeyService : IApiKeyService
     {
         // Check if environment specifies to use database
         var apiKeyFromEnv = Environment.GetEnvironmentVariable(key);
-        Console.WriteLine($"Environment Variables: {Environment.GetEnvironmentVariables()[1]}");
-        Console.WriteLine($"Token: {apiKeyFromEnv}");
-        
-        LoadHashedKeysInDB("AdminApiToken", "A1B2C3D4");
-        LoadHashedKeysInDB("EmployeeApiToken", "H8I9J10");
-        LoadHashedKeysInDB("FloorManagerApiToken", "E5F6G7");
-        LoadHashedKeysInDB("WarehouseManagerToken", "K11L12M13");
 
         if (!string.IsNullOrEmpty(apiKeyFromEnv))
         {
             apiKeyFromEnv = HashString(apiKeyFromEnv);
-            Console.WriteLine($"Returned Key From Env: {apiKeyFromEnv}");
             return apiKeyFromEnv; // If found in the environment, return it.
         }
         else {
             var apiKeyFromDb = _dbContext.APIKeys.FirstOrDefault(x => x.Name == key).Key;
             if (apiKeyFromDb == null) return null;
-            Console.WriteLine($"Returned Key From DB: {apiKeyFromDb}");
             return apiKeyFromDb;
         }
         // Fall back to app configuration or environment variables
