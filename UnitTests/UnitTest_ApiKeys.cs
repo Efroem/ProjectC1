@@ -402,7 +402,7 @@ public class UnitTest_APIKeys
     [DataRow("EmployeeApiToken")]
     [DataRow("WarehouseManagerToken")]
 
-    public async Task TestGetKeyWithouTDatabase(string TokenName)
+    public async Task TestGetKeyWithoutDatabase(string TokenName)
     {
     
         var databaseToken = _dbContext.APIKeys.FirstOrDefault(x => x.Name == TokenName);
