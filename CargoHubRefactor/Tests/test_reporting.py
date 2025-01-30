@@ -1,11 +1,15 @@
 import pytest
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_URL = "http://localhost:5000/api/v1/reporting"
 
 @pytest.fixture
 def admin_api_token():
-    return "A1B2C3D4"  # Replace with your actual token
+    return os.getenv('AdminApiToken')
 
 def get_headers(admin_api_token):
     return {"ApiToken": admin_api_token}

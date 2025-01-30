@@ -3,15 +3,17 @@ import requests
 import sys
 import os
 import json
+from dotenv import load_dotenv
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) 
 
+load_dotenv()
 
 # Fixture to provide URL and AdminApiToken
 @pytest.fixture
 def _data():
-    return [{'URL': 'http://localhost:5000/api/v1/', 'AdminApiToken': 'A1B2C3D4'}]
+    return [{'URL': 'http://localhost:5000/api/v1/', 'AdminApiToken': os.getenv('AdminApiToken')}]
 
 
 # Helper function to get headers with AdminApiToken

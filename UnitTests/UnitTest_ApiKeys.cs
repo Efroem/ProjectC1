@@ -328,63 +328,22 @@ public class UnitTest_APIKeys
         context.APIKeys.Add(new APIKey
         {
             APIKeyId = 1,
-            Name = "AdminApiToken",
-            Key = "v�W���ƨ�B����v$7rԄtP��D-���"
-        });
-
-        context.APIKeys.Add(new APIKey
-        {
-            APIKeyId = 2,
-            Name = "FloorManagerApiToken",
-            Key = "P�t[���4 Ah8~n�w3}T�z�;c�"
-        });
-
-        context.APIKeys.Add(new APIKey
-        {
-            APIKeyId = 3,
-            Name = "EmployeeApiToken",
-            Key = "��}���j�����-@�|�vS3h=�v�tT�"
-        });
-
-        context.APIKeys.Add(new APIKey
-        {
-            APIKeyId = 4,
-            Name = "WarehouseManagerToken",
-            Key = "*ɨ�@A�K�0���iRU�;F ���ۇ�"
+            Name = "TestToken",
+            Key = "d��C���������$+n����Gw," // THIS IS A DUMMY TESTING KEY. THIS DOES NOTHING IN THE FULL PROGRAM
+            // THIS KEY IS JUST HERE FOR TESTING THE METHOD TO GET THE API KEY
         });
 
         context.SaveChanges();
     }
 
     [TestMethod]
-    [DataRow("AdminApiToken")]
-    [DataRow("FloorManagerApiToken")]
-    [DataRow("EmployeeApiToken")]
-    [DataRow("WarehouseManagerToken")]
+    [DataRow("TestToken")]
     public async Task TestGetKey(string TokenName)
     {
 
         Console.WriteLine(TokenName);
-        string apiKey = null;
-        switch (TokenName) {
-            case "AdminApiToken": 
-                apiKey = await apiKeyService.GetAdminApiTokenAsync();
-                break;
+        string apiKey = await apiKeyService.GetTestingTokenAsync();
 
-            case "FloorManagerApiToken": 
-                apiKey = await apiKeyService.GetFloorManagerApiTokenAsync();
-                break;
-
-            case "EmployeeApiToken": 
-                apiKey = await apiKeyService.GetEmployeeApiTokenAsync();
-                break;
-            case "WarehouseManagerToken": 
-                apiKey = await apiKeyService.GetWarehouseManagerTokenAsync();
-                break;
-            default :
-                apiKey = null;
-                break;
-        }
         Assert.IsTrue(apiKey != null);
 
         var compareKey = await _dbContext.APIKeys.FirstOrDefaultAsync(x => x.Name == TokenName);
@@ -397,11 +356,7 @@ public class UnitTest_APIKeys
     }
 
     [TestMethod]
-    [DataRow("AdminApiToken")]
-    [DataRow("FloorManagerApiToken")]
-    [DataRow("EmployeeApiToken")]
-    [DataRow("WarehouseManagerToken")]
-
+    [DataRow("TestToken")]
     public async Task TestGetKeyWithoutDatabase(string TokenName)
     {
     
@@ -411,38 +366,15 @@ public class UnitTest_APIKeys
         await _dbContext.SaveChangesAsync();
         Assert.IsTrue(_dbContext.APIKeys.FirstOrDefault(x => x.Name == TokenName) == null);
         
-        string apiKey = null;
-        switch (TokenName) {
-            case "AdminApiToken": 
-                apiKey = await apiKeyService.GetAdminApiTokenAsync();
-                break;
+        string apiKey = apiKey = await apiKeyService.GetTestingTokenAsync();
 
-            case "FloorManagerApiToken": 
-                apiKey = await apiKeyService.GetFloorManagerApiTokenAsync();
-                break;
-
-            case "EmployeeApiToken": 
-                apiKey = await apiKeyService.GetEmployeeApiTokenAsync();
-                break;
-
-            case "WarehouseManagerToken": 
-                apiKey = await apiKeyService.GetWarehouseManagerTokenAsync();
-                break;
-                
-            default :
-                apiKey = null;
-                break;
-        }
         Assert.IsTrue(apiKey != null);
 
-        var compareKey = TokenName switch
-        {
-            "AdminApiToken" => "v�W���ƨ�B����v$7rԄtP��D-���",
-            "FloorManagerApiToken" => "P�t[���4 Ah8~n�w3}T�z�;c�",
-            "EmployeeApiToken" => "��}���j�����-@�|�vS3h=�v�tT�",
-            "WarehouseManagerToken" => "*ɨ�@A�K�0���iRU�;F ���ۇ�",
-            _ => "Invalid day"
-        };
+        // THIS IS A HASHED TESTING TOKEN AND DOES NOTHING IN THE ACTUAL PROGRAM
+        // IT IS JUST USED FOR TESTING
+        var compareKey = "d��C���������$+n����Gw,"; 
+
+        
         apiKey = apiKey.Replace("\0", ""); // Remove null characters
 
         Assert.IsTrue(compareKey != null);

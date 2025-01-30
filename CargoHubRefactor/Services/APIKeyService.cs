@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 public interface IApiKeyService
 {
@@ -41,14 +42,16 @@ public class ApiKeyService : IApiKeyService
         return await GetTokenAsync("WarehouseManagerToken");
     }
 
-    public async Task<string> GetEnvTestTokenAsync() {
-        return await GetTokenAsync("EnvTestToken");
-    }
+    public async Task<string> GetTestingTokenAsync() {
+        return await GetTokenAsync("TestToken");
+    } 
 
     private async Task<string> GetTokenAsync(string key)
     {
         // Check if environment specifies to use database
         var apiKeyFromEnv = Environment.GetEnvironmentVariable(key);
+
+        LoadHashedKeysInDB("DUMMY", "DummyKey");
 
         if (!string.IsNullOrEmpty(apiKeyFromEnv))
         {
@@ -62,6 +65,12 @@ public class ApiKeyService : IApiKeyService
         }
     }
 
+    private void LoadHashedKeysInDB(string name, string key) {
+        var ApiKey = _dbContext.APIKeys.FirstOrDefault(a => a.Name == name);
+        if (ApiKey == null) return;
+        ApiKey.Key = HashString(key);
+        _dbContext.SaveChanges();
+    }
 
     public static string HashString(string input)
     {
