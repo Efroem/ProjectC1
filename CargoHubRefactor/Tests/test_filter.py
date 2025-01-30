@@ -2,6 +2,9 @@ import os
 import sys
 import pytest
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Add paths for module imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
@@ -11,10 +14,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 def _data():
     return {
         "URL": "http://localhost:5000/api/v1/",
-        "AdminApiToken": "A1B2C3D4",
-        "EmployeeApiToken": "H8I9J10",
-        "FloorManagerApiToken": "E5F6G7",
-        "WarehouseManagerApiToken": "K11L12M13",
+        "AdminApiToken": os.getenv('AdminApiToken'),
+        "EmployeeApiToken": os.getenv('EmployeeApiToken'),
+        "FloorManagerApiToken": os.getenv('FloorManagerApiToken'),
+        "WarehouseManagerApiToken": os.getenv('WarehouseManagerToken'),
         "InvalidToken": "asdasasd",
 
     }
@@ -153,6 +156,7 @@ def test_warehouse_manager_token_put_limited_paths(_data):
 
     # Warehouse Manager can PUT on allowed paths
     response = requests.put(url_allowed, headers=headers, json=body)
+    print(response.text)
     assert response.status_code == 200, f"PUT failed with status {response.status_code} on allowed path"
 
     # Warehouse Manager cannot PUT on disallowed paths

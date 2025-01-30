@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 public interface IApiKeyService
 {
@@ -41,9 +42,9 @@ public class ApiKeyService : IApiKeyService
         return await GetTokenAsync("WarehouseManagerToken");
     }
 
-    public async Task<string> GetEnvTestTokenAsync() {
-        return await GetTokenAsync("EnvTestToken");
-    }
+    public async Task<string> GetTestingTokenAsync() {
+        return await GetTokenAsync("TestToken");
+    } 
 
     private async Task<string> GetTokenAsync(string key)
     {
@@ -61,7 +62,6 @@ public class ApiKeyService : IApiKeyService
             return apiKeyFromDb.Key;
         }
     }
-
 
     public static string HashString(string input)
     {

@@ -51,20 +51,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set environment variables
-        env:
-          AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
-          EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
-          FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
-          WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
-        run: |
-          printenv | grep 'ApiToken'
-      
       - name: Install pytest
         run: |
           python -m pip install --upgrade pip
           pip install pytest
           pip install requests
+
+      - name: Install python dotenv
+        run: |
+          pip install python-dotenv
 
       - name: Start ASP.NET application in background
         env:
@@ -130,25 +125,11 @@ jobs:
     - name: Build
       run: dotnet build --no-restore --configuration Release UnitTests/UnitTests.csproj
 
-    - name: Set environment variables
-      env:
-        AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
-        EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
-        FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
-        WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
-        EnvTestToken: ${{ secrets.ENVTESTTOKEN }}
-
-      run: |
-        printenv | grep 'ApiToken'
-    
     # Run tests with Coverlet
     - name: Run tests and collect coverage
       env:
-        AdminApiToken: ${{ secrets.ADMINAPITOKEN }}
-        EmployeeApiToken: ${{ secrets.EMPLOYEEAPITOKEN }}
-        FloorManagerApiToken: ${{ secrets.FLOORMANAGERAPITOKEN }}
-        WarehouseManagerToken: ${{ secrets.WAREHOUSEMANAGERTOKEN }}
-        EnvTestToken: ${{ secrets.ENVTESTTOKEN }}
+        TestToken: DummyKey 
+        # THIS KEY AND TOKEN ARE JUST USED FOR TESTING AND HAVE NO ACTUAL USE IN THE FINAL PROGRAM
 
       run: |
         dotnet test --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutput=coverage/ /p:CoverletOutputFormat=cobertura
@@ -183,7 +164,7 @@ jobs:
 
     # Upload coverage report (optional)
     - name: Upload coverage report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: coverage-report

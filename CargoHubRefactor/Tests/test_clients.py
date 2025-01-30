@@ -3,14 +3,18 @@ import requests
 import sys
 import os
 import json
+from dotenv import load_dotenv
+
 
 # Ensure the test can locate and import required modules
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+load_dotenv()
 
 @pytest.fixture
 def _data():
-    return [{'URL': 'http://localhost:5000/api/v1/', 'AdminApiToken': 'A1B2C3D4', 'EmployeeApiToken': 'H8I9J10'}]
+    return [{'URL': 'http://localhost:5000/api/v1/', 'AdminApiToken': os.getenv('AdminApiToken'), 'EmployeeApiToken': os.getenv('EmployeeApiToken')}]
 
 def get_headers(AdminApiToken):
     return {"ApiToken": AdminApiToken}
@@ -243,7 +247,7 @@ def test_delete_clients_integration(_data):
         response_data = get_response.json()
     except:
         pass
-    
+
     print(response_data)
     # Verify that the status code is 404 (Not Found) and the client no longer exists
     assert status_code == 200 and response_data["softDeleted"] == True
