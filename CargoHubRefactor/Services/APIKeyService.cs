@@ -51,8 +51,6 @@ public class ApiKeyService : IApiKeyService
         // Check if environment specifies to use database
         var apiKeyFromEnv = Environment.GetEnvironmentVariable(key);
 
-        LoadHashedKeysInDB("DUMMY", "DummyKey");
-
         if (!string.IsNullOrEmpty(apiKeyFromEnv))
         {
             apiKeyFromEnv = HashString(apiKeyFromEnv);
@@ -63,13 +61,6 @@ public class ApiKeyService : IApiKeyService
             if (apiKeyFromDb == null) return null;
             return apiKeyFromDb.Key;
         }
-    }
-
-    private void LoadHashedKeysInDB(string name, string key) {
-        var ApiKey = _dbContext.APIKeys.FirstOrDefault(a => a.Name == name);
-        if (ApiKey == null) return;
-        ApiKey.Key = HashString(key);
-        _dbContext.SaveChanges();
     }
 
     public static string HashString(string input)
