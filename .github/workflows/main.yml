@@ -164,7 +164,7 @@ jobs:
 
     # Upload coverage report (optional)
     - name: Upload coverage report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: coverage-report
